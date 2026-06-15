@@ -1,0 +1,12 @@
+# BunkMeter — robots.txt
+# https://bunkmeter.app
+
+User-agent: *
+Allow: /
+
+# Block any future admin paths if added
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://bunkmeter.app/sitemap.xml

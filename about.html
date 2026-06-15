@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About BunkMeter — The Attendance Calculator Built for Indian College Students</title>
+  <meta name="description" content="Learn about BunkMeter — why it was built, how it works, and what makes it different from every other attendance calculator out there." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://bunkmeter.app/about.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#3d8bff" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Space Grotesk',sans-serif;background:radial-gradient(ellipse at 20% 0%,#0f0a1a 0%,#0a0a0f 55%,#0a1020 100%) fixed;min-height:100vh;color:#e8e8f0;overflow-x:hidden;}
+    .orb{position:fixed;border-radius:50%;filter:blur(120px);opacity:.15;pointer-events:none;z-index:0;}
+    .orb-1{width:500px;height:500px;background:radial-gradient(circle,#3d8bff,transparent);top:-150px;left:-100px;}
+    .orb-2{width:400px;height:400px;background:radial-gradient(circle,#7b2fff,transparent);bottom:-100px;right:-80px;}
+    nav.site-nav{position:sticky;top:0;z-index:200;background:rgba(10,10,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.055);}
+    .nav-inner{max-width:44rem;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:48px;}
+    .nav-brand{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:#3d8bff;text-decoration:none;}
+    .nav-back{font-size:.72rem;font-weight:600;color:rgba(200,200,230,.4);text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;}
+    .nav-back:hover{color:rgba(200,200,230,.8);}
+    main{position:relative;z-index:1;max-width:44rem;margin:0 auto;padding:40px 16px 60px;}
+    .page-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3d8bff;margin-bottom:10px;}
+    h1{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;line-height:1.1;color:#fff;margin-bottom:8px;}
+    .lead{font-size:1.05rem;color:rgba(200,200,230,.55);line-height:1.7;margin-bottom:40px;}
+    .card{background:rgba(15,15,28,.65);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:28px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+    h2{font-size:1.1rem;font-weight:700;color:rgba(220,220,255,.85);margin-bottom:14px;}
+    p{font-size:.9rem;color:rgba(200,200,230,.55);line-height:1.75;margin-bottom:14px;}
+    p:last-child{margin-bottom:0;}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;}
+    .stat-box{text-align:center;padding:14px 8px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.055);}
+    .stat-val{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:#3d8bff;line-height:1;margin-bottom:6px;}
+    .stat-lbl{font-size:.68rem;color:rgba(200,200,230,.38);text-transform:uppercase;letter-spacing:.07em;}
+    ul{list-style:none;padding:0;}
+    ul li{font-size:.875rem;color:rgba(200,200,230,.55);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:10px;}
+    ul li:last-child{border-bottom:none;}
+    ul li::before{content:'→';color:#3d8bff;flex-shrink:0;}
+    footer{text-align:center;padding:32px 16px;font-size:.75rem;color:rgba(180,180,210,.25);position:relative;z-index:1;}
+    footer a{color:rgba(180,180,210,.35);text-decoration:none;margin:0 8px;}
+    footer a:hover{color:rgba(180,180,210,.7);}
+    strong{color:rgba(220,220,255,.75);font-weight:600;}
+    @media(max-width:480px){h1{font-size:1.9rem;}.stat-row{grid-template-columns:1fr 1fr;}}
+  </style>
+</head>
+<body>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">⚡ BunkMeter</a>
+      <a href="/" class="nav-back">← Back to Calculator</a>
+    </div>
+  </nav>
+
+  <main>
+    <p class="page-eyebrow">About</p>
+    <h1>Built for the Sunday-night panic.</h1>
+    <p class="lead">
+      BunkMeter started as a frustrated student's Notes-app calculation. It grew into the tool every Indian college student deserves: exact maths, no fluff, no data harvesting.
+    </p>
+
+    <div class="card">
+      <h2>The Problem</h2>
+      <p>Every Indian college student has been there. It's Sunday evening. Monday has an 8 AM lecture and you're debating whether you can afford to skip it. So you open the calculator app, punch in some numbers, and immediately forget whether you divided in the right order. You show up anyway, just to be safe.</p>
+      <p>The calculators that existed were either wrong (floating-point rounding quietly ate your bunk budget), misleading (showing you a bunk count larger than your remaining semester), or buried in apps that wanted your phone number first. None of them told you what happens when you've missed too much and the semester is almost over.</p>
+    </div>
+
+    <div class="card">
+      <h2>What BunkMeter Does Differently</h2>
+      <ul>
+        <li><strong>Integer arithmetic only.</strong> The bunk budget and recovery plan are computed without floating-point division in the comparison step, so there's no rounding that mysteriously adds or removes a lecture from your count.</li>
+        <li><strong>The verification line.</strong> Every result shows the check — e.g., "(90 attended + 4 to attend) ÷ (120 total + 4 upcoming) = 75.4%" — so you can verify the answer yourself in five seconds.</li>
+        <li><strong>Semester-aware hopeless check.</strong> If you fill in how many lectures are left, BunkMeter caps your bunk budget to what's physically possible and flags a HOPELESS state if recovery requires more lectures than the semester has left.</li>
+        <li><strong>Zero data collection.</strong> Nothing is logged, stored, or transmitted. The entire tool runs in your browser with no network requests except loading the fonts and Tailwind.</li>
+        <li><strong>Customisable threshold.</strong> 75% is the UGC minimum, but your program may require 80% or 85%. One field change, instant recalculation.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>The Numbers</h2>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-val">100%</div><div class="stat-lbl">Free, always</div></div>
+        <div class="stat-box"><div class="stat-val">0 KB</div><div class="stat-lbl">Data uploaded</div></div>
+        <div class="stat-box"><div class="stat-val">&lt;1 ms</div><div class="stat-lbl">Calculation time</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>A Note on Accuracy</h2>
+      <p>BunkMeter's calculations are <strong>mathematically exact</strong> given the inputs you provide. They are as accurate as the numbers you enter. If your college's attendance portal shows a different count than your own tracking — and this happens often, especially mid-semester — always use the portal's number as the source of truth. BunkMeter is a planning tool, not a substitute for checking your official records.</p>
+      <p>Attendance policies, condonation rules, and medical leave procedures vary significantly between institutions. Always verify your college's specific rules before making decisions based on any calculator's output.</p>
+    </div>
+
+    <div class="card">
+      <h2>Technology</h2>
+      <p>BunkMeter is a single HTML file — no build process, no framework, no backend. It uses <strong>Tailwind CSS</strong> (CDN) for utility classes and <strong>Space Grotesk / Space Mono</strong> from Google Fonts for typography. All logic is vanilla JavaScript. The glassmorphism UI, colour-shifting background, and ambient orb animations are pure CSS.</p>
+      <p>The entire app is deployable by dropping one file into any static hosting provider — Netlify, Vercel, GitHub Pages, or even a plain CDN.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 BunkMeter — Built for Indian college students</p>
+    <p style="margin-top:8px;">
+      <a href="/">Calculator</a>
+      <a href="/privacy-policy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/disclaimer.html">Disclaimer</a>
+    </p>
+  </footer>
+</body>
+</html>

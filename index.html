@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- ═══ PRIMARY META ═══════════════════════════════════════════════════════ -->
+  <title>BunkMeter — Free Attendance Calculator for College Students | Bunk Budget &amp; Recovery Planner</title>
+  <meta name="description" content="BunkMeter is a free, instant attendance calculator for Indian college students. Find your exact bunk budget — or exactly how many lectures you must attend to recover above 75%. No sign-up, no data stored, works offline." />
+  <meta name="keywords" content="attendance calculator, bunk calculator, college attendance planner, how many lectures can I bunk, 75 percent attendance calculator, attendance percentage, bunk budget calculator, Indian college, UGC attendance, recovery plan attendance" />
+  <meta name="author" content="BunkMeter" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="language" content="English" />
+  <meta name="geo.region" content="IN" />
+  <meta name="geo.placename" content="India" />
+
+  <!-- ═══ APP / PWA META ══════════════════════════════════════════════════════ -->
+  <meta name="application-name" content="BunkMeter" />
+  <meta name="theme-color" content="#3d8bff" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="apple-mobile-web-app-title" content="BunkMeter" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="msapplication-TileColor" content="#0a0a0f" />
+  <meta name="msapplication-config" content="/browserconfig.xml" />
+
+  <!-- ═══ CANONICAL ══════════════════════════════════════════════════════════ -->
+  <link rel="canonical" href="https://bunkmeter.app/" />
+
+  <!-- ═══ MANIFEST & ICONS ═══════════════════════════════════════════════════ -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+  <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3d8bff" />
+
+  <!-- ═══ OPEN GRAPH ══════════════════════════════════════════════════════════ -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="BunkMeter — Know Exactly How Many Classes You Can Skip 🎓⚡" />
+  <meta property="og:description" content="Stop guessing. Enter your attendance numbers and BunkMeter tells you your exact bunk budget — or your recovery plan. Free, instant, no BS." />
+  <meta property="og:image"       content="https://bunkmeter.app/og-preview.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt"   content="BunkMeter — Attendance Calculator for College Students" />
+  <meta property="og:url"         content="https://bunkmeter.app/" />
+  <meta property="og:site_name"   content="BunkMeter" />
+  <meta property="og:locale"      content="en_IN" />
+
+  <!-- ═══ TWITTER CARD ══════════════════════════════════════════════════════ -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="BunkMeter — Know Exactly How Many Classes You Can Skip 🎓⚡" />
+  <meta name="twitter:description" content="Stop guessing. Enter your attendance numbers and BunkMeter tells you your exact bunk budget — or your recovery plan. Free, instant, no BS." />
+  <meta name="twitter:image"       content="https://bunkmeter.app/og-preview.png" />
+  <meta name="twitter:image:alt"   content="BunkMeter — Attendance Calculator for College Students" />
+
+  <!-- ═══ PRECONNECT ═════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+
+  <!-- ═══ FONTS ══════════════════════════════════════════════════════════════ -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- ═══ TAILWIND ═══════════════════════════════════════════════════════════ -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            grotesk: ['Space Grotesk', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+          colors: {
+            base: '#0a0a0f',
+            surface: '#0f0f1a',
+            panel: '#13131f',
+            border: '#1e1e30',
+            blue:  { neon: '#3d8bff', glow: '#1a5ccc' },
+            green: { neon: '#00f5a0', glow: '#00a86b' },
+            red:   { neon: '#ff3b6b', glow: '#991133' },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* =====================================================================
+       BASE RESET & CSS VARIABLES
+    ===================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-from: #0f0a1a;
+      --bg-via:  #0a0a0f;
+      --bg-to:   #0a1020;
+      --accent:       #3d8bff;
+      --accent-glow:  rgba(61,139,255,0.18);
+      --result-glow:  rgba(61,139,255,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: radial-gradient(ellipse at 20% 0%, var(--bg-from) 0%, var(--bg-via) 55%, var(--bg-to) 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: #e8e8f0;
+      transition: background 1.2s cubic-bezier(0.4,0,0.2,1);
+      overflow-x: hidden;
+    }
+
+    body.safe-mode {
+      --bg-from: #001a0f; --bg-via: #000d07; --bg-to: #001308;
+      --accent: #00f5a0; --accent-glow: rgba(0,245,160,0.15);
+    }
+    body.danger-mode {
+      --bg-from: #1a000a; --bg-via: #0d0004; --bg-to: #110008;
+      --accent: #ff3b6b; --accent-glow: rgba(255,59,107,0.15);
+    }
+
+    /* =====================================================================
+       AMBIENT ORBS
+    ===================================================================== */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(120px); opacity: 0.18;
+      pointer-events: none; z-index: 0;
+      transition: background 1.2s ease, transform 4s ease;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #3d8bff, transparent);
+      top: -180px; left: -120px;
+      animation: orbFloat1 12s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #7b2fff, transparent);
+      bottom: -150px; right: -100px;
+      animation: orbFloat2 15s ease-in-out infinite;
+    }
+    .orb-3 { display: none; }
+
+    body.safe-mode   .orb-1 { background: radial-gradient(circle, #00f5a0, transparent); }
+    body.safe-mode   .orb-2 { background: radial-gradient(circle, #00c97a, transparent); }
+    body.danger-mode .orb-1 { background: radial-gradient(circle, #ff3b6b, transparent); }
+    body.danger-mode .orb-2 { background: radial-gradient(circle, #cc0033, transparent); }
+
+    @keyframes orbFloat1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,40px) scale(1.05); }
+      66%      { transform: translate(-20px,20px) scale(0.97); }
+    }
+    @keyframes orbFloat2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      40%     { transform: translate(-35px,-30px) scale(1.08); }
+      70%     { transform: translate(20px,15px) scale(0.95); }
+    }
+
+    /* =====================================================================
+       GLASS CARD
+    ===================================================================== */
+    .glass-card {
+      background: rgba(15,15,28,0.65);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 24px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 2px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative; z-index: 1;
+      transition: box-shadow 0.5s ease, border-color 0.5s ease;
+    }
+    .glass-card:hover {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.09),
+        0 12px 48px rgba(0,0,0,0.6),
+        0 4px 12px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.09);
+    }
+
+    /* =====================================================================
+       FLOAT ANIMATIONS
+    ===================================================================== */
+    .float-card      { animation: floatCard 6s ease-in-out infinite; }
+    .float-card-slow { animation: floatCard 9s ease-in-out infinite reverse; }
+    @keyframes floatCard {
+      0%,100% { transform: translateY(0px); }
+      50%     { transform: translateY(-8px); }
+    }
+
+    /* =====================================================================
+       INPUTS
+    ===================================================================== */
+    .input-field {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      color: #f0f0ff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem; font-weight: 500;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+      appearance: none; -webkit-appearance: none;
+    }
+    .input-field:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 0 0 3px var(--accent-glow), 0 2px 16px rgba(0,0,0,0.4);
+    }
+    .input-field::placeholder { color: rgba(200,200,230,0.3); }
+    .input-field::-webkit-inner-spin-button,
+    .input-field::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    .field-label {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(200,200,240,0.5);
+      margin-bottom: 8px; display: block;
+    }
+
+    .threshold-row { display: flex; align-items: center; gap: 10px; }
+    .threshold-input {
+      width: 72px;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.95rem; font-weight: 700;
+      padding: 8px 12px; outline: none; text-align: center;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .threshold-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .threshold-input::-webkit-inner-spin-button,
+    .threshold-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* =====================================================================
+       PROGRESS BAR
+    ===================================================================== */
+    .progress-track {
+      width: 100%; height: 8px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      transition: width .6s cubic-bezier(0.4,0,0.2,1), background .6s ease;
+    }
+
+    /* =====================================================================
+       RESULT STATUS
+    ===================================================================== */
+    .status-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 3.2rem; font-weight: 700;
+      letter-spacing: 0.05em; line-height: 1;
+      transition: color .6s ease, text-shadow .6s ease;
+    }
+    .big-percent {
+      font-family: 'Space Mono', monospace;
+      font-size: 4.5rem; font-weight: 700;
+      line-height: 1; transition: color .6s ease;
+    }
+
+    /* =====================================================================
+       BUTTONS
+    ===================================================================== */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 1rem; letter-spacing: 0.04em;
+      padding: 15px 28px; border: none; border-radius: 14px;
+      cursor: pointer; overflow: hidden; text-decoration: none;
+      transition: transform .18s cubic-bezier(0.4,0,0.2,1), box-shadow .18s ease;
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: #fff;
+      box-shadow:
+        0 4px 0 rgba(0,0,0,0.4),
+        0 8px 24px rgba(37,211,102,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 6px 0 rgba(0,0,0,0.4),
+        0 14px 32px rgba(37,211,102,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow:
+        0 1px 0 rgba(0,0,0,0.4),
+        0 4px 12px rgba(37,211,102,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .btn-share { width: 100%; }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; width: 100%;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em;
+      padding: 11px 20px; border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      color: rgba(220,220,255,0.6);
+      transition: all .2s ease; margin-top: 10px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+      color: rgba(220,220,255,0.85);
+    }
+
+    /* =====================================================================
+       STAT CHIPS / CARDS
+    ===================================================================== */
+    .stat-chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px 16px;
+      transition: border-color .4s, background .4s;
+    }
+
+    /* =====================================================================
+       DECORATIVE
+    ===================================================================== */
+    .fancy-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      margin: 28px 0;
+    }
+    .title-accent { display: inline-block; position: relative; }
+    .title-accent::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      border-radius: 2px; transition: background .6s ease;
+    }
+
+    /* =====================================================================
+       RESULT CARD STATES
+    ===================================================================== */
+    .result-card-safe {
+      border-color: rgba(0,245,160,0.2) !important;
+      box-shadow:
+        0 0 0 1px rgba(0,245,160,0.06),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 0 48px rgba(0,245,160,0.06),
+        inset 0 1px 0 rgba(0,245,160,0.1) !important;
+    }
+    .result-card-danger {
+      border-color: rgba(255,59,107,0.2) !important;
+      box-shadow:
+        0 0 0 1px rgba(255,59,107,0.06),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 0 48px rgba(255,59,107,0.06),
+        inset 0 1px 0 rgba(255,59,107,0.1) !important;
+    }
+    @keyframes pulse-danger { 0%,100% { opacity:1; } 50% { opacity:.7; } }
+    .pulse-danger { animation: pulse-danger 1.8s ease-in-out infinite; }
+
+    /* =====================================================================
+       TAG
+    ===================================================================== */
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 99px;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .tag-blue {
+      background: rgba(61,139,255,0.12);
+      border: 1px solid rgba(61,139,255,0.25);
+      color: #3d8bff;
+    }
+
+    /* =====================================================================
+       ADVICE ROWS
+    ===================================================================== */
+    .advice-row {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.88rem; color: rgba(200,200,230,0.7);
+    }
+    .advice-row:last-child { border-bottom: none; }
+    .advice-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* =====================================================================
+       REVEAL ANIMATION
+    ===================================================================== */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* =====================================================================
+       GRID HELPERS
+    ===================================================================== */
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* =====================================================================
+       SCROLLBAR
+    ===================================================================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(61,139,255,0.3); border-radius: 3px; }
+
+    .animated-border { position: relative; }
+
+    /* =====================================================================
+       FAQ ACCORDION
+    ===================================================================== */
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,0.055); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item summary {
+      list-style: none; cursor: pointer;
+      padding: 18px 0; font-size: 0.935rem; font-weight: 600;
+      color: rgba(220,220,255,0.68);
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      user-select: none; transition: color .22s ease; outline: none;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after {
+      content: '+'; font-family: 'Space Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; color: #3d8bff;
+      flex-shrink: 0; line-height: 1;
+      transition: transform .3s cubic-bezier(0.4,0,0.2,1), color .22s ease;
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); }
+    .faq-item[open] > summary { color: #3d8bff; }
+    .faq-answer {
+      font-size: 0.875rem; color: rgba(200,200,230,0.5);
+      line-height: 1.75; padding-bottom: 18px; padding-right: 24px;
+    }
+    .faq-answer strong { color: rgba(220,220,255,0.75); font-weight: 600; }
+    .faq-item[open] .faq-answer { animation: faqReveal .28s cubic-bezier(0.4,0,0.2,1) both; }
+    @keyframes faqReveal { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* =====================================================================
+       NEW: ACCESSIBILITY
+    ===================================================================== */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* =====================================================================
+       NEW: SITE NAVIGATION
+    ===================================================================== */
+    .site-nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(10,10,15,0.90);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.055);
+    }
+    .nav-inner {
+      max-width: 42rem; margin: 0 auto; padding: 0 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 48px; gap: 12px;
+    }
+    .nav-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem; font-weight: 700;
+      color: #3d8bff; text-decoration: none;
+      flex-shrink: 0; letter-spacing: 0.02em;
+      transition: color .2s;
+    }
+    .nav-brand:hover { color: #6baeff; }
+    .nav-links {
+      display: flex; align-items: center; gap: 18px;
+      overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-link {
+      font-size: 0.72rem; font-weight: 600;
+      color: rgba(200,200,230,0.38); text-decoration: none;
+      white-space: nowrap; letter-spacing: 0.06em; text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-link:hover { color: rgba(200,200,230,0.82); }
+    .nav-link:focus-visible { outline: 2px solid #3d8bff; outline-offset: 3px; border-radius: 4px; }
+
+    /* =====================================================================
+       NEW: AD SLOTS
+    ===================================================================== */
+    .ad-slot {
+      position: relative; z-index: 1;
+      text-align: center; margin: 0 auto 16px;
+    }
+    .ad-label {
+      font-size: 0.6rem; color: rgba(255,255,255,0.1);
+      text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 5px;
+    }
+    .ad-container {
+      background: rgba(255,255,255,0.015);
+      border: 1px dashed rgba(255,255,255,0.05);
+      border-radius: 10px; min-height: 90px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .ad-container--rect { min-height: 250px; }
+
+    /* =====================================================================
+       NEW: SECTION TITLES
+    ===================================================================== */
+    .section-title {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(200,200,240,0.3); margin-bottom: 16px;
+    }
+
+    /* =====================================================================
+       NEW: HOW-TO STEPS
+    ===================================================================== */
+    .step-list { list-style: none; }
+    .step-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem; font-weight: 700; color: #3d8bff;
+      background: rgba(61,139,255,0.1); border: 1px solid rgba(61,139,255,0.2);
+      border-radius: 8px; width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-title { font-size: 0.88rem; font-weight: 600; color: rgba(220,220,255,0.8); margin-bottom: 4px; line-height: 1.3; }
+    .step-desc { font-size: 0.815rem; color: rgba(200,200,230,0.48); line-height: 1.65; }
+    .step-desc strong { color: rgba(200,200,230,0.72); }
+
+    /* =====================================================================
+       NEW: ABOUT SECTION
+    ===================================================================== */
+    .about-body { font-size: 0.875rem; color: rgba(200,200,230,0.52); line-height: 1.75; }
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 10px; margin-top: 20px; padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.055);
+    }
+    .about-stat {
+      text-align: center; padding: 12px 6px;
+      background: rgba(255,255,255,0.025); border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+    .about-stat-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.3rem; font-weight: 700; color: #3d8bff;
+      line-height: 1; margin-bottom: 5px;
+    }
+    .about-stat-label {
+      font-size: 0.68rem; color: rgba(200,200,230,0.38);
+      text-transform: uppercase; letter-spacing: 0.07em; line-height: 1.3;
+    }
+
+    /* =====================================================================
+       NEW: FOOTER LEGAL NAV
+    ===================================================================== */
+    .footer-legal {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 6px 16px; margin-top: 12px;
+    }
+    .footer-legal a {
+      color: rgba(180,180,210,0.22); text-decoration: none;
+      font-size: 0.72rem; letter-spacing: 0.05em; transition: color .2s;
+    }
+    .footer-legal a:hover { color: rgba(180,180,210,0.58); }
+
+    /* =====================================================================
+       RESPONSIVE
+    ===================================================================== */
+    @media (max-width: 480px) {
+      .input-grid { grid-template-columns: 1fr; }
+      .big-percent { font-size: 3.5rem; }
+      .status-badge { font-size: 2.5rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       STRUCTURED DATA — JSON-LD
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "BunkMeter",
+    "alternateName": "Bunk Calculator",
+    "url": "https://bunkmeter.app",
+    "description": "Free attendance calculator for Indian college students. Calculate your exact bunk budget or recovery plan instantly.",
+    "inLanguage": "en-IN",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": { "@type": "EntryPoint", "urlTemplate": "https://bunkmeter.app/?q={search_term_string}" },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BunkMeter — Attendance Calculator",
+    "applicationCategory": "EducationApplication",
+    "applicationSubCategory": "Calculator",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "url": "https://bunkmeter.app",
+    "description": "A free, privacy-first attendance calculator for Indian college students. Enter your lecture count, attendance, and threshold to get your exact bunk budget or recovery plan.",
+    "featureList": [
+      "Exact bunk budget calculation with integer arithmetic",
+      "Recovery plan for attendance below threshold",
+      "Semester hopeless check when lectures run out",
+      "Customizable attendance threshold (75%, 80%, 85%+)",
+      "Lectures-remaining cap for realistic semester planning",
+      "Zero data storage — fully private",
+      "Instant results — no page refresh"
+    ],
+    "screenshot": "https://bunkmeter.app/og-preview.png",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+    "author": { "@type": "Organization", "name": "BunkMeter", "url": "https://bunkmeter.app" }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How accurate is the Bunk Budget?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Extremely accurate. BunkMeter uses integer arithmetic to find the precise number of lectures you can skip or must attend, avoiding floating-point rounding errors. Always cross-check with your college attendance portal for the most current numbers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does BunkMeter store or share my data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. BunkMeter runs entirely in your browser. There is no server, no database, and no tracking. Your numbers are never sent anywhere and disappear the moment you close the tab."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does Lectures Left in Semester actually do?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It unlocks two advanced checks. If you are safe, your bunk budget is capped to the lectures remaining so it stays realistic. If you are in crisis, BunkMeter checks whether recovery is even mathematically possible before the semester ends."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the minimum attendance required in Indian colleges?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The UGC mandates 75% as the national minimum. Individual universities and programs can set higher requirements — many engineering and medical colleges enforce 80% to 85%. Always confirm with your institution's official academic regulations."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I change the attendance threshold in BunkMeter?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. The Minimum Attendance % field at the top of the calculator defaults to 75% but can be changed to any value. All calculations update instantly as you type."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home",                    "item": "https://bunkmeter.app" },
+      { "@type": "ListItem", "position": 2, "name": "Attendance Calculator",   "item": "https://bunkmeter.app/#calculator" }
+    ]
+  }
+  </script>
+
+</head>
+<body>
+
+  <!-- Screen-reader live region for dynamic result announcements -->
+  <div id="announcer" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SITE NAVIGATION
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <nav class="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand" aria-label="BunkMeter — home">⚡ BunkMeter</a>
+      <div class="nav-links" role="list">
+        <a href="#calculator"     class="nav-link" role="listitem">Calculator</a>
+        <a href="#how-to-use"     class="nav-link" role="listitem">How It Works</a>
+        <a href="#faq"            class="nav-link" role="listitem">FAQ</a>
+        <a href="/about.html"     class="nav-link" role="listitem">About</a>
+        <a href="/contact.html"   class="nav-link" role="listitem">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <main class="relative z-10 max-w-2xl mx-auto px-4 py-8 pb-4" id="top">
+
+    <!-- HEADER -->
+    <header class="text-center mb-10 reveal" role="banner">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <span class="tag tag-blue" aria-label="Version 2.0, free forever">
+          <span aria-hidden="true">⚡</span> v2.0 · Free Forever
+        </span>
+      </div>
+      <h1 class="text-5xl font-bold tracking-tight text-white mb-2" style="font-family:'Space Grotesk',sans-serif;font-weight:700;">
+        <span class="title-accent">BunkMeter</span>
+      </h1>
+      <p class="text-base text-white/40 font-medium tracking-wide">
+        Your attendance. Your rules. No BS.
+      </p>
+    </header>
+
+    <!-- ═══ AD SLOT 1 — Top Banner (728×90 desktop / 320×50 mobile) ═══
+         Uncomment and replace with your AdSense publisher code after approval.
+    <div class="ad-slot" aria-label="Advertisement" role="complementary">
+      <p class="ad-label">Advertisement</p>
+      <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+      </div>
+    </div>
+    ═══ END AD SLOT 1 ═══ -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: CALCULATOR
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="calculator" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" class="sr-only">Attendance Calculator</h2>
+
+      <!-- Input Card -->
+      <div class="glass-card p-6 mb-5 float-card reveal" role="form" aria-label="Enter your attendance figures">
+
+        <!-- Threshold -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <p class="text-white font-semibold text-sm" id="threshold-label">Minimum Attendance</p>
+            <p class="text-white/35 text-xs mt-0.5" id="threshold-desc">Your college's requirement</p>
+          </div>
+          <div class="threshold-row">
+            <input
+              type="number" id="threshold" class="threshold-input"
+              value="75" min="1" max="100" autocomplete="off"
+              aria-label="Minimum attendance percentage required by your college"
+              aria-describedby="threshold-desc"
+            />
+            <span class="text-white/50 text-sm font-bold" aria-hidden="true">%</span>
+          </div>
+        </div>
+
+        <div class="fancy-divider" style="margin-top:0;"></div>
+
+        <!-- Total + Attended -->
+        <div class="input-grid">
+          <div>
+            <label class="field-label" for="total">Total Conducted</label>
+            <input type="number" id="total" class="input-field"
+              placeholder="e.g. 120" min="0" autocomplete="off"
+              aria-required="true"
+              aria-describedby="total-hint" />
+            <span id="total-hint" class="sr-only">Total number of lectures conducted this semester</span>
+          </div>
+          <div>
+            <label class="field-label" for="attended">You Attended</label>
+            <input type="number" id="attended" class="input-field"
+              placeholder="e.g. 50" min="0" autocomplete="off"
+              aria-required="true"
+              aria-describedby="attended-hint" />
+            <span id="attended-hint" class="sr-only">Number of lectures you personally attended</span>
+          </div>
+        </div>
+
+        <!-- Remaining -->
+        <div class="mt-4">
+          <label class="field-label" for="remaining">
+            Lectures Left in Semester
+            <span style="color:rgba(200,200,240,0.3);font-size:0.7rem;text-transform:none;letter-spacing:0;">(upcoming, incl. today)</span>
+          </label>
+          <input type="number" id="remaining" class="input-field"
+            placeholder="e.g. 60  —  leave blank if unknown"
+            min="0" autocomplete="off"
+            aria-describedby="remaining-hint" />
+          <span id="remaining-hint" class="sr-only">Optional. Enables semester bunk cap and hopeless-state detection.</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mt-6" aria-label="Attendance rate meter">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-white/40 font-semibold tracking-widest uppercase" aria-hidden="true">Attendance Rate</span>
+            <span id="percent-label" class="font-mono text-sm font-bold text-white/50" aria-live="polite" aria-atomic="true">—</span>
+          </div>
+          <div class="progress-track"
+               role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+               aria-label="Attendance percentage bar" id="progress-bar-el">
+            <div id="progress-fill" class="progress-fill" style="width:0%;background:#3d8bff;"></div>
+          </div>
+          <div class="flex justify-between mt-1" aria-hidden="true">
+            <span class="text-xs text-white/20">0%</span>
+            <span id="threshold-marker-label" class="text-xs text-white/30 font-mono">75%</span>
+            <span class="text-xs text-white/20">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div id="result-card"
+           class="glass-card p-6 mb-5 float-card-slow animated-border reveal"
+           style="transition:border-color .6s,box-shadow .6s;"
+           aria-live="polite" aria-atomic="false">
+
+        <!-- Empty state -->
+        <div id="empty-state" class="text-center py-8">
+          <div class="text-5xl mb-4" aria-hidden="true">🎓</div>
+          <p class="text-white/30 text-sm font-medium tracking-wide">Enter your numbers above</p>
+          <p class="text-white/20 text-xs mt-1">Results update instantly as you type</p>
+        </div>
+
+        <!-- Result content -->
+        <div id="result-content" class="hidden">
+          <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+            <div>
+              <div id="status-text" class="status-badge mb-1" aria-live="polite">SAFE!</div>
+              <div id="status-sub" class="text-sm text-white/40 font-medium"></div>
+            </div>
+            <div class="text-right">
+              <div id="big-percent" class="big-percent" aria-label="Current attendance percentage">0%</div>
+              <div class="text-xs text-white/30 tracking-widest uppercase mt-1">Current Rate</div>
+            </div>
+          </div>
+
+          <div class="fancy-divider" style="margin:20px 0;"></div>
+
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="stat-chip">
+              <div id="chip-left-value"  class="font-mono text-xl font-bold text-white mb-0.5">0</div>
+              <div id="chip-left-label"  class="text-xs text-white/35 uppercase tracking-widest">Lectures Attended</div>
+            </div>
+            <div class="stat-chip">
+              <div id="chip-right-value" class="font-mono text-xl font-bold text-white mb-0.5">0</div>
+              <div id="chip-right-label" class="text-xs text-white/35 uppercase tracking-widest">Out of Total</div>
+            </div>
+          </div>
+
+          <div id="advice-box" class="rounded-2xl p-4"
+               style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);"
+               role="region" aria-label="Attendance advice">
+            <div id="advice-content"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ AD SLOT 2 — Rectangle 300×250 after results ═══
+         Uncomment after AdSense approval.
+    <div class="ad-slot" aria-label="Advertisement" role="complementary">
+      <p class="ad-label">Advertisement</p>
+      <div class="ad-container ad-container--rect">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"
+             data-ad-format="rectangle"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+      </div>
+    </div>
+    ═══ END AD SLOT 2 ═══ -->
+
+    <!-- Share Card -->
+    <div id="share-card" class="glass-card p-5 mb-5 reveal hidden" aria-label="Share BunkMeter">
+      <p class="text-xs text-white/30 font-semibold uppercase tracking-widest mb-3 text-center">Spread the word</p>
+      <button onclick="shareOnWhatsApp()" class="btn-primary btn-share" aria-label="Share BunkMeter on WhatsApp">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Share on WhatsApp
+      </button>
+      <button onclick="shareNative()" id="native-share-btn" class="btn-secondary"
+              aria-label="Share via device share sheet" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share via…
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: HOW TO USE
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="how-to-use" aria-labelledby="howto-heading" class="reveal">
+      <div class="glass-card p-5 mb-5">
+        <h2 id="howto-heading" class="section-title">📋 How to Use BunkMeter</h2>
+        <ol class="step-list" aria-label="Four steps to use the calculator">
+          <li class="step-item">
+            <span class="step-num" aria-hidden="true">01</span>
+            <div>
+              <h3 class="step-title">Set your college's attendance threshold</h3>
+              <p class="step-desc">The field at the top defaults to <strong>75%</strong> — the UGC's national minimum. If your program requires 80% or 85% (common in engineering, law, and medical colleges), change it first. Every calculation is recalibrated the moment you type.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num" aria-hidden="true">02</span>
+            <div>
+              <h3 class="step-title">Enter your current lecture count</h3>
+              <p class="step-desc">Fill in <strong>Total Conducted</strong> — how many lectures have happened so far this semester — then <strong>You Attended</strong> — how many of those you were actually present for. Use subject-wise numbers or cumulative totals, whichever matches your college's report.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num" aria-hidden="true">03</span>
+            <div>
+              <h3 class="step-title">Add remaining lectures (optional but powerful)</h3>
+              <p class="step-desc">If you know how many lectures are left before the semester attendance is frozen, enter that number. This <strong>caps your bunk budget</strong> to what's physically achievable, and if you're in crisis, tells you whether recovery is even feasible given the time left.</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num" aria-hidden="true">04</span>
+            <div>
+              <h3 class="step-title">Read your result instantly</h3>
+              <p class="step-desc">Above threshold → you get a <strong>Bunk Budget</strong>: the exact number of consecutive lectures you can safely skip. Below threshold → you get a <strong>Recovery Plan</strong>: the exact back-to-back classes you must attend. No button to press — results update as you type.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: ATTENDANCE RULES GUIDE
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="attendance-guide" aria-labelledby="guide-heading" class="reveal">
+      <div class="glass-card p-5 mb-5">
+        <h2 id="guide-heading" class="section-title">📚 Indian College Attendance Rules — Explained</h2>
+        <div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">📜</span>
+            <span><strong class="text-white/60">75% is a floor, not a target.</strong> The UGC mandates 75% as the national minimum for all central and state universities. However, affiliating bodies and autonomous colleges are free to set higher limits. AICTE-approved engineering colleges typically follow 75%, while many medical, law, and pharmacy programs enforce 80–85%. Confirm your institution's policy in its official academic regulations.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">🏥</span>
+            <span><strong class="text-white/60">Medical leave condonation exists — but it's not automatic.</strong> Most Indian universities allow 5–10% of total lectures to be condoned for genuine medical emergencies, backed by documentation (hospital admission records, doctor certificates on letterhead). Approval is discretionary and decided by the examination committee, not guaranteed by any fixed rule.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">📅</span>
+            <span><strong class="text-white/60">Attendance is frozen before exams — usually 7–14 days out.</strong> Any lectures held after the freeze date don't count toward your final percentage. Always check your academic calendar. The "Lectures Left" field in BunkMeter refers to lectures that will actually count, not just any remaining schedule.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">⚖️</span>
+            <span><strong class="text-white/60">A shortage means detention, not a warning.</strong> Falling below the threshold bars you from appearing in semester-end exams at most Indian colleges. Some institutions offer a grace waiver for students between 65–74% who meet other criteria; others have zero exceptions. Know your specific policy before banking on a waiver.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">🧮</span>
+            <span><strong class="text-white/60">Track per subject, not just overall.</strong> Many colleges enforce the attendance threshold on each paper individually — not just an aggregate total. You could be above 75% overall and still be detained if a single elective drops below. Use BunkMeter separately for each subject to stay safe.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: PRO TIPS (existing)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="tips" aria-labelledby="tips-heading" class="reveal">
+      <div class="glass-card p-5 mb-5">
+        <h2 id="tips-heading" class="section-title">📌 Pro Tips</h2>
+        <div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">🎯</span>
+            <span>75% is the typical minimum, but some colleges require 80–85%. Update the threshold field at the top before calculating.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">🧮</span>
+            <span>The recovery plan shows consecutive lectures needed — skipping even one during that run resets the math. Plan accordingly.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">⚠️</span>
+            <span>Medical leaves, fest duties, and NCC/NSS exemptions can affect your count differently. Always verify final figures with admin.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">💡</span>
+            <span>Bunk wisely — a single lecture can tip your percentage significantly when the total count is low. The maths is cold-blooded.</span>
+          </div>
+          <div class="advice-row">
+            <span class="advice-icon" aria-hidden="true">📱</span>
+            <span>Add BunkMeter to your phone's home screen from the browser menu for one-tap access at the start of every week.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: ABOUT
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="about" aria-labelledby="about-heading" class="reveal">
+      <div class="glass-card p-5 mb-5">
+        <h2 id="about-heading" class="section-title">🎓 About BunkMeter</h2>
+        <p class="about-body">BunkMeter was built out of a very real frustration: the Sunday-night panic of trying to work out whether you can skip Monday's 8 AM lecture. Every Indian college student has been there — furiously adding numbers in a Notes app, second-guessing the rounding, and showing up anyway just to be safe.</p>
+        <p class="about-body" style="margin-top:10px;">The tool does one thing well. It uses exact integer arithmetic — no floating-point tricks, no rounding that quietly eats your budget. If BunkMeter says you have 3 bunks left, that answer is verified right there in the advice box. The semester remaining field was added because the classic bunk calculator tells you nothing about whether the plan is even feasible given where you are in the academic calendar.</p>
+        <p class="about-body" style="margin-top:10px;">No accounts. No cookies. No data leaves your browser. It runs entirely client-side, and it always will. <a href="/about.html" style="color:#3d8bff;text-decoration:underline;text-underline-offset:3px;">Read the full story →</a></p>
+        <div class="about-stats" aria-label="BunkMeter at a glance">
+          <div class="about-stat">
+            <div class="about-stat-value">100%</div>
+            <div class="about-stat-label">Free Forever</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-value">0</div>
+            <div class="about-stat-label">Data Collected</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-value" style="font-size:1rem;padding-top:4px;">Instant</div>
+            <div class="about-stat-label">Results — No Refresh</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION: FAQ
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section id="faq" aria-labelledby="faq-heading" class="reveal">
+      <div class="glass-card p-5 mb-5">
+        <h2 id="faq-heading" class="section-title">💬 Frequently Asked</h2>
+
+        <details class="faq-item">
+          <summary>How accurate is the Bunk Budget?</summary>
+          <p class="faq-answer">Extremely accurate — the math is exact, not approximate. BunkMeter uses <strong>integer arithmetic</strong> to find the precise number of lectures you can skip or must attend, avoiding floating-point rounding errors entirely. The only variable is your college's actual recorded count, which may differ slightly from your own tracking. Always cross-check with your attendance portal.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does BunkMeter store or share my data?</summary>
+          <p class="faq-answer"><strong>Absolutely not.</strong> BunkMeter runs entirely in your browser. There is no server, no database, no tracking, and no cookies. Your attendance numbers are never sent anywhere. The moment you close or refresh the tab, everything is gone. See our <a href="/privacy-policy.html">Privacy Policy</a> for the full breakdown.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>What does "Lectures Left in Semester" actually do?</summary>
+          <p class="faq-answer">It unlocks two reality-checks. If you're <strong>safe</strong>, your bunk budget is capped to the remaining lectures — so you never see a figure larger than what's physically possible this semester. If you're in <strong>crisis</strong>, it checks whether recovery is achievable before the semester ends. If you've run out of road, it tells you honestly and points you toward medical leaves or a meeting with your HOD.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>My college requires 80% — can I change the threshold?</summary>
+          <p class="faq-answer">Yes — that's exactly what the <strong>Minimum Attendance %</strong> field at the top is for. Change it to 80, 85, or any value. All calculations update instantly. You can also use different thresholds for different subjects if each has its own requirement.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>What is the minimum attendance required in Indian colleges?</summary>
+          <p class="faq-answer">The <strong>University Grants Commission (UGC) mandates 75%</strong> as the national minimum for all Indian universities. Individual institutions can — and frequently do — set higher thresholds. AICTE-approved engineering programs typically follow 75%, while medical and law colleges often enforce 80–85%. Check your institution's official academic handbook for the definitive figure.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ═══ AD SLOT 3 — Pre-footer Banner ═══
+         Uncomment after AdSense approval.
+    <div class="ad-slot" aria-label="Advertisement" role="complementary">
+      <p class="ad-label">Advertisement</p>
+      <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+      </div>
+    </div>
+    ═══ END AD SLOT 3 ═══ -->
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <footer role="contentinfo">
+    <p>Built for Indian college students who do the maths before skipping class &nbsp;·&nbsp; BunkMeter © 2025</p>
+    <p style="margin-top:5px;font-size:0.7rem;color:rgba(180,180,210,0.18);">
+      Calculations are for reference only. Always verify with your institution. <a href="/disclaimer.html" style="color:rgba(180,180,210,0.28);text-decoration:underline;">Disclaimer</a>
+    </p>
+    <nav class="footer-legal" aria-label="Legal and informational pages">
+      <a href="/about.html">About</a>
+      <span aria-hidden="true" style="color:rgba(180,180,210,0.1);">·</span>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <span aria-hidden="true" style="color:rgba(180,180,210,0.1);">·</span>
+      <a href="/terms.html">Terms of Use</a>
+      <span aria-hidden="true" style="color:rgba(180,180,210,0.1);">·</span>
+      <a href="/disclaimer.html">Disclaimer</a>
+      <span aria-hidden="true" style="color:rgba(180,180,210,0.1);">·</span>
+      <a href="/contact.html">Contact</a>
+    </nav>
+    <p style="margin-top:14px;">
+      <a href="#top" style="color:rgba(180,180,210,0.18);font-size:0.7rem;text-decoration:none;" aria-label="Back to top">↑ Back to top</a>
+    </p>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+    // ── DOM refs ────────────────────────────────────────────────────────────
+    const inputTotal      = document.getElementById('total');
+    const inputAttended   = document.getElementById('attended');
+    const inputThreshold  = document.getElementById('threshold');
+    const inputRemaining  = document.getElementById('remaining');
+    const announcer       = document.getElementById('announcer');
+    const progressBarEl   = document.getElementById('progress-bar-el');
+
+    const emptyState      = document.getElementById('empty-state');
+    const resultContent   = document.getElementById('result-content');
+    const resultCard      = document.getElementById('result-card');
+    const shareCard       = document.getElementById('share-card');
+    const nativeShareBtn  = document.getElementById('native-share-btn');
+
+    const statusText      = document.getElementById('status-text');
+    const statusSub       = document.getElementById('status-sub');
+    const bigPercent      = document.getElementById('big-percent');
+
+    const chipLV  = document.getElementById('chip-left-value');
+    const chipLL  = document.getElementById('chip-left-label');
+    const chipRV  = document.getElementById('chip-right-value');
+    const chipRL  = document.getElementById('chip-right-label');
+
+    const adviceBox     = document.getElementById('advice-box');
+    const adviceContent = document.getElementById('advice-content');
+
+    const progressFill    = document.getElementById('progress-fill');
+    const percentLabel    = document.getElementById('percent-label');
+    const thresholdMarker = document.getElementById('threshold-marker-label');
+
+    // Show native share button if Web Share API is available
+    if (navigator.share) { nativeShareBtn.style.display = ''; }
+
+    // Share state
+    let _sharePct   = null;
+    let _shareLabel = '';
+
+    // ── Core calculation ────────────────────────────────────────────────────
+    function calculate() {
+      const total     = parseInt(inputTotal.value)       || 0;
+      const attended  = parseInt(inputAttended.value)    || 0;
+      const threshold = parseFloat(inputThreshold.value) || 75;
+      const remaining = inputRemaining.value !== '' ? parseInt(inputRemaining.value) : null;
+
+      thresholdMarker.textContent = threshold + '%';
+
+      if (!inputTotal.value && !inputAttended.value) { showEmpty(); return; }
+      if (total <= 0 || attended < 0 || attended > total) {
+        showEmpty();
+        if (attended > total && total > 0) percentLabel.textContent = 'attended > total?';
+        return;
+      }
+
+      const pct = (attended / total) * 100;
+      const pctClamped = Math.min(Math.max(pct, 0), 100);
+
+      percentLabel.textContent = pct.toFixed(1) + '%';
+      progressFill.style.width = pctClamped + '%';
+      progressBarEl.setAttribute('aria-valuenow', Math.round(pctClamped));
+
+      progressFill.style.background = pct >= threshold
+        ? 'linear-gradient(90deg,#00a86b,#00f5a0)'
+        : pct >= threshold - 10
+          ? 'linear-gradient(90deg,#cc8800,#ffbb00)'
+          : 'linear-gradient(90deg,#991133,#ff3b6b)';
+
+      emptyState.classList.add('hidden');
+      resultContent.classList.remove('hidden');
+      shareCard.classList.remove('hidden');
+
+      bigPercent.textContent = pct.toFixed(1) + '%';
+      chipLV.textContent = attended; chipLL.textContent = 'Lectures Attended';
+      chipRV.textContent = total;    chipRL.textContent = 'Total Lectures';
+      _sharePct = pct;
+
+      if (pct >= threshold) {
+        showSafeState(total, attended, pct, threshold, remaining);
+      } else {
+        showDangerState(total, attended, pct, threshold, remaining);
+      }
+    }
+
+    // ── Safe state ──────────────────────────────────────────────────────────
+    function showSafeState(total, attended, pct, threshold, remaining) {
+      document.body.className = 'safe-mode';
+      resultCard.classList.remove('result-card-danger');
+      resultCard.classList.add('result-card-safe');
+      statusText.textContent = 'SAFE! 🟢';
+      statusText.style.color = '#00f5a0';
+      statusText.style.textShadow = '0 0 24px rgba(0,245,160,0.4)';
+      statusText.classList.remove('pulse-danger');
+      bigPercent.style.color = '#00f5a0';
+
+      let bunksAllowed = Math.floor(attended / (threshold / 100)) - total;
+      let cappedByRemaining = false;
+      if (remaining !== null && bunksAllowed > remaining) {
+        bunksAllowed = remaining;
+        cappedByRemaining = true;
+      }
+
+      statusSub.textContent = bunksAllowed > 0
+        ? `You can skip ${bunksAllowed} more lecture${bunksAllowed !== 1 ? 's' : ''} safely`
+        : `You're at the edge — don't skip anything!`;
+      _shareLabel = bunksAllowed > 0
+        ? `I have ${bunksAllowed} bunk${bunksAllowed !== 1 ? 's' : ''} left this semester!`
+        : `I'm on the edge — zero bunks left!`;
+
+      announcer.textContent = `Your attendance is ${pct.toFixed(1)} percent. You are safe. ${statusSub.textContent}.`;
+
+      if (bunksAllowed > 0) {
+        adviceBox.style.borderColor = 'rgba(0,245,160,0.2)';
+        adviceBox.style.background  = 'rgba(0,245,160,0.04)';
+        const goldenNote = cappedByRemaining
+          ? `<p style="font-size:.8rem;color:rgba(0,245,160,.7);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,245,160,.12);">⚡ That is literally every single remaining lecture this semester. You are golden.</p>`
+          : `<p style="font-size:.78rem;color:rgba(0,245,160,.45);font-style:italic;">⚡ After skipping ${bunksAllowed}, your next lecture becomes mandatory.</p>`;
+        adviceContent.innerHTML = `
+          <div class="flex items-center gap-2 mb-3">
+            <span style="color:#00f5a0;font-size:1.3rem;" aria-hidden="true">🎉</span>
+            <span style="color:#00f5a0;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Bunk Budget</span>
+          </div>
+          <p style="font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;color:#00f5a0;line-height:1;margin-bottom:8px;">
+            ${bunksAllowed} <span style="font-size:1rem;color:rgba(0,245,160,.6);">lecture${bunksAllowed !== 1 ? 's' : ''}</span>
+          </p>
+          <p style="font-size:.85rem;color:rgba(200,200,220,.55);margin-bottom:12px;line-height:1.5;">
+            You can skip up to <strong style="color:#00f5a0;">${bunksAllowed}</strong> upcoming consecutive lectures before dipping below <strong style="color:#00f5a0;">${threshold}%</strong>.
+          </p>
+          ${goldenNote}`;
+      } else {
+        adviceBox.style.borderColor = 'rgba(255,187,0,.2)';
+        adviceBox.style.background  = 'rgba(255,187,0,.04)';
+        adviceContent.innerHTML = `
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:1.3rem;" aria-hidden="true">⚠️</span>
+            <span style="color:#ffbb00;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Borderline Safe</span>
+          </div>
+          <p style="font-size:.88rem;color:rgba(200,200,220,.6);line-height:1.6;">
+            You're above ${threshold}% but have <strong style="color:#ffbb00;">zero room to bunk</strong>. Attend the next lecture to build a safety cushion.
+          </p>`;
+      }
+    }
+
+    // ── Danger state ────────────────────────────────────────────────────────
+    function showDangerState(total, attended, pct, threshold, remaining) {
+      document.body.className = 'danger-mode';
+      resultCard.classList.add('result-card-danger');
+      resultCard.classList.remove('result-card-safe');
+      bigPercent.style.color = '#ff3b6b';
+
+      // Find minimum consecutive lectures N to recover:
+      // (attended + N) / (total + N) >= threshold/100
+      // solved as: N >= (threshold*total - 100*attended) / (100 - threshold)
+      let needed = null;
+      if (threshold < 100) {
+        needed = 0;
+        while (needed <= 10000) {
+          if ((attended + needed) * 100 >= threshold * (total + needed)) break;
+          needed++;
+        }
+        if (needed > 10000) needed = null;
+      }
+
+      const shortfall    = (threshold - pct).toFixed(1);
+      const isHopeless   = needed !== null && remaining !== null && needed > remaining;
+
+      if (isHopeless) {
+        statusText.textContent = 'HOPELESS! 🚨';
+        statusText.style.color = '#ff3b6b';
+        statusText.style.textShadow = '0 0 24px rgba(255,59,107,.5)';
+        statusText.classList.add('pulse-danger');
+        statusSub.textContent = 'Recovery is mathematically impossible this semester';
+        _shareLabel = 'My attendance situation is hopeless this semester 😬';
+        announcer.textContent = `Your attendance is ${pct.toFixed(1)} percent. Hopeless. Recovery is not possible before the semester ends.`;
+
+        adviceBox.style.borderColor = 'rgba(255,59,107,.25)';
+        adviceBox.style.background  = 'rgba(255,59,107,.06)';
+        adviceContent.innerHTML = `
+          <div class="flex items-center gap-2 mb-3">
+            <span style="color:#ff3b6b;font-size:1.3rem;" aria-hidden="true">🚨</span>
+            <span style="color:#ff3b6b;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Semester Closed</span>
+          </div>
+          <p style="font-size:.88rem;color:rgba(200,200,220,.65);line-height:1.7;margin-bottom:14px;">
+            You need <strong style="color:#ff3b6b;">${needed} more consecutive lectures</strong> to hit ${threshold}%, but only
+            <strong style="color:#ff3b6b;">${remaining} lecture${remaining !== 1 ? 's' : ''}</strong>
+            remain${remaining === 1 ? 's' : ''} this semester. The math simply doesn't work out.
+          </p>
+          <div style="border-top:1px solid rgba(255,59,107,.12);padding-top:12px;">
+            <p style="font-size:.8rem;color:rgba(255,59,107,.75);font-weight:600;margin-bottom:8px;">What you can still do:</p>
+            <p style="font-size:.82rem;color:rgba(200,200,220,.5);line-height:1.8;">
+              🏥 Apply for <strong style="color:rgba(220,200,220,.75);">medical leave condonation</strong> if you were genuinely unwell — documented illness is often condoned up to 5–10%.<br/>
+              🧑‍💼 Request a meeting with your <strong style="color:rgba(220,200,220,.75);">HOD or Dean of Academic Affairs</strong>. Explain the situation honestly; discretionary condonation exists in most institutions.<br/>
+              📋 Check your college handbook for a <strong style="color:rgba(220,200,220,.75);">shortage waiver form</strong> or grace provision for extenuating circumstances.
+            </p>
+          </div>`;
+        return;
+      }
+
+      statusText.textContent = 'CRISIS! 🔴';
+      statusText.style.color = '#ff3b6b';
+      statusText.style.textShadow = '0 0 24px rgba(255,59,107,.4)';
+      statusText.classList.add('pulse-danger');
+      statusSub.textContent = `${shortfall}% below the ${threshold}% requirement`;
+      _shareLabel = `I need to attend ${needed} consecutive lectures to recover 😅`;
+      announcer.textContent = `Your attendance is ${pct.toFixed(1)} percent. Crisis. You are ${shortfall} percent below the requirement.`;
+
+      adviceBox.style.borderColor = 'rgba(255,59,107,.2)';
+      adviceBox.style.background  = 'rgba(255,59,107,.04)';
+
+      const verifiedPct = needed !== null
+        ? (((attended + needed) / (total + needed)) * 100).toFixed(1)
+        : '—';
+
+      adviceContent.innerHTML = needed === null ? `
+        <div class="flex items-center gap-2 mb-3">
+          <span style="color:#ff3b6b;font-size:1.3rem;" aria-hidden="true">🚨</span>
+          <span style="color:#ff3b6b;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Mathematically Impossible</span>
+        </div>
+        <p style="font-size:.88rem;color:rgba(200,200,220,.6);line-height:1.6;">
+          Your threshold is 100% but you have already missed lectures — recovery is impossible by definition. Contact your HOD immediately.
+        </p>` : `
+        <div class="flex items-center gap-2 mb-3">
+          <span style="color:#ff3b6b;font-size:1.3rem;" aria-hidden="true">🚨</span>
+          <span style="color:#ff3b6b;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Recovery Plan</span>
+        </div>
+        <p style="font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;color:#ff3b6b;line-height:1;margin-bottom:8px;">
+          ${needed} <span style="font-size:1rem;color:rgba(255,59,107,.6);">lecture${needed !== 1 ? 's' : ''}</span>
+        </p>
+        <p style="font-size:.85rem;color:rgba(200,200,220,.55);margin-bottom:12px;line-height:1.5;">
+          Attend the next <strong style="color:#ff3b6b;">${needed} consecutive lecture${needed !== 1 ? 's' : ''}</strong> without missing a single one.
+          After that your attendance will be <strong style="color:#ff3b6b;">${verifiedPct}%</strong> — safely above ${threshold}%.
+        </p>
+        <p style="font-size:.78rem;color:rgba(255,59,107,.45);font-style:italic;">
+          ⚡ Verified: (${attended} + ${needed}) ÷ (${total} + ${needed}) = ${verifiedPct}%
+        </p>`;
+    }
+
+    // ── Empty state ─────────────────────────────────────────────────────────
+    function showEmpty() {
+      document.body.className = '';
+      emptyState.classList.remove('hidden');
+      resultContent.classList.add('hidden');
+      shareCard.classList.add('hidden');
+      resultCard.classList.remove('result-card-safe', 'result-card-danger');
+      progressFill.style.width = '0%';
+      progressBarEl.setAttribute('aria-valuenow', 0);
+      _sharePct = null;
+    }
+
+    // ── Share helpers ───────────────────────────────────────────────────────
+    function shareOnWhatsApp() {
+      const url  = window.location.href;
+      const result = _sharePct !== null ? `My attendance: *${_sharePct.toFixed(1)}%*. ${_shareLabel}\n\n` : '';
+      const msg = `Abe yaar, check your bunk status right now! 😈\n${result}BunkMeter gives you your *exact* bunk budget or recovery plan — instantly, no sign-up.\n\n🔗 ${url}\n\nCalculate karke hi bunk maro! 🎓⚡`;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      window.open(
+        isMobile ? `whatsapp://send?text=${encodeURIComponent(msg)}`
+                 : `https://web.whatsapp.com/send?text=${encodeURIComponent(msg)}`,
+        '_blank'
+      );
+    }
+
+    async function shareNative() {
+      const url  = window.location.href;
+      const text = _sharePct !== null
+        ? `My attendance is ${_sharePct.toFixed(1)}%. ${_shareLabel} Check yours on BunkMeter!`
+        : 'BunkMeter — Free attendance calculator for college students. No sign-up, instant results.';
+      try {
+        await navigator.share({ title: 'BunkMeter — Attendance Calculator', text, url });
+      } catch (e) {
+        if (e.name !== 'AbortError') shareOnWhatsApp();
+      }
+    }
+
+    // ── Event listeners ─────────────────────────────────────────────────────
+    inputTotal.addEventListener('input',     calculate);
+    inputAttended.addEventListener('input',  calculate);
+    inputThreshold.addEventListener('input', calculate);
+    inputRemaining.addEventListener('input', calculate);
+
+    // ── Scroll reveal ───────────────────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Mobile focus scroll ─────────────────────────────────────────────────
+    [inputTotal, inputAttended].forEach(inp =>
+      inp.addEventListener('focus', () =>
+        setTimeout(() => inp.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)
+      )
+    );
+  </script>
+</body>
+</html>
