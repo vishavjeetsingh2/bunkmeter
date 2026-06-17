@@ -927,6 +927,21 @@
         Share via…
       </button>
     </div>
+    <div id="donate-card" class="glass-card p-5 mb-5 reveal hidden" style="text-align:center;">
+  <p style="font-size:.85rem;color:rgba(220,220,255,.7);font-weight:600;margin-bottom:4px;">
+    🎓 Built by a JEE aspirant, for students like you
+  </p>
+  <p style="font-size:.78rem;color:rgba(200,200,230,.4);margin-bottom:16px;line-height:1.6;">
+    Free forever. If this just saved your Sunday night panic, 
+    a small support means a lot.
+  </p>
+  <img src="donate-qr.png" alt="UPI QR code to support BunkMeter" 
+       style="width:160px;height:160px;margin:0 auto 12px;
+              border-radius:16px;border:1px solid rgba(255,255,255,.1);display:block;" />
+  <p style="font-size:.7rem;color:rgba(200,200,230,.3);">
+    Scan with any UPI app · Even ₹10 helps 🙏
+  </p>
+</div>
 
     <!-- ═══════════════════════════════════════════════════════════════════
          SECTION: HOW TO USE
@@ -1225,6 +1240,7 @@
       emptyState.classList.add('hidden');
       resultContent.classList.remove('hidden');
       shareCard.classList.remove('hidden');
+      document.getElementById('donate-card').classList.remove('hidden');
 
       bigPercent.textContent = pct.toFixed(1) + '%';
       chipLV.textContent = attended; chipLL.textContent = 'Lectures Attended';
@@ -1397,6 +1413,7 @@
       emptyState.classList.remove('hidden');
       resultContent.classList.add('hidden');
       shareCard.classList.add('hidden');
+      document.getElementById('donate-card').classList.add('hidden');
       resultCard.classList.remove('result-card-safe', 'result-card-danger');
       progressFill.style.width = '0%';
       progressBarEl.setAttribute('aria-valuenow', 0);
