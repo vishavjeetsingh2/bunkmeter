@@ -720,6 +720,7 @@
       <div class="nav-links" role="list">
         <a href="#calculator"     class="nav-link" role="listitem">Calculator</a>
         <a href="#how-to-use"     class="nav-link" role="listitem">How It Works</a>
+        <a href="#condonation"    class="nav-link" role="listitem">Condonation</a>
         <a href="#faq"            class="nav-link" role="listitem">FAQ</a>
         <a href="about.html"     class="nav-link" role="listitem">About</a>
         <a href="contact.html"   class="nav-link" role="listitem">Contact</a>
@@ -942,7 +943,87 @@
     Scan with any UPI app · Even ₹10 helps 🙏
   </p>
 </div>
+<!-- ═══════════════════════════════════════════════════════════════════
+     SECTION: CONDONATION CALCULATOR
+═══════════════════════════════════════════════════════════════════ -->
+<section id="condonation" aria-labelledby="cond-heading" class="reveal">
+  <div class="glass-card p-6 mb-5">
+    <h2 id="cond-heading" class="section-title" style="margin-bottom:6px;">🩺 Condonation Calculator</h2>
+    <p style="font-size:.8rem;color:rgba(200,200,230,.4);line-height:1.6;margin-bottom:20px;">
+      Most Indian universities let you "condone" a limited number of absences for
+      genuine medical certificates, NCC/NSS duty, or sports representation — meaning
+      those days count as present. This tells you if your condonation limit alone
+      is enough to clear the threshold.
+    </p>
 
+    <div class="fancy-divider" style="margin-top:0;"></div>
+
+    <div class="input-grid">
+      <div>
+        <label class="field-label" for="cond-total">Total Conducted</label>
+        <input type="number" id="cond-total" class="input-field"
+          placeholder="e.g. 120" min="0" autocomplete="off"
+          aria-describedby="cond-total-hint" />
+        <span id="cond-total-hint" class="sr-only">Total lectures conducted this semester</span>
+      </div>
+      <div>
+        <label class="field-label" for="cond-attended">You Attended</label>
+        <input type="number" id="cond-attended" class="input-field"
+          placeholder="e.g. 78" min="0" autocomplete="off"
+          aria-describedby="cond-attended-hint" />
+        <span id="cond-attended-hint" class="sr-only">Lectures you personally attended</span>
+      </div>
+    </div>
+
+    <div class="input-grid mt-4">
+      <div>
+        <label class="field-label" for="cond-threshold">Required Attendance %</label>
+        <input type="number" id="cond-threshold" class="input-field"
+          placeholder="e.g. 75" min="1" max="100" value="75" autocomplete="off" />
+      </div>
+      <div>
+        <label class="field-label" for="cond-maxdays">Max Condonation Days Allowed</label>
+        <input type="number" id="cond-maxdays" class="input-field"
+          placeholder="e.g. 10" min="0" autocomplete="off"
+          aria-describedby="cond-maxdays-hint" />
+        <span id="cond-maxdays-hint" class="sr-only">Maximum number of absences your college allows to be condoned — check your academic handbook</span>
+      </div>
+    </div>
+
+    <p style="font-size:.72rem;color:rgba(200,200,230,.3);margin-top:10px;margin-bottom:0;">
+      Don't know your limit? Most Indian colleges allow 5–15 days. AKTU allows up to 15,
+      Anna University and Mumbai University typically allow 5–10. Check your academic handbook to confirm.
+    </p>
+
+    <div class="fancy-divider"></div>
+
+    <!-- Empty state -->
+    <div id="cond-empty-state" class="text-center py-6">
+      <div class="text-4xl mb-3" aria-hidden="true">🩺</div>
+      <p class="text-white/30 text-sm font-medium tracking-wide">Enter your numbers above</p>
+    </div>
+
+    <!-- Result -->
+    <div id="cond-result" class="hidden" aria-live="polite">
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="stat-chip">
+          <div id="cond-current-pct" class="font-mono text-xl font-bold text-white mb-0.5">0%</div>
+          <div class="text-xs text-white/35 uppercase tracking-widest">Current Rate</div>
+        </div>
+        <div class="stat-chip">
+          <div id="cond-needed-days" class="font-mono text-xl font-bold text-white mb-0.5">0</div>
+          <div class="text-xs text-white/35 uppercase tracking-widest" id="cond-needed-label">Days Needed</div>
+        </div>
+      </div>
+
+      <div id="cond-advice-box" class="rounded-2xl p-4"
+           style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);"
+           role="region" aria-label="Condonation advice">
+        <div id="cond-advice-content"></div>
+      </div>
+    </div>
+  </div>
+</section>
     <!-- ═══════════════════════════════════════════════════════════════════
          SECTION: HOW TO USE
     ═══════════════════════════════════════════════════════════════════ -->
@@ -1419,7 +1500,132 @@
       progressBarEl.setAttribute('aria-valuenow', 0);
       _sharePct = null;
     }
+// ── CONDONATION CALCULATOR ──────────────────────────────────────────────
+const condTotal     = document.getElementById('cond-total');
+const condAttended  = document.getElementById('cond-attended');
+const condThreshold = document.getElementById('cond-threshold');
+const condMaxDays   = document.getElementById('cond-maxdays');
 
+const condEmptyState   = document.getElementById('cond-empty-state');
+const condResult       = document.getElementById('cond-result');
+const condCurrentPct   = document.getElementById('cond-current-pct');
+const condNeededDays   = document.getElementById('cond-needed-days');
+const condNeededLabel  = document.getElementById('cond-needed-label');
+const condAdviceBox    = document.getElementById('cond-advice-box');
+const condAdviceContent= document.getElementById('cond-advice-content');
+
+function calculateCondonation() {
+  const total     = parseInt(condTotal.value)        || 0;
+  const attended  = parseInt(condAttended.value)      || 0;
+  const threshold = parseFloat(condThreshold.value)   || 75;
+  const maxDays   = condMaxDays.value !== '' ? parseInt(condMaxDays.value) : null;
+
+  if (!condTotal.value && !condAttended.value) { showCondEmpty(); return; }
+  if (total <= 0 || attended < 0 || attended > total) { showCondEmpty(); return; }
+
+  const currentPct = (attended / total) * 100;
+  condCurrentPct.textContent = currentPct.toFixed(1) + '%';
+
+  condEmptyState.classList.add('hidden');
+  condResult.classList.remove('hidden');
+
+  // Already safe without condonation
+  if (currentPct >= threshold) {
+    condNeededDays.textContent = '0';
+    condNeededLabel.textContent = 'Days Needed';
+    condCurrentPct.style.color = '#00f5a0';
+    condNeededDays.style.color = '#00f5a0';
+
+    condAdviceBox.style.borderColor = 'rgba(0,245,160,.2)';
+    condAdviceBox.style.background  = 'rgba(0,245,160,.04)';
+    condAdviceContent.innerHTML = `
+      <div class="flex items-center gap-2 mb-3">
+        <span style="color:#00f5a0;font-size:1.3rem;" aria-hidden="true">✅</span>
+        <span style="color:#00f5a0;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">No Condonation Needed</span>
+      </div>
+      <p style="font-size:.88rem;color:rgba(200,200,220,.6);line-height:1.6;">
+        You're already above ${threshold}% — you don't need to apply for condonation at all. Save it for a real emergency later in the semester.
+      </p>`;
+    return;
+  }
+
+  // Below threshold — calculate days needed via condonation
+  // effective % = (attended + condonedDays) / total * 100 >= threshold
+  const neededDays = Math.max(0, Math.ceil((threshold / 100 * total) - attended));
+  condNeededDays.textContent = neededDays;
+  condNeededLabel.textContent = 'Days Needed';
+
+  if (maxDays === null) {
+    // No max days entered — just show what's needed
+    condCurrentPct.style.color = '#ff3b6b';
+    condNeededDays.style.color = '#ffbb00';
+    condAdviceBox.style.borderColor = 'rgba(255,187,0,.2)';
+    condAdviceBox.style.background  = 'rgba(255,187,0,.04)';
+    condAdviceContent.innerHTML = `
+      <div class="flex items-center gap-2 mb-3">
+        <span style="font-size:1.3rem;" aria-hidden="true">🩺</span>
+        <span style="color:#ffbb00;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Enter Your Condonation Limit</span>
+      </div>
+      <p style="font-size:.88rem;color:rgba(200,200,220,.6);line-height:1.6;">
+        You'd need <strong style="color:#ffbb00;">${neededDays} day${neededDays !== 1 ? 's' : ''}</strong> of condoned absences to reach ${threshold}%.
+        Enter your college's max condonation limit above to see if that's actually possible.
+      </p>`;
+    return;
+  }
+
+  const isPossible = neededDays <= maxDays;
+  condCurrentPct.style.color = '#ff3b6b';
+
+  if (isPossible) {
+    condNeededDays.style.color = '#00f5a0';
+    condAdviceBox.style.borderColor = 'rgba(0,245,160,.2)';
+    condAdviceBox.style.background  = 'rgba(0,245,160,.04)';
+    const resultPct = (((attended + neededDays) / total) * 100).toFixed(1);
+    condAdviceContent.innerHTML = `
+      <div class="flex items-center gap-2 mb-3">
+        <span style="color:#00f5a0;font-size:1.3rem;" aria-hidden="true">🎉</span>
+        <span style="color:#00f5a0;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Condonation Can Save You</span>
+      </div>
+      <p style="font-size:.85rem;color:rgba(200,200,220,.55);margin-bottom:12px;line-height:1.6;">
+        Apply for condonation of <strong style="color:#00f5a0;">${neededDays} day${neededDays !== 1 ? 's' : ''}</strong>
+        (medical certificate, NCC/NSS duty, or sports) and you'll be at
+        <strong style="color:#00f5a0;">${resultPct}%</strong> — clearing the ${threshold}% requirement.
+      </p>
+      <p style="font-size:.78rem;color:rgba(0,245,160,.45);font-style:italic;">
+        ⚡ Verified: (${attended} + ${neededDays}) ÷ ${total} = ${resultPct}%. You have ${maxDays - neededDays} condonation day${(maxDays - neededDays) !== 1 ? 's' : ''} left over for emergencies.
+      </p>`;
+  } else {
+    condNeededDays.style.color = '#ff3b6b';
+    condAdviceBox.style.borderColor = 'rgba(255,59,107,.2)';
+    condAdviceBox.style.background  = 'rgba(255,59,107,.04)';
+    const maxPossiblePct = (((attended + maxDays) / total) * 100).toFixed(1);
+    const stillShort = (threshold - maxPossiblePct).toFixed(1);
+    condAdviceContent.innerHTML = `
+      <div class="flex items-center gap-2 mb-3">
+        <span style="color:#ff3b6b;font-size:1.3rem;" aria-hidden="true">🚨</span>
+        <span style="color:#ff3b6b;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Condonation Alone Isn't Enough</span>
+      </div>
+      <p style="font-size:.85rem;color:rgba(200,200,220,.55);margin-bottom:12px;line-height:1.6;">
+        Even using your full <strong style="color:#ff3b6b;">${maxDays}-day</strong> condonation limit, you'd only reach
+        <strong style="color:#ff3b6b;">${maxPossiblePct}%</strong> — still <strong style="color:#ff3b6b;">${stillShort}%</strong> short of ${threshold}%.
+      </p>
+      <p style="font-size:.82rem;color:rgba(200,200,220,.5);line-height:1.7;">
+        Apply for the full condonation anyway, then use the
+        <a href="#calculator" style="color:#ff3b6b;text-decoration:underline;">Recovery Plan calculator above</a>
+        to see exactly how many more lectures you need to attend on top of it.
+      </p>`;
+  }
+}
+
+function showCondEmpty() {
+  condEmptyState.classList.remove('hidden');
+  condResult.classList.add('hidden');
+}
+
+condTotal.addEventListener('input', calculateCondonation);
+condAttended.addEventListener('input', calculateCondonation);
+condThreshold.addEventListener('input', calculateCondonation);
+condMaxDays.addEventListener('input', calculateCondonation);
     // ── Share helpers ───────────────────────────────────────────────────────
     function shareOnWhatsApp() {
       const url  = window.location.href;
