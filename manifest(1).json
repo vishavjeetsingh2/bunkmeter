@@ -1,62 +1,56 @@
-{
-  "name": "BunkMeter — Attendance Calculator",
-  "short_name": "BunkMeter",
-  "description": "Free attendance calculator for Indian college students. Get your exact bunk budget or recovery plan instantly.",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#0a0a0f",
-  "theme_color": "#3d8bff",
-  "lang": "en-IN",
-  "categories": ["education", "utilities"],
-  "icons": [
-    {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/og-preview.png",
-      "sizes": "1200x630",
-      "type": "image/png",
-      "label": "BunkMeter attendance calculator showing safe state with bunk budget"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Open Calculator",
-      "short_name": "Calculate",
-      "description": "Jump straight to the attendance calculator",
-      "url": "/#calculator",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    }
-  ]
-}
+	
+name	"BunkMeter — Attendance Calculator"
+short_name	"BunkMeter"
+description	"Free attendance calculator for Indian college students. Get your exact bunk budget or recovery plan instantly."
+start_url	"/"
+scope	"/"
+display	"standalone"
+orientation	"portrait-primary"
+background_color	"#F2ECDC"
+theme_color	"#2B4C7E"
+lang	"en-IN"
+categories	
+0	"education"
+1	"utilities"
+icons	
+0	
+src	"/icons/icon-72x72.png"
+sizes	"72x72"
+type	"image/png"
+purpose	"maskable any"
+1	
+src	"/icons/icon-96x96.png"
+sizes	"96x96"
+type	"image/png"
+purpose	"maskable any"
+2	
+src	"/icons/icon-128x128.png"
+sizes	"128x128"
+type	"image/png"
+purpose	"maskable any"
+3	
+src	"/icons/icon-192x192.png"
+sizes	"192x192"
+type	"image/png"
+purpose	"maskable any"
+4	
+src	"/icons/icon-512x512.png"
+sizes	"512x512"
+type	"image/png"
+purpose	"maskable any"
+screenshots	
+0	
+src	"/og-preview.png"
+sizes	"1200x630"
+type	"image/png"
+label	"BunkMeter attendance calculator showing safe state with bunk budget"
+shortcuts	
+0	
+name	"Open Calculator"
+short_name	"Calculate"
+description	"Jump straight to the attendance calculator"
+url	"/#calculator"
+icons	
+0	
+src	"/icons/icon-96x96.png"
+sizes	"96x96"
