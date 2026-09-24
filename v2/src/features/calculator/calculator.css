@@ -21,7 +21,7 @@ input[aria-invalid='true'] { border-color:var(--red); background:#fff8f6; }
 .percent-input input { background:transparent; border:0; color:var(--ink); width:100%; min-width:0; text-align:right; padding:10px 5px 10px 10px; min-height:46px; font-size:21px; font-variant-numeric:tabular-nums; outline:none; }
 .percent-input span { color:var(--muted); font-size:13px; }
 .target-presets { display:flex; align-items:center; gap:8px; margin-top:16px; flex-wrap:wrap; }
-.target-presets button { min-width:58px; min-height:44px; border:1px solid var(--line); border-radius:7px; padding:8px 12px; background:transparent; color:var(--muted); font-size:13px; transition:background 120ms,transform 120ms; }
+.target-presets button { min-width:58px; min-height:44px; border:1px solid var(--line); border-radius:7px; padding:8px 12px; background:transparent; color:var(--muted); font-size:13px; transition:transform 120ms; }
 .target-presets button[aria-pressed='true'] { background:var(--ink); color:var(--surface); border-color:var(--ink); box-shadow:0 2px 0 #0d2326; }
 .target-presets button:hover { border-color:var(--ink); }
 button:active { transform:translateY(1px); }
@@ -83,16 +83,15 @@ button:active { transform:translateY(1px); }
   .preview-heading { flex-direction:column; gap:3px; }
   .decision-number { font-size:54px; }
   .decision-number--long { font-size:28px; }
-  .count-note { max-width:13ch; }
   .target-presets span { flex-basis:100%; }
 }
 @media(max-width:700px) {
   .calculator-workspace { grid-template-columns:1fr; gap:0; }
-  .calculator-inputs { grid-column:1; grid-row:2; padding:21px 0 22px; border-top:0; }
+  .calculator-inputs { grid-column:1; grid-row:2; padding:12px 0 22px; border-top:0; }
   .form-heading h2 { font-size:22px; }
   .form-intro { font-size:12px; }
-  .count-fields { margin-top:18px; gap:12px; }
-  .field input { min-height:56px; padding:10px 12px; font-size:26px; margin-top:8px; }
+  .count-fields { margin-top:12px; gap:12px; }
+  .field input { min-height:56px; padding:10px 12px; font-size:26px; line-height:1.2; margin-top:8px; }
   .target-section { margin-top:20px; padding-top:18px; }
   .target-heading label { font-size:13px; }
   .target-presets span { flex-basis:auto; }
