@@ -110,12 +110,21 @@ test('mobile touch responds without capturing vertical scrolling', async ({ page
   const stage = page.locator('.instrument-stage');
   await expect(stage).toHaveAttribute('data-enhanced', 'true', { timeout: 20_000 });
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(1800);
+  const host = page.locator('.instrument-webgl');
+  await expect.poll(async () => (await stage.getAttribute('data-enhanced')) === 'false'
+    || (await host.getAttribute('data-settled')) === 'true', { timeout: 10_000 }).toBe(true);
   const box = (await stage.boundingBox())!;
   const x = box.x + box.width * .75, y = box.y + box.height * .75;
-  const frames = await page.locator('.instrument-webgl').getAttribute('data-frames');
+  const frames = await host.getAttribute('data-frames');
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
-  await expect.poll(() => page.locator('.instrument-webgl').getAttribute('data-frames')).not.toBe(frames);
+  await expect.poll(async () => (await host.getAttribute('data-frames')) !== frames
+    || (await stage.getAttribute('data-enhanced')) === 'false').toBe(true);
+  if (await stage.getAttribute('data-enhanced') === 'false') {
+    // Software GPUs may legitimately simplify mid-gesture; scrolling must still work.
+    await expect(host.locator('canvas')).toHaveCount(0);
+    await expect(page.locator('.instrument-still')).toHaveCSS('opacity', '1');
+    test.info().annotations.push({ type: 'graphics', description: 'Adaptive still view activated on the software GPU; touch scrolling remains required.' });
+  }
   for (let step = 1; step <= 5; step++) {
     await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - step * 25 }] });
     await page.waitForTimeout(25);
