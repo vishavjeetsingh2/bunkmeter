@@ -81,7 +81,7 @@ test('enhanced rendering settles, responds, and disposes on still-view selection
   await expect(stage).toHaveAttribute('data-enhanced', 'true', { timeout: 20_000 });
   await page.mouse.move(0, 0);
   // A bounded stability window checks actual inactivity, not merely a queued callback.
-  await page.waitForTimeout(1800);
+  await expect(host).toHaveAttribute('data-settled', 'true', { timeout: 10_000 });
   const frames = await host.getAttribute('data-frames');
   await page.waitForTimeout(350);
   expect(await host.getAttribute('data-frames')).toBe(frames);
