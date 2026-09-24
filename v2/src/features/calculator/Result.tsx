@@ -1,4 +1,5 @@
 import type { AttendanceInput, AttendanceResult } from '../../domain/attendance';
+import type { InstrumentState } from '../instrument/motion';
 
 const number = (value: bigint | number) => value.toLocaleString('en-IN');
 
@@ -12,7 +13,13 @@ export function resultMessage(input: AttendanceInput, result: AttendanceResult):
   return result.canMiss === 0n ? 'No room to miss the next class.' : `You can miss ${number(result.canMiss!)} consecutive classes.`;
 }
 
-export default function Result({ input, result }: { input: AttendanceInput; result: AttendanceResult }) {
+export function resultTone(input: AttendanceInput, result: AttendanceResult): InstrumentState['tone'] {
+  if (result.state === 'empty' || input.targetBasisPoints === 0) return 'neutral';
+  if (result.state === 'perfect-unreachable' || result.state === 'unreachable' || (input.remaining === 0 && !result.semester?.reachable)) return 'danger';
+  return result.state === 'recovery' || result.canMiss === 0n ? 'caution' : 'safe';
+}
+
+export default function Result({ input, result, preview, onPreview }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void }) {
   const target = input.targetBasisPoints / 100;
   const finished = input.remaining === 0;
   const perfect = result.state === 'perfect-unreachable';
@@ -20,7 +27,7 @@ export default function Result({ input, result }: { input: AttendanceInput; resu
   const recovering = result.state === 'recovery';
   const empty = result.state === 'empty';
   const noTarget = target === 0;
-  const tone = empty || noTarget ? 'neutral' : perfect || unreachable || (finished && !result.semester?.reachable) ? 'danger' : recovering || result.canMiss === 0n ? 'caution' : 'safe';
+  const tone = resultTone(input, result);
   const status = empty ? 'No classes yet' : noTarget ? 'No minimum set' : perfect || unreachable ? 'Target out of reach' : recovering ? 'Below target' : result.state === 'at-target' ? 'Exactly at target' : 'Above target';
   let lead = 'You can miss';
   let figure = result.canMiss === null ? '—' : number(result.canMiss);
@@ -54,20 +61,19 @@ export default function Result({ input, result }: { input: AttendanceInput; resu
       <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><span aria-hidden="true" />{status}</span></div>
       <div class="attendance-summary">
         <div><span class="metric-label">Current attendance</span><strong>{result.percentage ?? '—'}{result.percentage !== null && <span>%</span>}</strong></div>
-        <span class="count-note">{number(input.attended)} of {number(input.total)}<br />classes attended</span>
+        <span class="count-note">{number(input.attended)} of {number(input.total)}<br />{' '}classes attended</span>
       </div>
-      <div class="meter" aria-hidden="true"><span class="meter-fill" style={{ transform: `scaleX(${Number(result.percentage ?? 0) / 100})` }} /><span class="meter-target" style={{ left: `clamp(2px, ${target}%, calc(100% - 2px))` }} /></div>
-      <div class="meter-caption"><span>0%</span><span>Target {target}%</span><span>100%</span></div>
       <div class="decision">
         <h2 id="result-title">{lead}</h2>
         <p class={`decision-number ${figure.length > 10 ? 'decision-number--long' : ''}`}>{figure}</p>
         <p class="decision-unit">{unit}</p>
         <p class="decision-explanation">{explanation}</p>
       </div>
-      {!finished && !empty && <div class="next-class" aria-label="Next class preview">
-        <div><span>If you attend next <span aria-hidden="true">↗</span></span><strong>{result.nextPresent}%</strong></div>
-        <div><span>If you miss next <span aria-hidden="true">↘</span></span><strong>{result.nextAbsent}%</strong></div>
-      </div>}
+      {!finished && !empty && <div class="next-preview"><div class="preview-heading"><span>Explore your next class</span><span>Preview only · counts stay the same</span></div><div class="next-class" aria-label="Next class preview">
+        <button type="button" aria-pressed={preview === null} onClick={() => onPreview(null)}><span>Current</span><strong>{result.percentage}%</strong></button>
+        <button type="button" aria-pressed={preview === 'present'} onClick={() => onPreview('present')}><span>If you attend next <span aria-hidden="true">↗</span></span><strong>{result.nextPresent}%</strong></button>
+        <button type="button" aria-pressed={preview === 'absent'} onClick={() => onPreview('absent')}><span>If you miss next <span aria-hidden="true">↘</span></span><strong>{result.nextAbsent}%</strong></button>
+      </div><p class="sr-only" role="status">{preview === 'present' ? `Preview: attending next gives ${result.nextPresent}%. Your counts have not changed.` : preview === 'absent' ? `Preview: missing next gives ${result.nextAbsent}%. Your counts have not changed.` : ''}</p></div>}
       {result.semester && !finished && <div class="semester-note">
         <h3>Across your {number(input.remaining!)} remaining classes</h3>
         {result.semester.reachable ? <p>Attend at least <strong>{number(result.semester.required)}</strong>; you can miss <strong>{number(result.semester.canMiss!)}</strong> in total and finish at your target or higher. This is a term-end budget, not a consecutive-skip allowance.</p>

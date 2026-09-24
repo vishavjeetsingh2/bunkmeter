@@ -1,5 +1,7 @@
 # BunkMeter V2 foundation
 
+The current review slice uses the BunkMeter Instrument: an optional, lazy-loaded Three.js object over an always-available static visualization. It is presentation only; exact arithmetic stays in the domain layer. See [Instrument review and performance limits](../docs/INSTRUMENT-REVIEW.md) for architecture, fallback coverage and the visual approval boundary.
+
 Isolated calculator preview, not a production migration. Node 24 LTS recommended (minimum 22.12).
 
 ```sh

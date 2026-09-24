@@ -4,11 +4,11 @@ import Calculator from '../features/calculator/Calculator';
 ---
 <Shell>
   <header class="site-header wrap">
-    <a class="brand" href="/" aria-label="BunkMeter home"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M8 21V15M16 21V8M24 21V12" stroke="#edc76b" stroke-width="3" stroke-linecap="round"/></svg><span>BunkMeter<span class="brand-dot">.</span></span></a>
+    <a class="brand" href="/" aria-label="BunkMeter home"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="currentColor"/><path d="M9 23a10 10 0 1 1 14 0" fill="none" stroke="#f2e5bc" stroke-width="2.5" stroke-linecap="round"/><path d="m21 11-5 5" stroke="#e6b667" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="#e6b667"/></svg><span>BunkMeter<span class="brand-dot">.</span></span></a>
     <nav aria-label="Main navigation"><a href="#calculator" aria-current="page">Calculator</a><a href="#how-it-works">How it works <span aria-hidden="true">↗</span></a></nav>
   </header>
   <main id="main" class="wrap" tabindex="-1">
-    <div class="page-intro"><p class="intro-kicker"><span aria-hidden="true"></span> A little less attendance anxiety</p><h1>Know your next<br class="mobile-break" /> class move.</h1><p>Your attendance, a clear answer. Start with the numbers you know.</p></div>
+    <div class="page-intro"><div><p class="intro-kicker">A little less attendance anxiety</p><h1>Your attendance.<br class="mobile-break" /> In perspective.</h1></div><p>What you can miss.<br />What you need to attend.</p></div>
     <Calculator client:load />
     <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
     <section class="how-section" id="how-it-works" aria-labelledby="how-title">
@@ -25,18 +25,17 @@ import Calculator from '../features/calculator/Calculator';
 </Shell>
 
 <style>
-  .site-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 92px; border-bottom: 1px solid var(--line); }
+  .site-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 78px; border-bottom: 1px solid var(--line); }
   .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 22px; font-weight: 700; letter-spacing: -.9px; }
   .brand-dot { color: var(--green); }
   nav { display: flex; gap: 30px; font-size: 13px; }
   nav a { min-height: 44px; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); }
   nav a[aria-current] { color: var(--ink); font-weight: 600; }
   nav a:hover { text-decoration: underline; }
-  .page-intro { padding: 39px 0 31px; }
-  .intro-kicker { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 500; color: var(--green); }
-  .intro-kicker span { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
-  h1 { margin-top: 9px; font-size: 42px; line-height: 1.2; letter-spacing: -1.8px; font-weight: 600; }
-  .page-intro > p:last-child { font-size: 14px; color: var(--muted); margin-top: 10px; }
+  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 28px 0 30px; }
+  .intro-kicker { font-size: 11px; font-weight: 500; color: var(--green); }
+  h1 { margin-top: 8px; font-size: 43px; line-height: 1.1; letter-spacing: -2px; font-weight: 550; }
+  .page-intro > p:last-child { font-size: 12px; color: var(--muted); padding-bottom: 3px; line-height: 1.6; }
   .mobile-break { display: none; }
   .how-section { display: grid; grid-template-columns: .94fr 1.06fr; gap: 32px; margin-top: 53px; padding-top: 30px; border-top: 1px solid var(--line); }
   .how-section h2 { font-size: 23px; font-weight: 550; letter-spacing: -.7px; margin-top: 9px; }
@@ -57,10 +56,11 @@ import Calculator from '../features/calculator/Calculator';
     nav { gap: 14px; font-size: 12px; }
     nav a[aria-current] { display: none; }
     nav a span { display: none; }
-    .page-intro { padding: 22px 0; }
+    .page-intro { padding: 18px 0; }
     .intro-kicker { display: none; }
-    h1 { font-size: 30px; letter-spacing: -1px; margin-top: 0; }
-    .page-intro > p:last-child { font-size: 13px; margin-top: 8px; }
+    h1 { font-size: 29px; letter-spacing: -1.3px; margin-top: 0; }
+    .mobile-break { display: block; }
+    .page-intro > p:last-child { display: none; }
     .how-section { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; padding-top: 25px; }
     .how-section > div > p { display: none; }
     .how-section h2 { font-size: 22px; }

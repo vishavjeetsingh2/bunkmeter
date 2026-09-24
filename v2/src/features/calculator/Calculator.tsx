@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { calculateAttendance } from '../../domain/attendance';
 import { parseAttendance, type AttendanceFields, type FieldName } from '../../domain/validation';
-import Result, { resultMessage } from './Result';
+import Result, { resultMessage, resultTone } from './Result';
+import Instrument from '../instrument/Instrument';
+import type { InstrumentState } from '../instrument/motion';
 import './calculator.css';
 
 const initial: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
@@ -10,18 +12,29 @@ export default function Calculator() {
   const [fields, setFields] = useState<AttendanceFields>(initial);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [announcement, setAnnouncement] = useState('');
+  const [preview, setPreview] = useState<InstrumentState['preview']>(null);
   const totalRef = useRef<HTMLInputElement>(null);
   const parsed = parseAttendance(fields);
   const result = parsed.valid ? calculateAttendance(parsed.value) : null;
   const hasInvalid = !parsed.valid && Object.values(parsed.issues).some(issue => issue.kind === 'invalid');
   const message = parsed.valid && result ? resultMessage(parsed.value, result) : hasInvalid ? 'Check the highlighted fields. No result calculated.' : 'Enter classes held and attended to see your result.';
+  const canPreview = parsed.valid && result && result.percentage !== null && parsed.value.remaining !== 0;
+  const activePreview = canPreview ? preview : null;
+  const visualValue = result ? activePreview === 'present' ? result.nextPresent : activePreview === 'absent' ? result.nextAbsent : result.percentage : null;
+  const instrumentState: InstrumentState = {
+    value: visualValue,
+    ratio: parsed.valid && parsed.value.total > 0 ? activePreview ? (parsed.value.attended + (activePreview === 'present' ? 1 : 0)) / (parsed.value.total + 1) : parsed.value.attended / parsed.value.total : 0,
+    target: parsed.valid ? parsed.value.targetBasisPoints / 100 : !parsed.issues.target ? Number(fields.target) : null,
+    tone: parsed.valid && result ? resultTone(parsed.value, result) : 'neutral',
+    preview: activePreview,
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setAnnouncement(message), 350);
     return () => clearTimeout(timer);
   }, [message]);
 
-  function update(name: FieldName, value: string) { setFields(current => ({ ...current, [name]: value })); }
+  function update(name: FieldName, value: string) { setPreview(null); setFields(current => ({ ...current, [name]: value })); }
   function error(name: FieldName) {
     if (parsed.valid) return undefined;
     const issue = parsed.issues[name];
@@ -40,13 +53,13 @@ export default function Calculator() {
   return <>
     <div class="calculator-workspace" id="calculator">
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
-        <div class="form-heading"><h2>Your numbers</h2><button class="text-button" type="button" onClick={() => { setFields({ ...initial }); setTouched({}); totalRef.current?.focus(); }}>Reset <span aria-hidden="true">↺</span></button></div>
+        <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" onClick={() => { setPreview(null); setFields({ ...initial }); setTouched({}); totalRef.current?.focus(); }}>Reset <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
         <div class="count-fields">
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
         </div>
-        {parsed.valid && result && <div class="mobile-answer"><span>Your next move</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
+        {parsed.valid && result && <div class="mobile-answer"><span>Your next move · {parsed.value.targetBasisPoints / 100}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
         <div class="target-section">
           <div class="target-heading"><label for="target">Required attendance</label><div class="percent-input"><input id="target" name="target" type="text" inputMode="decimal" autoComplete="off" maxLength={16} value={fields.target}
             aria-invalid={Boolean(error('target'))} aria-describedby={error('target') ? 'target-error' : 'target-help'}
@@ -61,13 +74,12 @@ export default function Calculator() {
         </details>
         <div class="form-bottom"><span class="privacy-dot" aria-hidden="true" /><p>No signup. These numbers stay in this tab.</p></div>
       </form>
-      {parsed.valid && result ? <Result input={parsed.value} result={result} /> : <section class="result result--empty" aria-labelledby="empty-heading">
+      <Instrument state={instrumentState}/>
+      {parsed.valid && result ? <Result input={parsed.value} result={result} preview={activePreview} onPreview={setPreview} /> : <section class="result result--empty" aria-labelledby="empty-heading">
         <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label">{hasInvalid ? 'Check your inputs' : 'Ready when you are'}</span></div>
-        <div class="empty-graphic" aria-hidden="true"><span /><span /><span /><span /><i /></div>
-        <h2 id="empty-heading">{hasInvalid ? 'Let’s get the counts right.' : <>A little clarity.<br />Before your next class.</>}</h2>
+        <h2 id="empty-heading">{hasInvalid ? 'Let’s get the counts right.' : <>Less guessing. <br />More perspective.</>}</h2>
         <p>{hasInvalid ? 'Correct the highlighted fields to get an accurate answer. We won’t guess or round your class counts.' : 'Enter your attendance to see what you can miss—or what you need to attend.'}</p>
-        {!hasInvalid && <button class="example-button" type="button" onClick={() => { setFields({ attended: '90', total: '110', target: '75', remaining: '' }); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button>}
-        <span class="empty-footnote">Clear numbers. No guesswork.</span>
+        {!hasInvalid && <button class="example-button" type="button" onClick={() => { setPreview(null); setFields({ attended: '90', total: '110', target: '75', remaining: '' }); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button>}
       </section>}
     </div>
     <p class="sr-only" role="status" aria-atomic="true">{announcement}</p>

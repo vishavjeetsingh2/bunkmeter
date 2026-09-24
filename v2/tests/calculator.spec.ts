@@ -101,7 +101,9 @@ test('keyboard, visible focus, disclosure and reduced motion', async ({ page, br
   await expect(page.getByLabel('Classes remaining', { exact: true })).toBeVisible();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await counts(page, '80', '100');
-  await expect(page.locator('.meter-fill')).toHaveCSS('transition-duration', '0s');
+  await expect(page.locator('.instrument-stage')).toHaveAttribute('data-enhanced', 'false');
+  await expect(page.locator('.instrument-webgl canvas')).toHaveCount(0);
+  await expect(page.locator('.target-presets button').first()).toHaveCSS('transition-duration', '0s');
 });
 
 test('no automated accessibility violations across result states', async ({ page }) => {

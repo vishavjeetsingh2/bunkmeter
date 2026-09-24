@@ -3,7 +3,9 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  workers: 3,
+  // Concurrent software WebGL renderers trigger the product's low-power fallback.
+  // Measure the GPU lifecycle without competing browser workers.
+  workers: 1,
   timeout: 30_000,
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
