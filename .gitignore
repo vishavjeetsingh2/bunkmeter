@@ -1,0 +1,9 @@
+v2/node_modules/
+v2/dist/
+v2/.astro/
+v2/coverage/
+v2/test-results/
+v2/playwright-report/
+.env
+.env.*
+!.env.example

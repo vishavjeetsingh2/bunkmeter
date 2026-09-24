@@ -1,0 +1,69 @@
+---
+import Shell from '../layouts/Shell.astro';
+import Calculator from '../features/calculator/Calculator';
+---
+<Shell>
+  <header class="site-header wrap">
+    <a class="brand" href="/" aria-label="BunkMeter home"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="currentColor"/><path d="M9 23a10 10 0 1 1 14 0" fill="none" stroke="#f2e5bc" stroke-width="2.5" stroke-linecap="round"/><path d="m21 11-5 5" stroke="#e6b667" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="#e6b667"/></svg><span>BunkMeter<span class="brand-dot">.</span></span></a>
+    <nav aria-label="Main navigation"><a href="#calculator" aria-current="page">Calculator</a><a href="#how-it-works">How it works <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main id="main" class="wrap" tabindex="-1">
+    <div class="page-intro"><div><p class="intro-kicker">A little less attendance anxiety</p><h1>Your attendance.<br class="mobile-break" /> In perspective.</h1></div><p>What you can miss.<br />What you need to attend.</p></div>
+    <Calculator client:load />
+    <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
+    <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+      <div><span class="eyebrow">Good to know</span><h2 id="how-title">Understand the answer.</h2><p>A percentage is the starting point.<br />Here’s what the next step means.</p></div>
+      <div class="explanations">
+        <details><summary>What does “can miss” mean?<span aria-hidden="true">+</span></summary><p>It is the number of consecutive future classes you can miss while staying at or above your target. Each missed class increases classes held, but not classes attended. If you enter remaining classes, this allowance cannot exceed them.</p></details>
+        <details><summary>How does recovery work?<span aria-hidden="true">+</span></summary><p>Each class you attend increases both counts. We find the smallest consecutive run that reaches your target. At 60 attended out of 100 held, a 75% target needs 60 more attended classes: 120 out of 160.</p></details>
+        <details><summary>What if my semester is nearly over?<span aria-hidden="true">+</span></summary><p>Add the lectures remaining to check your best possible finish. A term-end allowance assumes you attend the other remaining classes; it is different from how many you can miss consecutively right now.</p></details>
+        <details id="condonation"><summary>Do approved absences count?<span aria-hidden="true">+</span></summary><p>That depends on your institution. Calendar days and lectures are not interchangeable. Use the attended and held counts your institution recognizes; BunkMeter cannot approve leave or determine condonation eligibility.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer wrap"><span>BunkMeter <span aria-hidden="true">/</span> Make the numbers work for you.</span><span>Calculator preview · No account needed</span></footer>
+</Shell>
+
+<style>
+  .site-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 78px; border-bottom: 1px solid var(--line); }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 22px; font-weight: 700; letter-spacing: -.9px; }
+  .brand-dot { color: var(--green); }
+  nav { display: flex; gap: 30px; font-size: 13px; }
+  nav a { min-height: 44px; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); }
+  nav a[aria-current] { color: var(--ink); font-weight: 600; }
+  nav a:hover { text-decoration: underline; }
+  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 28px 0 30px; }
+  .intro-kicker { font-size: 11px; font-weight: 500; color: var(--green); }
+  h1 { margin-top: 8px; font-size: 43px; line-height: 1.1; letter-spacing: -2px; font-weight: 550; }
+  .page-intro > p:last-child { font-size: 12px; color: var(--muted); padding-bottom: 3px; line-height: 1.6; }
+  .mobile-break { display: none; }
+  .how-section { display: grid; grid-template-columns: .94fr 1.06fr; gap: 32px; margin-top: 53px; padding-top: 30px; border-top: 1px solid var(--line); }
+  .how-section h2 { font-size: 23px; font-weight: 550; letter-spacing: -.7px; margin-top: 9px; }
+  .how-section > div > p { color: var(--muted); font-size: 13px; margin-top: 12px; }
+  .explanations details { border-bottom: 1px solid var(--line); }
+  .explanations summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 0; min-height: 54px; cursor: pointer; list-style: none; font-size: 14px; }
+  .explanations summary::-webkit-details-marker { display: none; }
+  .explanations summary > span { color: var(--muted); font-size: 20px; }
+  .explanations details[open] summary > span { transform: rotate(45deg); }
+  .explanations details > p { padding: 0 24px 18px 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+  .site-footer { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 11px; margin-top: 52px; padding-block: 22px; border-top: 1px solid var(--line); }
+  .site-footer span > span { margin-inline: 10px; }
+  .noscript { border: 1px solid var(--red); padding: 16px; margin-top: 16px; }
+  @media (max-width: 700px) {
+    .site-header { min-height: 64px; gap: 12px; }
+    .brand { font-size: 20px; gap: 8px; }
+    .brand svg { width: 27px; height: 27px; }
+    nav { gap: 14px; font-size: 12px; }
+    nav a[aria-current] { display: none; }
+    nav a span { display: none; }
+    .page-intro { padding: 14px 0; }
+    .intro-kicker { display: none; }
+    h1 { font-size: 29px; letter-spacing: -1.3px; margin-top: 0; }
+    .mobile-break { display: block; }
+    .page-intro > p:last-child { display: none; }
+    .how-section { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; padding-top: 25px; }
+    .how-section > div > p { display: none; }
+    .how-section h2 { font-size: 22px; }
+    .site-footer { flex-direction: column; gap: 8px; margin-top: 34px; }
+  }
+</style>
