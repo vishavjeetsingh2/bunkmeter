@@ -6,7 +6,7 @@ Repository main: `289c0d76c21657924ac2b3bf39f3d8041149b732`.
 Remote rollback point: `rollback/pre-v2-2026-09-23`; local tag: `pre-v2-2026-09-23`.
 Development branch: `v2/foundation-calculator`.
 
-Production deployment metadata is not exposed by the public site. Verify the live parsed inline scripts against this revision and record the comparison in the stage report; do not equate a branch head alone with a confirmed host deployment ID.
+Production deployment metadata is not exposed by the public site. On 23 September, all seven nonempty parsed inline script blocks from the live homepage matched this revision exactly, and the live homepage returned HTTP 200. This establishes a matching calculator baseline, not a confirmed host deployment ID.
 
 ## Isolation
 
