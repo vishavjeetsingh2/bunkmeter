@@ -1,5 +1,7 @@
-import type { AttendanceInput, AttendanceResult } from '../../domain/attendance';
+import { calculateAttendance, type AttendanceInput, type AttendanceResult } from '../../domain/attendance';
 import type { InstrumentState } from '../instrument/motion';
+import NumberReadout from './NumberReadout';
+import { projectClasses } from './class-actions';
 
 const number = (value: bigint | number) => value.toLocaleString('en-IN');
 
@@ -19,8 +21,12 @@ export function resultTone(input: AttendanceInput, result: AttendanceResult): In
   return result.state === 'recovery' || result.canMiss === 0n ? 'caution' : 'safe';
 }
 
-export default function Result({ input, result, preview, onPreview }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void }) {
+export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null }) {
   const target = input.targetBasisPoints / 100;
+  const presentRun = projectClasses(input, 'present', previewCount);
+  const absentRun = projectClasses(input, 'absent', previewCount);
+  const presentPercentage = presentRun ? calculateAttendance(presentRun).percentage : result.nextPresent;
+  const absentPercentage = absentRun ? calculateAttendance(absentRun).percentage : result.nextAbsent;
   const finished = input.remaining === 0;
   const perfect = result.state === 'perfect-unreachable';
   const unreachable = result.state === 'unreachable';
@@ -60,20 +66,25 @@ export default function Result({ input, result, preview, onPreview }: { input: A
     <section class={`result result--${tone}`} aria-labelledby="result-title" data-testid="result">
       <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><span aria-hidden="true" />{status}</span></div>
       <div class="attendance-summary">
-        <div><span class="metric-label">Current attendance</span><strong>{result.percentage ?? '—'}{result.percentage !== null && <span>%</span>}</strong></div>
+        <div><span class="metric-label">Current attendance</span><strong><NumberReadout value={result.percentage ?? '—'}/>{result.percentage !== null && <span>%</span>}</strong></div>
         <span class="count-note">{number(input.attended)} of {number(input.total)}<br />{' '}classes attended</span>
       </div>
       <div class="decision">
         <h2 id="result-title">{lead}</h2>
-        <p class={`decision-number ${figure.length > 10 ? 'decision-number--long' : ''}`}>{figure}</p>
+        <p class={`decision-number ${figure.length > 10 ? 'decision-number--long' : ''}`}><NumberReadout value={figure}/></p>
         <p class="decision-unit">{unit}</p>
         <p class="decision-explanation">{explanation}</p>
       </div>
-      {!finished && !empty && <div class="next-preview"><div class="preview-heading"><span>Explore your next class</span><span>Preview only · counts stay the same</span></div><div class="next-class" aria-label="Next class preview">
+      {!finished && !empty && maxPreview > 0 && <div class="next-preview"><div class="preview-heading"><span>A look ahead</span><span>Preview only · counts stay the same</span></div><div class="next-class" aria-label="Next class preview">
         <button type="button" aria-pressed={preview === null} onClick={() => onPreview(null)}><span>Current</span><strong>{result.percentage}%</strong></button>
-        <button type="button" aria-pressed={preview === 'present'} onClick={() => onPreview('present')}><span>If you attend next <span aria-hidden="true">↗</span></span><strong>{result.nextPresent}%</strong></button>
-        <button type="button" aria-pressed={preview === 'absent'} onClick={() => onPreview('absent')}><span>If you miss next <span aria-hidden="true">↘</span></span><strong>{result.nextAbsent}%</strong></button>
-      </div><p class="sr-only" role="status">{preview === 'present' ? `Preview: attending next gives ${result.nextPresent}%. Your counts have not changed.` : preview === 'absent' ? `Preview: missing next gives ${result.nextAbsent}%. Your counts have not changed.` : ''}</p></div>}
+        <button type="button" aria-pressed={preview === 'present'} onClick={() => onPreview('present')}><span>If you attend next {previewCount > 1 ? previewCount : ''}<span aria-hidden="true">↗</span></span><strong>{presentPercentage}%</strong></button>
+        <button type="button" aria-pressed={preview === 'absent'} onClick={() => onPreview('absent')}><span>If you miss next {previewCount > 1 ? previewCount : ''}<span aria-hidden="true">↘</span></span><strong>{absentPercentage}%</strong></button>
+      </div><div class="future-run" data-active={Boolean(preview)}>
+        <div class="future-run-heading"><label for="future-classes">Explore a run of classes</label><span><strong>{previewCount}</strong> {previewCount === 1 ? 'class' : 'classes'}</span></div>
+        <input id="future-classes" type="range" min="1" max={maxPreview} step="1" value={previewCount} aria-describedby="future-help" onInput={event => onPreviewCount(Number(event.currentTarget.value))}/>
+        <div class="future-scale" aria-hidden="true">{Array.from({ length: maxPreview }, (_, i) => <span class={i < previewCount && preview ? 'is-projected' : ''} key={i}>{i === 0 || i === maxPreview - 1 ? i + 1 : '·'}</span>)}</div>
+        <p class="future-outcome" id="future-help">{futureResult && preview ? <><strong>{futureResult.percentage}%</strong> if you {preview === 'present' ? 'attend' : 'miss'} the next {previewCount} {previewCount === 1 ? 'class' : 'classes'}. <span>This is a preview.</span></> : 'Slide to explore a possible future. Your record stays put.'}</p>
+      </div><p class="sr-only" role="status">{futureResult && preview ? `Preview: ${preview === 'present' ? 'attending' : 'missing'} ${previewCount} ${previewCount === 1 ? 'class' : 'classes'} gives ${futureResult.percentage}%. Your counts have not changed.` : ''}</p></div>}
       {result.semester && !finished && <div class="semester-note">
         <h3>Across your {number(input.remaining!)} remaining classes</h3>
         {result.semester.reachable ? <p>Attend at least <strong>{number(result.semester.required)}</strong>; you can miss <strong>{number(result.semester.canMiss!)}</strong> in total and finish at your target or higher. This is a term-end budget, not a consecutive-skip allowance.</p>

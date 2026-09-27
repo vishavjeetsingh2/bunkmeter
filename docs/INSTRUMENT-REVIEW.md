@@ -47,3 +47,17 @@ Review the calculator at the local preview and in the attached screenshots. Appr
 
 The preceding calculator checkpoint is commit `2a098dd`; the original production rollback is `rollback/pre-v2-2026-09-23`. Revert the Instrument commit to return to the previous V2 slice; do not rewrite main or discard future unrelated changes.
 
+
+## Motion revision — 27 September 2026
+
+The calculator slice now has a stepped metal housing, milled rim, flush fasteners, raised ceramic readout, mechanical target carriage and damped depth response. A coordinated entrance and update sequence connects the Instrument, exact HTML numbers, result copy and class tiles. No extra runtime dependency was added.
+
+Present and Absent update the counts immediately. Undo restores the prior raw fields, including remaining lectures. The ribbon and Undo retain the latest 12 events; editing a field starts a fresh baseline. This is explicitly session-only: refresh clears it. No storage or privacy-model change is introduced.
+
+The native, keyboard-accessible future slider explores 1–12 classes, capped by remaining lectures and supported count bounds. It changes the preview object and outcome, never the recorded counts or main answer. Reduced motion removes the choreography and avoids downloading Three.js. Rendering still stops at rest/offscreen.
+
+Verification: type checks, lint, 103 unit tests and production build passed. All 21 local Chromium browser assertions passed, including action/Undo boundaries, preview isolation, accessibility, six responsive widths and graphics lifecycle/fallback checks. The Windows browser-runner teardown remained stuck after the final passing case and was stopped; Linux CI is the cross-browser authority.
+
+Current local lab sample (software GPU, localhost, no network throttle): desktop LCP 100ms / CLS 0; 390px at 4x CPU LCP 324ms / CLS 0.00028; reduced-motion LCP 40ms / CLS 0. Input-to-two-frames: 120 / 31 / 29ms respectively. These are diagnostic samples, not field CWV or INP. Graphics initialization still produced a roughly 520ms task; real mobile-device validation remains a production gate. Optional graphics retain the existing chunk-size advisory.
+
+Review the revised calculator only. Other screens, deployment, persistent history and trajectory views remain deferred. Rollback checkpoint before this revision: remote commit bf9c4c4d991250050ca09ec603a0136d4e52c449.

@@ -27,6 +27,7 @@ export type InstrumentState = {
   target: number | null;
   tone: 'safe' | 'caution' | 'danger' | 'neutral';
   preview: 'present' | 'absent' | null;
+  previewCount?: number;
 };
 
 export const tones = { safe: '#175b60', caution: '#93601c', danger: '#a64737', neutral: '#65716c' };
