@@ -1,0 +1,63 @@
+---
+import Shell from '../layouts/Shell.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Calculator from '../features/calculator/Calculator';
+---
+<Shell>
+  <Header home={true} />
+  <main id="main" class="wrap" tabindex="-1">
+    <div class="page-intro"><div><p class="intro-kicker">A little less attendance anxiety</p><h1>Your attendance.<br class="mobile-break" /> <span>In perspective.</span></h1></div><p>Every class changes the picture.<br />Know your next move.</p></div>
+    <Calculator client:load />
+    <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
+    <span id="faq" aria-hidden="true"></span><section class="how-section" id="how-it-works" aria-labelledby="how-title">
+      <div><span class="eyebrow">Good to know</span><h2 id="how-title">Understand the answer.</h2><p>A percentage is the starting point.<br />Here’s what the next step means.</p></div>
+      <div class="explanations">
+        <details><summary>What does “can miss” mean?<span aria-hidden="true">+</span></summary><p>It is the number of consecutive future classes you can miss while staying at or above your target. Each missed class increases classes held, but not classes attended. If you enter remaining classes, this allowance cannot exceed them.</p></details>
+        <details><summary>How does recovery work?<span aria-hidden="true">+</span></summary><p>Each class you attend increases both counts. We find the smallest consecutive run that reaches your target. At 60 attended out of 100 held, a 75% target needs 60 more attended classes: 120 out of 160.</p></details>
+        <details><summary>What if my semester is nearly over?<span aria-hidden="true">+</span></summary><p>Add the lectures remaining to check your best possible finish. A term-end allowance assumes you attend the other remaining classes; it is different from how many you can miss consecutively right now.</p></details>
+        <details id="condonation"><summary>Do approved absences count?<span aria-hidden="true">+</span></summary><p>That depends on your institution. Calendar days and lectures are not interchangeable. Use the attended and held counts your institution recognizes; BunkMeter cannot approve leave or determine condonation eligibility.</p></details>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Shell>
+
+<style>
+  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 28px 0 30px; }
+  .intro-kicker { font-size: 11px; font-weight: 500; color: var(--green); }
+  h1 { margin-top: 8px; font-size: clamp(36px,4vw,54px); line-height: 1.05; letter-spacing: -2.5px; font-weight: 600; }
+  h1 > span { font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic; letter-spacing:-2.1px; }
+  .page-intro > p:last-child { font-size: 12px; color: var(--muted); padding-bottom: 3px; line-height: 1.6; }
+  .mobile-break { display: none; }
+  .how-section { display: grid; grid-template-columns: .94fr 1.06fr; gap: 32px; margin-top: 53px; padding-top: 30px; border-top: 1px solid var(--line); }
+  .how-section h2 { font-size: 23px; font-weight: 550; letter-spacing: -.7px; margin-top: 9px; }
+  .how-section > div > p { color: var(--muted); font-size: 13px; margin-top: 12px; }
+  .explanations details { border-bottom: 1px solid var(--line); }
+  .explanations summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 0; min-height: 54px; cursor: pointer; list-style: none; font-size: 14px; }
+  .explanations summary::-webkit-details-marker { display: none; }
+  .explanations summary > span { color: var(--muted); font-size: 20px; }
+  .explanations details[open] summary > span { transform: rotate(45deg); }
+  .explanations details > p { padding: 0 24px 18px 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+  .noscript { border: 1px solid var(--red); padding: 16px; margin-top: 16px; }
+  @media(prefers-reduced-motion:no-preference) {
+    h1 > span { display:inline-block; animation:perspective-arrival 900ms cubic-bezier(.16,1,.3,1) both; }
+    .intro-kicker { animation:perspective-arrival 700ms cubic-bezier(.16,1,.3,1) both; }
+    @supports(animation-timeline:view()) {
+      .how-section { animation:explanation-arrival linear both; animation-timeline:view(); animation-range:entry 0% entry 85%; }
+    }
+  }
+  @keyframes perspective-arrival { from { transform:translateY(10px); } to { transform:translateY(0); } }
+  @keyframes explanation-arrival { from { transform:translateY(18px); } to { transform:translateY(0); } }
+  @media (max-width: 700px) {
+    .page-intro { padding: 12px 0; }
+    .intro-kicker { display: none; }
+    h1 { font-size: 29px; letter-spacing: -1.3px; margin-top: 0; }
+    h1 > span { letter-spacing:-1.1px; }
+    .mobile-break { display: block; }
+    .page-intro > p:last-child { display: none; }
+    .how-section { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; padding-top: 25px; }
+    .how-section > div > p { display: none; }
+    .how-section h2 { font-size: 22px; }
+  }
+</style>

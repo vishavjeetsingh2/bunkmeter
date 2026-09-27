@@ -1,0 +1,12 @@
+---
+import Content from '../layouts/Content.astro';
+import { contactEmail } from '../site';
+---
+<Content title="Let’s get it right." description="Report a calculation problem, share feedback, or ask about how BunkMeter handles information." path="/contact" eyebrow="Contact">
+ <h2>Contact BunkMeter</h2>
+ {contactEmail ? <p>Email <a href={`mailto:${contactEmail}`}>{contactEmail}</a>. Your email app opens; BunkMeter does not submit a form or attach your calculator values automatically.</p> : <p class="notice">Contact details will be available when this preview launches.</p>}
+ <h2>Reporting a calculation</h2><p>Include the classes held, classes attended, target percentage and remaining lectures (if entered). Describe the result you expected and the result shown. Your browser and device type can help with display problems.</p>
+ <p>Use example numbers where possible. Do not send passwords, student IDs, medical documents or unredacted screenshots of your college portal.</p>
+ <h2>Policy questions</h2><p>BunkMeter cannot approve absences, change an institution’s record or decide exam eligibility. For those questions, contact your institution directly.</p>
+ <p>There is no guaranteed response time. Please see the <a href="/privacy-policy">privacy policy</a> before sending personal information.</p>
+</Content>
