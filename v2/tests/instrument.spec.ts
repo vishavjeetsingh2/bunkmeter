@@ -81,7 +81,22 @@ test('enhanced rendering settles, responds, and disposes on still-view selection
   await expect(stage).toHaveAttribute('data-enhanced', 'true', { timeout: 20_000 });
   await page.mouse.move(0, 0);
   // A bounded stability window checks actual inactivity, not merely a queued callback.
-  await expect(host).toHaveAttribute('data-settled', 'true', { timeout: 10_000 });
+  await expect.poll(async () => (await host.getAttribute('data-settled')) === 'true'
+    || (await stage.getAttribute('data-enhanced')) === 'false', { timeout: 10_000 }).toBe(true);
+  if (await stage.getAttribute('data-enhanced') === 'false') {
+    // Slow software GPUs must stop rendering by disposing, rather than be forced to animate.
+    await expect(host.locator('canvas')).toHaveCount(0);
+    await expect(page.locator('.instrument-still')).toHaveCSS('opacity', '1');
+    const stoppedFrames = await host.getAttribute('data-frames');
+    await page.waitForTimeout(350);
+    expect(await host.getAttribute('data-frames')).toBe(stoppedFrames);
+    await expect(page.locator('.decision-number')).toHaveText('10');
+    await page.getByRole('button', { name: 'If you miss next' }).click();
+    await expect(page.locator('.instrument-still')).toContainText('81.08%');
+    await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('110');
+    test.info().annotations.push({ type: 'graphics', description: 'Software GPU simplified before settling; disposal, inactivity and working preview verified.' });
+    return;
+  }
   const frames = await host.getAttribute('data-frames');
   await page.waitForTimeout(350);
   expect(await host.getAttribute('data-frames')).toBe(frames);
