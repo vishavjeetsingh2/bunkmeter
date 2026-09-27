@@ -15,11 +15,15 @@ Approved scope: calculator-first launch with the Instrument visual identity and 
 - Type checking, lint, 103 unit tests and seven-page build passed.
 - Local Chromium: 24 browser cases passed. Local WebKit: 21 passed, three GPU-specific cases intentionally skipped.
 - Cases include all public links/metadata, narrow-page accessibility, six calculator viewport widths, exact math, action/Undo, preview isolation and failure fallbacks.
-- Windows runner completed all assertions but hung in shutdown and was stopped. Linux CI must pass on the final release commit.
+- Windows runner completed all assertions but hung in shutdown and was stopped. Linux CI passed on 832d471 across Chromium, Firefox and WebKit.
 - Production contact guard, all public pages' indexability, noindex 404, robots/sitemap and inherited preview protection verified by scripts/check-release.mjs.
 
+## Deployment handoff
+- Owner confirmed hello@bunkmeter.online as the public contact address; configured for production. Mail delivery is not verified by a website deployment.
+- Existing hosting confirmed: Cloudflare DNS/proxy in front of Netlify project bunkmter. Keep the existing domain and DNS.
+- Hosted preview checked: public routes, legacy redirects, real HTTP 404, security headers, social image and calculator interactions passed.
+
 ## Remaining release gates
-- Owner supplies the real public contact email (CONTACT_EMAIL) and confirms the hosting project. Do not invent a mailbox.
 - Final GitHub Actions green; resolve actual failures before merging.
 - Check the hosted preview: original URLs redirect once, no redirect loops, unknown URL returns HTTP 404, security headers present, no CSP errors, social image loads.
 - Brief owner phone check on real hardware: enter numbers, Present/Absent/Undo, scroll and preview. Desktop emulation is not physical-device proof; graphics startup still needs hardware assessment.
