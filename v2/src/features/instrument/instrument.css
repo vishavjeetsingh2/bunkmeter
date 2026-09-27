@@ -40,7 +40,7 @@
   .instrument-heading { min-height: 32px; }
   .instrument-heading .eyebrow { font-size: 9px; }
   .view-toggle { min-height: 32px; padding: 4px 0 4px 8px; font-size: 10px; }
-  .instrument-stage { height: 180px; }
+  .instrument-stage { height: 160px; }
   .stage-orbit { width:174px; height:174px; }
   .stage-orbit span { display:none; }
   .instrument-legend { font-size: 10px; padding-bottom: 8px; gap: 18px; }

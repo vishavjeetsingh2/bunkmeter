@@ -26,3 +26,6 @@ On restricted machines, set `ASTRO_TELEMETRY_DISABLED=1` to avoid Astro writing 
 No persistence is implemented before visual approval. Future IndexedDB and optional sync belong behind a repository boundary, separate from these pure functions and UI components. Versioned migrations, transactional event/checkpoint updates and validated restore are required before any stored-record release. See `../docs/V2-MIGRATION.md`.
 
 Preview deliberately uses noindex and robots disallow. Production SEO enablement and route parity are release tasks, not accomplished by this slice. No service worker, third-party analytics, payment code or ad scripts are loaded.
+
+## Approved launch update — 27 September 2026
+The calculator-first release now includes all public support pages and deployment configuration. Earlier references above to pending visual approval and absent route parity are historical. See the repository-root README and LAUNCH_CHECKLIST.md for current release instructions. Saved subjects and persistence remain deferred by the approved scope. Preview noindex remains intentional; production indexing requires the guarded production build.

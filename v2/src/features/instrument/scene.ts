@@ -231,7 +231,7 @@ export function createInstrument(host: HTMLElement, initial: InstrumentState, un
       && response === 0 && elevation.settled(state.preview ? .055 : 0)
       && Math.abs(arcMaterial.color.r - color.r) + Math.abs(arcMaterial.color.g - color.g) + Math.abs(arcMaterial.color.b - color.b) < .001;
     host.dataset['settled'] = String(settled);
-    if (elapsed > .05 && elapsed < .25) slowFrames++; else slowFrames = Math.max(0, slowFrames - 1);
+    if (elapsed > .05) slowFrames++; else slowFrames = Math.max(0, slowFrames - 1);
     if (slowFrames >= 8 && !qualityReduced) {
       qualityReduced = true; slowFrames = 0; renderer.setPixelRatio(1);
     } else if (slowFrames >= 12 && qualityReduced) { unavailable(); return; }

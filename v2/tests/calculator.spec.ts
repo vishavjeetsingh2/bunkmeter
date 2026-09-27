@@ -107,6 +107,7 @@ test('keyboard, visible focus, disclosure and reduced motion', async ({ page, br
 });
 
 test('no automated accessibility violations across result states', async ({ page }) => {
+  test.setTimeout(90_000); // Six full axe scans, including software-GPU initialization on CI.
   for (const state of ['empty', 'safe', 'recovery', 'unreachable', 'invalid']) {
     if (state === 'safe') await counts(page, '90', '110');
     if (state === 'recovery') await counts(page, '60', '100');
