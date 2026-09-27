@@ -1,44 +1,71 @@
 [build]
-  publish = "."
-
+  base = "v2"
+  command = "npm run verify"
+  publish = "dist"
+[build.environment]
+  NODE_VERSION = "24"
+  ASTRO_TELEMETRY_DISABLED = "1"
+[context.production.environment]
+  BUNKMETER_PRODUCTION = "true"
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
+    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests"
+    Cache-Control = "public, max-age=0, must-revalidate"
 [[headers]]
-  for = "/*.html"
+  for = "/_astro/*"
   [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-
-[[headers]]
-  for = "/icons/*"
-  [headers.values]
-    Cache-Control = "public, max-age=2592000, immutable"
-
+    Cache-Control = "public, max-age=31536000, immutable"
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/about.html"
+  to = "/about"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/terms.html"
+  to = "/terms"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/disclaimer.html"
+  to = "/disclaimer"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/contact.html"
+  to = "/contact"
+  status = 301
+  force = true
 [[redirects]]
   from = "/about"
   to = "/about.html"
   status = 200
-
 [[redirects]]
   from = "/privacy-policy"
   to = "/privacy-policy.html"
   status = 200
-
 [[redirects]]
   from = "/terms"
   to = "/terms.html"
   status = 200
-
 [[redirects]]
   from = "/disclaimer"
   to = "/disclaimer.html"
   status = 200
-
 [[redirects]]
   from = "/contact"
   to = "/contact.html"
