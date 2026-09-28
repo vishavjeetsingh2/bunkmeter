@@ -1,4 +1,4 @@
-import { calculateAttendance, type AttendanceInput } from '../../domain/attendance';
+import { calculateAttendance, targetLabel, type AttendanceInput } from '../../domain/attendance';
 import { parseAttendance, type AttendanceFields } from '../../domain/validation';
 
 const keys = ['held', 'attended', 'req', 'remaining'] as const;
@@ -17,16 +17,16 @@ export function readAttendancePreset(search: string, defaults: AttendanceFields)
 
 export function createAttendanceShare(input: AttendanceInput, path = '/') {
   const result = calculateAttendance(input); // Validate through the same exact engine as the UI.
-  const target = input.targetBasisPoints / 100;
+  const target = targetLabel(input);
   const url = new URL(['/', '/vtu', '/aktu', '/du'].includes(path) ? path : '/', 'https://bunkmeter.online');
   url.searchParams.set('held', String(input.total));
   url.searchParams.set('attended', String(input.attended));
-  url.searchParams.set('req', String(target));
+  url.searchParams.set('req', input.targetRule === 'two-thirds' ? '2/3' : target);
   if (input.remaining !== null) url.searchParams.set('remaining', String(input.remaining));
   let summary: string;
   if (result.state === 'empty') summary = `I have no classes recorded yet. My attendance target is ${target}%.`;
   else if (input.remaining === 0) summary = `My term is complete at ${result.percentage}% attendance, ${result.semester?.reachable ? 'meeting' : 'below'} my ${target}% target.`;
-  else if (target === 0) summary = 'I have no minimum attendance target set.';
+  else if (input.targetBasisPoints === 0) summary = 'I have no minimum attendance target set.';
   else if (result.state === 'perfect-unreachable') summary = 'Exact 100% attendance cannot be recovered after a missed class.';
   else if (result.state === 'unreachable') summary = `My ${target}% attendance target is out of reach within the ${input.remaining} remaining classes.`;
   else if (result.state === 'recovery') summary = `I need ${result.mustAttend} consecutive ${result.mustAttend === 1n ? 'class' : 'classes'} to reach ${target}% attendance.`;

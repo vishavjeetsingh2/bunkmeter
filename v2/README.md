@@ -29,3 +29,13 @@ Preview deliberately uses noindex and robots disallow. Production SEO enablement
 
 ## Approved launch update — 27 September 2026
 The calculator-first release now includes all public support pages and deployment configuration. Earlier references above to pending visual approval and absent route parity are historical. See the repository-root README and LAUNCH_CHECKLIST.md for current release instructions. Saved subjects and persistence remain deferred by the approved scope. Preview noindex remains intentional; production indexing requires the guarded production build.
+
+## Saved attendance release
+
+The calculator stores quick drafts and up to 20 subjects in IndexedDB. Each record keeps its own target, remaining classes and last 50 reversible, timestamped actions. There is no account or server attendance database. URL presets and university pages open isolated calculations; saving one as a subject is explicit.
+
+`src/features/saved/model.ts` validates backups and persisted records. Imports preserve existing records; an empty browser restores the full workspace. `database.ts` compares revisions inside one transaction to prevent stale-tab overwrites. Unknown versions and write failures preserve the existing database and display a warning. Export backups before clearing browser data. For recovery from unsupported/corrupt storage, preserve any available backup before clearing site data and importing a validated backup.
+
+Targets accept decimal percentages or `2/3`. The latter is an exact integer-ratio calculation, not 66.67%. Keep the exhaustive fraction tests when changing the engine.
+
+Release checks: `npm run verify`, `node scripts/check-release.mjs`, and `npm run test:e2e`. Deploy through the existing Netlify build; no new environment variables or services are required. Rollback application code with the previous production commit; do not clear or downgrade the attendance database as part of rollback.

@@ -98,3 +98,13 @@
   from = "/contact"
   to = "/contact.html"
   status = 200
+
+[[redirects]]
+  from = "/attendance-calculator-guide.html"
+  to = "/attendance-calculator-guide"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/attendance-calculator-guide"
+  to = "/attendance-calculator-guide.html"
+  status = 200

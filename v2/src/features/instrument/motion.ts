@@ -25,6 +25,7 @@ export type InstrumentState = {
   value: string | null;
   ratio: number;
   target: number | null;
+  targetLabel?: string;
   tone: 'safe' | 'caution' | 'danger' | 'neutral';
   preview: 'present' | 'absent' | null;
   previewCount?: number;

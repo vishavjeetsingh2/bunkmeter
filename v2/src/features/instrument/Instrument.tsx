@@ -28,7 +28,7 @@ function StillInstrument({ state }: { state: InstrumentState }) {
     {state.target !== null && <circle cx={tx} cy={ty} r="4" fill="#a96d22" stroke="#f4d59b" stroke-width="1.5"/>}
     <text x="160" y="135" text-anchor="middle" font-size="8" letter-spacing="1.5" fill="#556962">{state.preview ? (state.previewCount ?? 1) > 1 ? `${state.previewCount} CLASS PREVIEW` : 'NEXT CLASS PREVIEW' : 'ATTENDANCE'}</text>
     <text x="160" y="178" text-anchor="middle" font-size="36" font-weight="500" letter-spacing="-1.5" fill="#173a40">{state.value === null ? '—' : `${state.value}%`}</text>
-    <text x="160" y="202" text-anchor="middle" font-size="9" fill="#556962">{state.target === null ? 'Set your target' : `TARGET ${state.target}%`}</text>
+    <text x="160" y="202" text-anchor="middle" font-size="9" fill="#556962">{state.target === null ? 'Set your target' : `TARGET ${state.targetLabel ?? state.target}%`}</text>
     <text x="160" y="269" text-anchor="middle" font-size="8" font-weight="700" letter-spacing="2" fill="#173a40">BUNKMETER</text>
   </svg>;
 }
@@ -43,8 +43,9 @@ export default function Instrument({ state, children }: { state: InstrumentState
 
   useEffect(() => {
     const media = matchMedia('(prefers-reduced-motion: reduce)');
-    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    const update = () => setEligible(!media.matches && !connection?.saveData && navigator.hardwareConcurrency !== 1 && navigator.hardwareConcurrency !== 2);
+    const device = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean; effectiveType?: string } };
+    const connection = device.connection;
+    const update = () => setEligible(!media.matches && !connection?.saveData && connection?.effectiveType !== 'slow-2g' && connection?.effectiveType !== '2g' && (device.deviceMemory === undefined || device.deviceMemory > 2) && navigator.hardwareConcurrency !== 1 && navigator.hardwareConcurrency !== 2);
     update(); media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
@@ -94,7 +95,7 @@ export default function Instrument({ state, children }: { state: InstrumentState
       <StillInstrument state={state}/>
       <div class="instrument-webgl" ref={hostRef} aria-hidden="true"/>
     </div>
-    <div class="instrument-legend"><span><i class="arc-key" aria-hidden="true"/> {state.preview === 'present' ? `If you attend next${(state.previewCount ?? 1) > 1 ? ` ${state.previewCount}` : ''}` : state.preview === 'absent' ? `If you miss next${(state.previewCount ?? 1) > 1 ? ` ${state.previewCount}` : ''}` : 'Your attendance'}</span><span><i class="target-key" aria-hidden="true"/> {state.target === null ? 'Set a target' : `${state.target}% target`}</span></div>
+    <div class="instrument-legend"><span><i class="arc-key" aria-hidden="true"/> {state.preview === 'present' ? `If you attend next${(state.previewCount ?? 1) > 1 ? ` ${state.previewCount}` : ''}` : state.preview === 'absent' ? `If you miss next${(state.previewCount ?? 1) > 1 ? ` ${state.previewCount}` : ''}` : 'Your attendance'}</span><span><i class="target-key" aria-hidden="true"/> {state.target === null ? 'Set a target' : `${state.targetLabel ?? state.target}% target`}</span></div>
     {children}
   </div>;
 }

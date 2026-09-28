@@ -58,10 +58,12 @@ test('unavailable WebGL falls back without hiding the answer', async ({ page }) 
   await expect(page.locator('.decision-number')).toHaveText('10');
 });
 
-for (const reason of ['save-data', 'low-core'] as const) {
+for (const reason of ['save-data', 'low-core', 'low-memory', 'slow-network'] as const) {
   test(`${reason} uses the lightweight still view`, async ({ page }) => {
     await page.addInitScript(mode => {
       if (mode === 'save-data') Object.defineProperty(navigator, 'connection', { value: { saveData: true } });
+      else if (mode === 'low-memory') Object.defineProperty(navigator, 'deviceMemory', { value: 2 });
+      else if (mode === 'slow-network') Object.defineProperty(navigator, 'connection', { value: { effectiveType: '2g' } });
       else Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 2 });
     }, reason);
     const graphicsRequests: string[] = [];
