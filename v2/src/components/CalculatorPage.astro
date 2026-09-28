@@ -14,7 +14,7 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
 <Shell {...metadata} path={path} faq={true}>
   <Header home={true} />
   <main id="main" class="wrap" tabindex="-1">
-    <div class="page-intro"><div><p class="intro-kicker">A little less attendance anxiety</p><h1>{university ? university.heading : <>Your attendance.<br class="mobile-break" /> <span>In perspective.</span></>}</h1></div><p>Every class changes the picture.<br />Know your next move.</p></div>
+    <div class="page-intro"><div><p class="intro-kicker">Attendance calculator · Bunk budget & recovery</p><h1>{university ? university.heading : <>Your attendance.<br class="mobile-break" /> <span>In perspective.</span></>}</h1></div><p>Every class changes the picture.<br />Know your next move.</p></div>
     {university && <p class="university-preset-note">{university.lead}</p>}
     <Calculator client:load {...calculatorProps} sharePath={path} />
     <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
@@ -25,12 +25,14 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
         {attendanceFaq.map(item => <details id={item.id}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}
       </div>
     </section>
+    <p class="calculation-guide-link">Attendance = attended ÷ held × 100. At 72 of 100 classes, a 75% target needs 12 consecutive attended classes: 84 of 112. <a href="/attendance-calculator-guide">See the formulas and worked examples →</a></p>
     <nav class="university-links" aria-label="University attendance calculators"><span>University calculators:</span>{universities.map(item => <a href={`/${item.slug}`} aria-current={university?.slug === item.slug ? 'page' : undefined}>{item.shortName}</a>)}{university && <a href="/">All students</a>}</nav>
   </main>
   <Footer />
 </Shell>
 
 <style>
+  .calculation-guide-link { max-width:78ch; font-size:13px; line-height:1.8; color:var(--muted); margin-top:24px; }
   .university-preset-note { font-size:13px; line-height:1.6; color:var(--muted); max-width:78ch; margin:0 0 20px; }
   .university-guide { margin-top:40px; padding-top:24px; border-top:1px solid var(--line); max-width:78ch; }
   .university-guide h2 { font-size:23px; letter-spacing:-.7px; }

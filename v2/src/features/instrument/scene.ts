@@ -149,7 +149,7 @@ export function createInstrument(host: HTMLElement, initial: InstrumentState, un
   function paintReadout(state: InstrumentState, ratio: number, complete: boolean) {
     if (!displayContext) return;
     const value = state.value === null ? '—' : `${complete ? state.value : Number((ratio * 100).toFixed(2))}%`;
-    const targetText = state.target === null ? 'SET YOUR TARGET' : `TARGET  ${state.target}%`;
+    const targetText = state.target === null ? 'SET YOUR TARGET' : `TARGET  ${state.targetLabel ?? state.target}%`;
     const label = state.preview ? (state.previewCount ?? 1) === 1 ? 'NEXT CLASS PREVIEW' : `${state.previewCount} CLASS PREVIEW` : 'ATTENDANCE';
     const signature = `${value}|${targetText}|${label}`;
     if (signature === paintedReadout) return;

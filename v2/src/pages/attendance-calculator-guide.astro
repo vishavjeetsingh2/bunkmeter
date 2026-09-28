@@ -1,0 +1,24 @@
+---
+import Content from '../layouts/Content.astro';
+---
+<Content title="How to calculate attendance and reach your target" description="Attendance percentage, classes you can miss and recovery formulas—with worked examples for a 75% requirement and any custom target." path="/attendance-calculator-guide" eyebrow="The calculation guide">
+  <p>Use the <a href="/#calculator">attendance calculator</a> for an immediate answer. This guide explains the numbers behind it so you can check the result yourself.</p>
+  <h2>Calculate your attendance percentage</h2>
+  <p><strong>Attendance percentage = (classes attended ÷ classes held) × 100.</strong> If you attended 90 of 110 classes, your attendance is 81.8181…%. BunkMeter displays 81.81%, truncating to two decimal places. It uses the exact counts for decisions, so a rounded display can never turn a shortage into a safe result.</p>
+  <p>Use lectures, not calendar days. If two classes were held on Monday and you attended one, add 2 to held and 1 to attended. If each subject has a separate requirement, calculate them separately instead of averaging their percentages.</p>
+  <h2>How many classes can I miss and keep 75% attendance?</h2>
+  <p>Missing a class increases classes held but leaves classes attended unchanged. With 90 attended out of 110 held, missing 10 gives 90 out of 120: exactly 75%. Missing 11 gives 90 out of 121: below 75%.</p>
+  <p>For any positive target, let A be attended, T be held and r be the target as a fraction (75% = 0.75). <strong>Consecutive classes you can miss = floor(A ÷ r − T)</strong>, with a minimum of zero. “Floor” means round down to a whole class. If you know how many lectures remain, you cannot miss more than that number.</p>
+  <h2>How many classes must I attend to recover?</h2>
+  <p>Attending adds one to both counts. For a target below 100%, <strong>classes to attend consecutively = ceil((r × T − A) ÷ (1 − r))</strong>, with a minimum of zero. “Ceil” means round up, because part of a class is not a full attendance mark.</p>
+  <p>At 60 attended out of 100 held, reaching 75% requires 60 more attended classes. The resulting record is 120 out of 160. Attending only 15 would give 75 out of 115—65.21%, not 75%. The total changes as you recover.</p>
+  <h2>What if only a few classes remain?</h2>
+  <p>Suppose you have 60 attended out of 100 held with 20 lectures remaining. Attending every remaining lecture gives 80 out of 120, or 66.66%. A 75% target is unreachable within those remaining lectures.</p>
+  <p>If recovery is possible, the term-end allowance is different from the consecutive allowance. At 75 out of 100 with 100 lectures remaining, you can miss 25 over the rest of the term if you attend the other 75. You cannot miss a class immediately and still remain at 75% at that moment.</p>
+  <h2>Zero classes and a 100% target</h2>
+  <p>With no classes held, a current attendance percentage is undefined. At a 100% target, an existing absence cannot be erased by any finite number of future classes. A perfect record stays perfect only if you attend every next class. At a 0% target there is no minimum attendance to meet.</p>
+  <h2>Exact two thirds and rounded percentages</h2><p>Select Exact 2/3 when that is your confirmed rule. Two attended out of three held meets two thirds exactly, although the displayed percentage is 66.66%. It does not meet a 66.67% or 67% rule. BunkMeter checks 3 × attended against 2 × held for the exact fraction.</p>
+  <h2>Keep the record useful</h2>
+  <p>Start with official counts, save a subject, then record Present or Absent after each counted lecture. Reconcile your saved figures with your institution’s portal regularly. Your subject names, targets and recent actions stay in this browser; export a backup before changing devices.</p>
+  <p class="notice">These formulas assume equally weighted classes and a target applied directly to the counts. Your institution may treat labs, leave, rounding or condonation differently. Confirm its policy; a calculator cannot determine permission to miss classes or eligibility for an exam.</p>
+</Content>

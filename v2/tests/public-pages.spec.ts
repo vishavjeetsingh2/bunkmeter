@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-const routes = ['/', '/vtu', '/aktu', '/du', '/about', '/contact', '/privacy-policy', '/terms', '/disclaimer'];
+const routes = ['/', '/vtu', '/aktu', '/du', '/attendance-calculator-guide', '/about', '/contact', '/privacy-policy', '/terms', '/disclaimer'];
 test('public routes have unique metadata, canonical URLs and complete navigation', async ({ page, request }) => {
   const titles = new Set<string>();
   for (const path of routes) {

@@ -156,3 +156,5 @@ button:active { transform:translateY(1px); }
   .session-feedback { font-size:10px; }
   .future-run { padding-inline:10px; }
 }
+
+.calculation-proof{font-size:12px;color:var(--muted);line-height:1.7;margin:12px 0;overflow-wrap:anywhere}

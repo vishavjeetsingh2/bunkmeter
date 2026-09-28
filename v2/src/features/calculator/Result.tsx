@@ -1,4 +1,4 @@
-import { calculateAttendance, type AttendanceInput, type AttendanceResult } from '../../domain/attendance';
+import { calculateAttendance, targetLabel, type AttendanceInput, type AttendanceResult } from '../../domain/attendance';
 import type { InstrumentState } from '../instrument/motion';
 import NumberReadout from './NumberReadout';
 import { projectClasses } from './class-actions';
@@ -23,7 +23,7 @@ export function resultTone(input: AttendanceInput, result: AttendanceResult): In
 }
 
 export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult, sharePath = '/' }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null; sharePath?: string }) {
-  const target = input.targetBasisPoints / 100;
+  const target = targetLabel(input);
   const presentRun = projectClasses(input, 'present', previewCount);
   const absentRun = projectClasses(input, 'absent', previewCount);
   const presentPercentage = presentRun ? calculateAttendance(presentRun).percentage : result.nextPresent;
@@ -33,7 +33,7 @@ export default function Result({ input, result, preview, onPreview, previewCount
   const unreachable = result.state === 'unreachable';
   const recovering = result.state === 'recovery';
   const empty = result.state === 'empty';
-  const noTarget = target === 0;
+  const noTarget = input.targetBasisPoints === 0;
   const tone = resultTone(input, result);
   const status = empty ? 'No classes yet' : noTarget ? 'No minimum set' : perfect || unreachable ? 'Target out of reach' : recovering ? 'Below target' : result.state === 'at-target' ? 'Exactly at target' : 'Above target';
   let lead = 'You can miss';
@@ -76,6 +76,8 @@ export default function Result({ input, result, preview, onPreview, previewCount
         <p class="decision-unit">{unit}</p>
         <p class="decision-explanation">{explanation}</p>
       </div>
+      {recovering && <p class="calculation-proof">{number(input.attended)}/{number(input.total)} → attend {number(result.mustAttend!)} → {number(BigInt(input.attended) + result.mustAttend!)}/{number(BigInt(input.total) + result.mustAttend!)}. This reaches your {target}% target.</p>}
+      {!recovering && !empty && !noTarget && !finished && !unreachable && !perfect && result.canMiss !== null && <p class="calculation-proof">{number(input.attended)}/{number(input.total)} → miss {number(result.canMiss)} → {number(input.attended)}/{number(BigInt(input.total) + result.canMiss)}. One more would {input.remaining !== null && result.canMiss === BigInt(input.remaining) ? 'exceed your remaining classes' : 'fall below your target'}.</p>}
       {!finished && !empty && maxPreview > 0 && <div class="next-preview"><div class="preview-heading"><span>A look ahead</span><span>Preview only · counts stay the same</span></div><div class="next-class" aria-label="Next class preview">
         <button type="button" aria-pressed={preview === null} onClick={() => onPreview(null)}><span>Current</span><strong>{result.percentage}%</strong></button>
         <button type="button" aria-pressed={preview === 'present'} onClick={() => onPreview('present')}><span>If you attend next {previewCount > 1 ? previewCount : ''}<span aria-hidden="true">↗</span></span><strong>{presentPercentage}%</strong></button>
