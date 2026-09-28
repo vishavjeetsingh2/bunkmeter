@@ -2,6 +2,7 @@ import { calculateAttendance, type AttendanceInput, type AttendanceResult } from
 import type { InstrumentState } from '../instrument/motion';
 import NumberReadout from './NumberReadout';
 import { projectClasses } from './class-actions';
+import ShareResult from './ShareResult';
 
 const number = (value: bigint | number) => value.toLocaleString('en-IN');
 
@@ -21,7 +22,7 @@ export function resultTone(input: AttendanceInput, result: AttendanceResult): In
   return result.state === 'recovery' || result.canMiss === 0n ? 'caution' : 'safe';
 }
 
-export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null }) {
+export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult, sharePath = '/' }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null; sharePath?: string }) {
   const target = input.targetBasisPoints / 100;
   const presentRun = projectClasses(input, 'present', previewCount);
   const absentRun = projectClasses(input, 'absent', previewCount);
@@ -90,6 +91,7 @@ export default function Result({ input, result, preview, onPreview, previewCount
         {result.semester.reachable ? <p>Attend at least <strong>{number(result.semester.required)}</strong>; you can miss <strong>{number(result.semester.canMiss!)}</strong> in total and finish at your target or higher. This is a term-end budget, not a consecutive-skip allowance.</p>
           : <p>You would need {number(result.semester.required)} attended classes among only {number(input.remaining!)} remaining. Revise the estimate if your schedule changes.</p>}
       </div>}
+      <ShareResult key={JSON.stringify(input)} input={input} path={sharePath} />
     </section>
   );
 }

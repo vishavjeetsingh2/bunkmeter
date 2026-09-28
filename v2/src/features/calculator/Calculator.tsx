@@ -6,13 +6,16 @@ import Instrument from '../instrument/Instrument';
 import type { InstrumentState } from '../instrument/motion';
 import { applyClass, projectClasses, type ClassKind } from './class-actions';
 import { useChoreography } from './choreography';
+import { readAttendancePreset } from './sharing';
 import './calculator.css';
 
-const initial: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
+const emptyFields: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
 type ClassEvent = { id: number; kind: ClassKind; before: AttendanceFields };
 
-export default function Calculator() {
+export default function Calculator({ defaultTarget = '75', presets = ['75', '80', '85'], targetHelp = 'Use your course’s requirement. Rules vary by institution.', sharePath = '/' }: { defaultTarget?: string; presets?: string[]; targetHelp?: string; sharePath?: string } = {}) {
+  const initial = { ...emptyFields, target: defaultTarget };
   const [session, setSession] = useState<{ fields: AttendanceFields; events: ClassEvent[] }>({ fields: initial, events: [] });
+  const [presetNotice, setPresetNotice] = useState('');
   const fields = session.fields;
   const nextEvent = useRef(1);
   const workspace = useRef<HTMLDivElement>(null);
@@ -49,6 +52,14 @@ export default function Calculator() {
   useChoreography(workspace, `${fields.attended}|${fields.total}|${fields.target}|${fields.remaining}|${activePreview}|${runLength}|${session.events.length}`, direction);
 
   useEffect(() => {
+    const preset = readAttendancePreset(window.location.search, initial);
+    if (preset.fields) {
+      setSession({ fields: preset.fields, events: [] });
+      setPresetNotice('Values loaded from the link. Check them against your attendance record.');
+    } else if (preset.invalid) setPresetNotice('This link contains invalid attendance values. Enter your own counts below.');
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => setAnnouncement(message), 350);
     return () => clearTimeout(timer);
   }, [message]);
@@ -59,6 +70,7 @@ export default function Calculator() {
   }, [undoGhost]);
 
   function update(name: FieldName, value: string) {
+    setPresetNotice('');
     setDirection('edit'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setFeedback('Counts adjusted. A new run starts here.');
     setSession(current => ({ fields: { ...current.fields, [name]: value }, events: [] }));
   }
@@ -99,8 +111,9 @@ export default function Calculator() {
   return <>
     <div class="calculator-workspace" id="calculator" ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
-        <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" onClick={() => { setDirection('undo'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { ...initial }, events: [] }); setFeedback('A class at a time.'); setTouched({}); totalRef.current?.focus(); }}>Reset <span aria-hidden="true">↺</span></button></div>
+        <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" onClick={() => { setDirection('undo'); setPresetNotice(''); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { ...initial }, events: [] }); setFeedback('A class at a time.'); setTouched({}); totalRef.current?.focus(); }}>Reset <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
+        {presetNotice && <p class="field-help" role="status">{presetNotice}</p>}
         <div class="count-fields">
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
@@ -116,8 +129,8 @@ export default function Calculator() {
             aria-invalid={Boolean(error('target'))} aria-describedby={error('target') ? 'target-error' : 'target-help'}
             onInput={event => update('target', event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, target: true }))} /><span aria-hidden="true">%</span></div></div>
           {error('target') && <p class="field-error" id="target-error">{error('target')}</p>}
-          <div class="target-presets" role="group" aria-label="Common target percentages">{['75', '80', '85'].map(target => <button type="button" key={target} aria-pressed={fields.target === target} onClick={() => update('target', target)}>{target}%</button>)}<span>or enter your own</span></div>
-          <p class="field-help" id="target-help">Use your course’s requirement. Rules vary by institution.</p>
+          <div class="target-presets" role="group" aria-label="Common target percentages">{presets.map(target => <button type="button" key={target} aria-pressed={fields.target === target} onClick={() => update('target', target)}>{target}%</button>)}<span>or enter your own</span></div>
+          <p class="field-help" id="target-help">{targetHelp}</p>
         </div>
         <details class="remaining-details">
           <summary><span>Plan to the end of term <small>{fields.remaining.trim() ? `${fields.remaining} left` : 'Optional'}</small></span><span class="expand-icon" aria-hidden="true">+</span></summary>
@@ -134,11 +147,11 @@ export default function Calculator() {
           </div>
         </div>
       </Instrument>
-      {parsed.valid && result ? <Result input={parsed.value} result={result} preview={activePreview} onPreview={choosePreview} previewCount={runLength} maxPreview={maxPreview} onPreviewCount={count => { setDirection('future'); setPreviewCount(count); setPreview(current => current ?? 'present'); }} futureResult={futureResult} /> : <section class="result result--empty" aria-labelledby="empty-heading">
+      {parsed.valid && result ? <Result sharePath={sharePath} input={parsed.value} result={result} preview={activePreview} onPreview={choosePreview} previewCount={runLength} maxPreview={maxPreview} onPreviewCount={count => { setDirection('future'); setPreviewCount(count); setPreview(current => current ?? 'present'); }} futureResult={futureResult} /> : <section class="result result--empty" aria-labelledby="empty-heading">
         <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label">{hasInvalid ? 'Check your inputs' : 'Ready when you are'}</span></div>
         <h2 id="empty-heading">{hasInvalid ? 'Let’s get the counts right.' : <>Less guessing. <br />More perspective.</>}</h2>
         <p>{hasInvalid ? 'Correct the highlighted fields to get an accurate answer. We won’t guess or round your class counts.' : 'Enter your attendance to see what you can miss—or what you need to attend.'}</p>
-        {!hasInvalid && <button class="example-button" type="button" onClick={() => { setDirection('present'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { attended: '90', total: '110', target: '75', remaining: '' }, events: [] }); setFeedback('Example loaded. Try a class.'); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button>}
+        {!hasInvalid && <button class="example-button" type="button" onClick={() => { setDirection('present'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { attended: '90', total: '110', target: defaultTarget, remaining: '' }, events: [] }); setFeedback('Example loaded. Try a class.'); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button>}
       </section>}
     </div>
     <p class="sr-only" role="status" aria-atomic="true">{announcement}</p>

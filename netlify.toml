@@ -56,6 +56,33 @@
   to = "/about.html"
   status = 200
 [[redirects]]
+  from = "/vtu.html"
+  to = "/vtu"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/aktu.html"
+  to = "/aktu"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/du.html"
+  to = "/du"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/vtu"
+  to = "/vtu.html"
+  status = 200
+[[redirects]]
+  from = "/aktu"
+  to = "/aktu.html"
+  status = 200
+[[redirects]]
+  from = "/du"
+  to = "/du.html"
+  status = 200
+[[redirects]]
   from = "/privacy-policy"
   to = "/privacy-policy.html"
   status = 200

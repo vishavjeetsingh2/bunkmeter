@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-const routes = ['/', '/about', '/contact', '/privacy-policy', '/terms', '/disclaimer'];
+const routes = ['/', '/vtu', '/aktu', '/du', '/about', '/contact', '/privacy-policy', '/terms', '/disclaimer'];
 test('public routes have unique metadata, canonical URLs and complete navigation', async ({ page, request }) => {
   const titles = new Set<string>();
   for (const path of routes) {
@@ -34,7 +34,7 @@ test('preview is not indexable and schema describes only the real free calculato
   await page.goto('/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
   expect(await (await request.get('/robots.txt')).text()).toContain('Disallow: /');
-  const schema = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  const schema = JSON.parse((await page.locator('script[type="application/ld+json"]:not([data-faq-schema])').textContent())!);
   expect(schema['@type']).toBe('WebApplication'); expect(schema.offers.price).toBe('0');
   expect(schema).not.toHaveProperty('aggregateRating');
   await page.goto('/404');

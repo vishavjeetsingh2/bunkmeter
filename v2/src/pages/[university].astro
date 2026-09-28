@@ -1,0 +1,9 @@
+---
+import CalculatorPage from '../components/CalculatorPage.astro';
+import { universities } from '../content/universities';
+export function getStaticPaths() {
+  return universities.map(university => ({ params: { university: university.slug }, props: { university } }));
+}
+const { university } = Astro.props;
+---
+<CalculatorPage university={university} />
