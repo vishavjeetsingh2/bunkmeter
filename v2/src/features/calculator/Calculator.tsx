@@ -124,6 +124,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     <div class="calculator-workspace" id="calculator" ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
         <SubjectPicker saved={saved} onSwitch={switchSubject} />
+        {parsed.valid && result && <div class="mobile-answer"><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
         <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" disabled={!saved.ready} onClick={reset}>{saved.state.activeId ? 'New calculation' : 'Reset'} <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
         {presetNotice && <p class="field-help" role="status">{presetNotice}</p>}
@@ -131,7 +132,6 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
         </div>
-        {parsed.valid && result && <div class="mobile-answer"><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
         <div class="class-actions" role="group" aria-label="Record a class for the selected subject">
           <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon" aria-hidden="true">＋</span><span>Present<small>Attended this class</small></span></button>
           <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon" aria-hidden="true">−</span><span>Absent<small>Missed this class</small></span></button>
@@ -140,7 +140,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
         <div class="target-section">
           <div class="target-heading"><label for="target">Required attendance</label><div class="percent-input"><input disabled={!saved.ready} id="target" name="target" type="text" inputMode={fields.target === '2/3' ? 'text' : 'decimal'} autoComplete="off" maxLength={16} value={fields.target}
             aria-invalid={Boolean(error('target'))} aria-describedby={error('target') ? 'target-error' : 'target-help'}
-            onInput={event => update('target', event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, target: true }))} /><span aria-hidden="true">%</span></div></div>
+            onInput={event => update('target', event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, target: true }))} />{fields.target !== '2/3' && <span aria-hidden="true">%</span>}</div></div>
           {error('target') && <p class="field-error" id="target-error">{error('target')}</p>}
           <div class="target-presets" role="group" aria-label="Common target percentages">{presets.map(target => <button type="button" disabled={!saved.ready} key={target} aria-pressed={fields.target === target} onClick={() => update('target', target)}>{target === '2/3' ? 'Exact 2/3' : `${target}%`}</button>)}{!presets.includes('2/3') && <button type="button" disabled={!saved.ready} aria-pressed={fields.target === '2/3'} onClick={() => update('target', '2/3')}>Exact 2/3</button>}<span>or enter your own</span></div>
           <p class="field-help" id="target-help">{targetHelp}</p>
