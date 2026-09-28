@@ -6,6 +6,8 @@ export interface AttendanceInput {
   attended: number;
   total: number;
   targetBasisPoints: number;
+  /** Exact fraction; basis points remain 6667 only for backward-compatible display data. */
+  targetRule?: 'two-thirds';
   remaining: number | null;
 }
 
@@ -31,6 +33,9 @@ export interface AttendanceResult {
 const ceilDiv = (numerator: bigint, denominator: bigint): bigint =>
   numerator <= 0n ? 0n : (numerator + denominator - 1n) / denominator;
 
+export const targetPercent = (input: AttendanceInput) => input.targetRule === 'two-thirds' ? 200 / 3 : input.targetBasisPoints / 100;
+export const targetLabel = (input: AttendanceInput) => input.targetRule === 'two-thirds' ? '66⅔' : String(input.targetBasisPoints / 100);
+
 /** Truncate display to two places: a below-target ratio must not look safely rounded up. */
 export function percentage(attended: bigint, total: bigint): string | null {
   if (total === 0n) return null;
@@ -46,16 +51,18 @@ export function calculateAttendance(input: AttendanceInput): AttendanceResult {
   if (!Number.isInteger(input.targetBasisPoints) || input.targetBasisPoints < 0 || input.targetBasisPoints > 10_000) {
     throw new RangeError('Invalid target.');
   }
+  if (input.targetRule !== undefined && (input.targetRule !== 'two-thirds' || input.targetBasisPoints !== 6667)) throw new RangeError('Invalid exact target.');
 
   const a = BigInt(input.attended);
   const t = BigInt(input.total);
-  const q = BigInt(input.targetBasisPoints);
+  const scale = input.targetRule === 'two-thirds' ? 3n : SCALE;
+  const q = input.targetRule === 'two-thirds' ? 2n : BigInt(input.targetBasisPoints);
   const r = input.remaining === null ? null : BigInt(input.remaining);
-  const balance = SCALE * a - q * t;
-  const mustAttend = balance >= 0n ? 0n : q === SCALE ? null : ceilDiv(-balance, SCALE - q);
-  const immediate = q === 0n ? null : balance < 0n ? 0n : (SCALE * a) / q - t;
+  const balance = scale * a - q * t;
+  const mustAttend = balance >= 0n ? 0n : q === scale ? null : ceilDiv(-balance, scale - q);
+  const immediate = q === 0n ? null : balance < 0n ? 0n : (scale * a) / q - t;
   const canMiss = r === null ? immediate : immediate === null || immediate > r ? r : immediate;
-  const required = r === null ? null : ceilDiv(q * (t + r) - SCALE * a, SCALE);
+  const required = r === null ? null : ceilDiv(q * (t + r) - scale * a, scale);
   const semester = r === null || required === null ? null : {
     bestPercentage: percentage(a + r, t + r),
     required,
@@ -70,7 +77,7 @@ export function calculateAttendance(input: AttendanceInput): AttendanceResult {
 
   return {
     state, percentage: percentage(a, t), canMiss, mustAttend,
-    requiredAtCurrentTotal: ceilDiv(q * t, SCALE),
+    requiredAtCurrentTotal: ceilDiv(q * t, scale),
     nextPresent: percentage(a + 1n, t + 1n)!,
     nextAbsent: percentage(a, t + 1n)!,
     semester,

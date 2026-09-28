@@ -28,8 +28,9 @@ export function parseAttendance(fields: AttendanceFields): ParsedAttendance {
   const targetText = fields.target.trim();
   let targetBasisPoints = 0;
   if (!targetText) issues.target = { kind: 'required', message: 'Enter your required percentage.' };
+  else if (targetText === '2/3') targetBasisPoints = 6667;
   else if (targetText.length > 16 || !/^\d+(?:\.\d{1,2})?$/.test(targetText)) {
-    issues.target = { kind: 'invalid', message: 'Use 0–100%, with up to two decimal places.' };
+    issues.target = { kind: 'invalid', message: 'Use 0–100% with up to two decimals, or 2/3 for exact two thirds.' };
   } else {
     const [whole = '0', decimals = ''] = targetText.split('.');
     targetBasisPoints = Number(whole) * 100 + Number(decimals.padEnd(2, '0'));
@@ -39,5 +40,5 @@ export function parseAttendance(fields: AttendanceFields): ParsedAttendance {
     issues.attended = { kind: 'invalid', message: 'Attended classes cannot exceed classes held.' };
   }
   if (Object.keys(issues).length || attended === null || total === null) return { valid: false, issues };
-  return { valid: true, value: { attended, total, targetBasisPoints, remaining } };
+  return { valid: true, value: { attended, total, targetBasisPoints, remaining, ...(targetText === '2/3' ? { targetRule: 'two-thirds' as const } : {}) } };
 }

@@ -10,6 +10,7 @@ export function projectClasses(input: AttendanceInput, kind: ClassKind, count: n
   if (counts.some(value => !Number.isSafeInteger(value) || value < 0 || value > MAX_CLASSES)
     || input.attended > input.total
     || !Number.isInteger(input.targetBasisPoints) || input.targetBasisPoints < 0 || input.targetBasisPoints > 10_000
+    || (input.targetRule !== undefined && (input.targetRule !== 'two-thirds' || input.targetBasisPoints !== 6667))
     || count > MAX_CLASSES - input.total
     || (input.remaining !== null && count > input.remaining)) return null;
 
