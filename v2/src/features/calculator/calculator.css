@@ -77,6 +77,12 @@ button:active { transform:translateY(1px); }
 .calculator-note { display:flex; gap:8px; color:var(--muted); font-size:11px; margin-top:20px; max-width:62ch; }
 .calculator-note > span { color:var(--green); font-size:15px; line-height:1.2; }
 .mobile-answer { display:none; }
+.share-result { margin-top:18px; padding-top:10px; border-top:1px solid var(--line); }
+.share-result > div { display:flex; flex-wrap:wrap; gap:4px 16px; }
+.share-result .text-button { padding-left:0; color:var(--ink); }
+.share-note,.share-status { font-size:11px; line-height:1.6; color:var(--muted); }
+.share-status:not(:empty) { margin-top:6px; color:var(--green); }
+.share-result textarea { width:100%; margin-top:10px; min-height:100px; padding:10px; font:inherit; font-size:13px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:6px; resize:vertical; }
 .number-readout { display:inline; }
 .number-window { display:inline-block; overflow:clip; vertical-align:bottom; perspective:200px; padding-block:.05em; margin-block:-.05em; }
 .number-glyph { display:inline-block; transform-origin:center bottom; }

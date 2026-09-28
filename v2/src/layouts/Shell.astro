@@ -1,8 +1,9 @@
 ---
 import '../styles/tokens.css';
 import { siteUrl, productionRelease } from '../site';
-interface Props { title?: string; description?: string; path?: string; noindex?: boolean; }
-const { title = 'Attendance Calculator — Bunk Budget & Recovery | BunkMeter', description = 'Calculate how many classes you can miss or must attend to reach your attendance target. Check remaining lectures and explore what-if scenarios for free.', path = '/', noindex = false } = Astro.props;
+import { faqSchema } from '../content/faq';
+interface Props { title?: string; description?: string; path?: string; noindex?: boolean; faq?: boolean; }
+const { title = 'Attendance Calculator — Bunk Budget & Recovery | BunkMeter', description = 'Calculate how many classes you can miss or must attend to reach your attendance target. Check remaining lectures and explore what-if scenarios for free.', path = '/', noindex = false, faq = false } = Astro.props;
 const canonical = new URL(path, siteUrl).href;
 const schema = path === '/' ? { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'BunkMeter', url: siteUrl + '/', applicationCategory: 'EducationalApplication', operatingSystem: 'Web browser', description, offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' } } : null;
 ---
@@ -27,6 +28,7 @@ const schema = path === '/' ? { '@context': 'https://schema.org', '@type': 'WebA
     <meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${siteUrl}/og-preview.png`} />
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}
+    {faq && <script type="application/ld+json" data-faq-schema set:html={JSON.stringify(faqSchema).replace(/</g, '\\u003c')} />}
     <meta name="theme-color" content="#f5f4ee" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

@@ -17,7 +17,7 @@ try {
   assert.match(rejected.stderr + rejected.stdout, /owner-confirmed public contact/);
   const production = build({ BUNKMETER_PRODUCTION: 'true', CONTEXT: 'production', CONTACT_EMAIL: 'release-test@bunkmeter.invalid' });
   assert.equal(production.status, 0, production.stderr);
-  for (const file of ['index', 'about', 'contact', 'privacy-policy', 'terms', 'disclaimer']) {
+  for (const file of ['index', 'vtu', 'aktu', 'du', 'about', 'contact', 'privacy-policy', 'terms', 'disclaimer']) {
     assert.match(read(`${file}.html`), /name="robots" content="index, follow"/);
   }
   assert.match(read('contact.html'), /mailto:release-test@bunkmeter.invalid/);

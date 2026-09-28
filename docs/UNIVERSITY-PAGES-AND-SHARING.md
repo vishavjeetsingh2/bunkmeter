@@ -1,0 +1,12 @@
+# University pages and result sharing
+
+- `v2/src/content/universities.ts` owns each page's slug, title, description, headings, explanatory copy, editable target presets and dated source. The static `[university].astro` route renders the existing `CalculatorPage`/`Calculator` for every entry. No calculator logic is duplicated.
+- Add a config entry and matching clean-path/.html redirects in `netlify.toml` when adding a university. Sitemap and internal links derive from the config. Verify the applicable programme/scheme before changing a preset; never represent it as a universal exam-eligibility rule.
+- VTU's 85% source is its 2022 B.E./B.Tech. regulation. AKTU's 75% planning preset is scoped to a cited MIET 2022–23 academic plan. DU uses a clearly labelled 67% planning buffer, not an exact two-thirds threshold. The decimal engine is unchanged.
+- `v2/src/content/faq.ts` is the single source for both visible FAQs and head JSON-LD. Google retired FAQ rich results starting 7 May 2026; valid schema is not a ranking or snippet guarantee. [Google update](https://developers.google.com/search/updates#may_2026).
+- URL parameters: `held`, `attended`, `req`, optional `remaining`. Counts must be valid whole numbers; targets allow two decimals. A target-only `req` is supported. Ambiguous duplicate parameters or invalid values do not load a plausible result. Unrelated URL parameters are ignored and never included in generated links.
+- Share Result uses the native share sheet when available. Copy result link copies the summary and canonical-origin preset link; denied clipboard access exposes selectable text. Cancelling a native share does not trigger copying. Only recorded counts are shared, never the hypothetical preview.
+- Sharing is explicit and includes attendance values in the URL. Recipients, link preview services, browser history and hosting logs may see those values. The privacy policy explains this. No cookies, trackers, analytics or dependencies were added.
+- These pages and FAQs render in initial HTML. Canonicals/OG URLs exclude query parameters; production indexing and preview noindex are unchanged. Search Console already has a successful `/sitemap.xml` submission; after deployment it can discover new entries on recrawl.
+
+The separate saved-attendance follow-up is preserved at local branch `v2/saved-subjects-search`, commit `652f4a9`. It is not part of this scoped release.
