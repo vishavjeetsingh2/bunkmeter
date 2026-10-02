@@ -58,6 +58,17 @@ test('unavailable WebGL falls back without hiding the answer', async ({ page }) 
   await expect(page.locator('.decision-number')).toHaveText('10');
 });
 
+test('unavailable lighting leaves the calculator usable without creating a renderer', async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 }));
+  await page.route('**/_astro/environment*.gz', route => route.abort());
+  await page.goto('/'); await example(page);
+  await expect(page.getByRole('button', { name: 'Interactive view' })).toBeVisible();
+  await expect(page.locator('.instrument-webgl canvas')).toHaveCount(0);
+  await page.getByRole('button', { name: /^Present/ }).click();
+  await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('111');
+  await expect(page.getByTestId('save-status')).toHaveText('Saved on this device.');
+});
+
 for (const reason of ['save-data', 'low-core', 'low-memory', 'slow-network'] as const) {
   test(`${reason} uses the lightweight still view`, async ({ page }) => {
     await page.addInitScript(mode => {

@@ -54,6 +54,7 @@ export default function Instrument({ state, children }: { state: InstrumentState
     if (!eligible || still || !hostRef.current) return;
     const host = hostRef.current;
     let cancelled = false, started = false;
+    const loading = new AbortController();
     let idle: number | undefined;
     const simplify = () => {
       if (cancelled) return;
@@ -64,9 +65,11 @@ export default function Instrument({ state, children }: { state: InstrumentState
       if (cancelled || started) return; started = true;
       try {
         // The normal calculator bundle never imports Three.js eagerly.
-        const { createInstrument } = await import('./scene');
+        const { createInstrument, loadEnvironment } = await import('./scene');
         if (cancelled) return;
-        controller.current = createInstrument(host, latest.current, simplify);
+        const environment = await loadEnvironment(loading.signal);
+        if (cancelled) return;
+        controller.current = createInstrument(host, latest.current, simplify, environment);
         await controller.current.ready;
         if (cancelled || !controller.current) return;
         setInteractive(true);
@@ -80,7 +83,7 @@ export default function Instrument({ state, children }: { state: InstrumentState
     }, { rootMargin: '80px' });
     observer.observe(host);
     return () => {
-      cancelled = true; observer.disconnect();
+      cancelled = true; loading.abort(); observer.disconnect();
       if (idle !== undefined) window.cancelIdleCallback(idle);
       controller.current?.dispose(); controller.current = null; setInteractive(false);
     };

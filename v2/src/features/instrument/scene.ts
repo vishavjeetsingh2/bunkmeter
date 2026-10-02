@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import environmentUrl from './environment.bin.gz?url';
 import { dialAngle, spring, tones, type InstrumentState } from './motion';
 
 export interface InstrumentScene {
@@ -9,7 +9,20 @@ export interface InstrumentScene {
 }
 
 /** One isolated, demand-rendered enhancement. No attendance or input logic lives here. */
-export function createInstrument(host: HTMLElement, initial: InstrumentState, unavailable: () => void): InstrumentScene {
+export async function loadEnvironment(signal: AbortSignal): Promise<Uint16Array> {
+  const response = await fetch(environmentUrl, { signal });
+  if (!response.ok) throw Error('Lighting unavailable');
+  let buffer = await response.arrayBuffer();
+  // Hosts may serve .gz with Content-Encoding (already decoded by fetch), or as a gzip file.
+  const prefix = new Uint8Array(buffer, 0, Math.min(2, buffer.byteLength));
+  if (prefix[0] === 0x1f && prefix[1] === 0x8b) {
+    buffer = await new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  }
+  if (buffer.byteLength !== 336 * 64 * 8) throw Error('Invalid lighting map');
+  return new Uint16Array(buffer);
+}
+
+export function createInstrument(host: HTMLElement, initial: InstrumentState, unavailable: () => void, environmentPixels: Uint16Array): InstrumentScene {
   performance.mark('instrument-init');
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
@@ -24,12 +37,14 @@ export function createInstrument(host: HTMLElement, initial: InstrumentState, un
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-3, 3, 2.2, -2.2, .1, 30);
   camera.position.set(0, 0, 9);
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const room = new RoomEnvironment();
-  const environment = pmrem.fromScene(room, .04, .1, 100, { size: 64 });
-  scene.environment = environment.texture;
+  // The same room lighting is baked once, rather than compiling its convolution shaders on every visit.
+  const environment = new THREE.DataTexture(environmentPixels, 336, 64, THREE.RGBAFormat, THREE.HalfFloatType);
+  environment.mapping = THREE.CubeUVReflectionMapping;
+  environment.minFilter = environment.magFilter = THREE.LinearFilter;
+  environment.colorSpace = THREE.LinearSRGBColorSpace;
+  environment.needsUpdate = true;
+  scene.environment = environment;
   scene.environmentIntensity = .55;
-  room.dispose(); pmrem.dispose();
   performance.measure('instrument-environment', 'instrument-init');
   scene.add(new THREE.HemisphereLight(0xe4f5f0, 0x183a40, .7));
   const key = new THREE.DirectionalLight(0xfff5dd, 2.1);
