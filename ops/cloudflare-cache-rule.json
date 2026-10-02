@@ -1,0 +1,22 @@
+{
+  "name": "BunkMeter public page cache",
+  "kind": "zone",
+  "phase": "http_request_cache_settings",
+  "rules": [
+    {
+      "ref": "bunkmeter_public_html",
+      "description": "Cache public static HTML using the origin's short CDN TTL",
+      "expression": "http.host eq \"bunkmeter.online\" and http.request.scheme eq \"https\" and http.request.method eq \"GET\" and http.request.uri.query eq \"\" and http.request.uri.path in {\"/\" \"/vtu\" \"/aktu\" \"/du\" \"/attendance-calculator-guide\" \"/about\" \"/contact\" \"/privacy-policy\" \"/terms\" \"/disclaimer\"}",
+      "action": "set_cache_settings",
+      "action_parameters": {
+        "cache": true,
+        "edge_ttl": {
+          "mode": "respect_origin",
+          "status_code_ttl": [{ "status_code_range": { "from": 300 }, "value": -1 }]
+        },
+        "browser_ttl": { "mode": "respect_origin" }
+      },
+      "enabled": true
+    }
+  ]
+}
