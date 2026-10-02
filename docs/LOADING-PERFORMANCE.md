@@ -8,7 +8,9 @@ Netlify sends `Cloudflare-CDN-Cache-Control: public, max-age=120` separately fro
 
 Production HTML can remain cached for up to two minutes after a release or rollback. Purge the affected URLs for urgent releases. Preview hosts and unlisted routes are excluded. Remove or revise this rule before introducing server-personalized responses or authentication.
 
-The intended Cloudflare ruleset is recorded in `ops/cloudflare-cache-rule.json`; this repository file does not activate it automatically. Apply it only to the `bunkmeter.online` zone; preserve any unrelated rules if the zone gains more rules later. To roll back caching, disable the rule with ref `bunkmeter_public_html` and purge its listed URLs.
+The reproducible Cloudflare ruleset is recorded in `ops/cloudflare-cache-rule.json`; this repository file does not activate it automatically. The equivalent rule was activated through the dashboard on October 2, 2026 as **BunkMeter public page cache**, rule ID `167811db2f4444859f5fd260e815627d`. The dashboard-created rule does not use the template's custom ref. Apply the template only to the `bunkmeter.online` zone; update the existing rule rather than creating a duplicate, and preserve unrelated rules. To roll back caching, disable the named rule and purge its listed URLs.
+
+Post-deployment mobile lab verification (390×844, 4× CPU slowdown, 150 ms configured network latency, cold browser cache) confirmed Cloudflare `HIT`, 75 ms document response start, 544 ms LCP, calculator enabled at 1068 ms, and 16 ms lighting setup. The preceding cache-miss sample had 1022 ms response start. These are individual samples, not guarantees or field metrics. Saved subjects, class updates across reload, Undo, and shared-link isolation passed on the live domain. Cross-browser CI, 136 unit tests, type checking, lint and production build passed before deployment.
 
 ## Instrument lighting
 

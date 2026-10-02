@@ -6,7 +6,7 @@
     {
       "ref": "bunkmeter_public_html",
       "description": "Cache public static HTML using the origin's short CDN TTL",
-      "expression": "http.host eq \"bunkmeter.online\" and http.request.scheme eq \"https\" and http.request.method eq \"GET\" and http.request.uri.query eq \"\" and http.request.uri.path in {\"/\" \"/vtu\" \"/aktu\" \"/du\" \"/attendance-calculator-guide\" \"/about\" \"/contact\" \"/privacy-policy\" \"/terms\" \"/disclaimer\"}",
+      "expression": "http.host eq \"bunkmeter.online\" and ssl and http.request.method eq \"GET\" and http.request.uri.query eq \"\" and http.request.uri.path in {\"/\" \"/vtu\" \"/aktu\" \"/du\" \"/attendance-calculator-guide\" \"/about\" \"/contact\" \"/privacy-policy\" \"/terms\" \"/disclaimer\"}",
       "action": "set_cache_settings",
       "action_parameters": {
         "cache": true,
