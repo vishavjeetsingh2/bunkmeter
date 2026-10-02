@@ -87,9 +87,11 @@ export default function Result({ input, result, preview, onPreview, previewCount
         <input id="future-classes" type="range" min="1" max={maxPreview} step="1" value={previewCount} aria-describedby="future-help" onInput={event => onPreviewCount(Number(event.currentTarget.value))}/>
         <div class="future-scale" aria-hidden="true">{Array.from({ length: maxPreview }, (_, i) => <span class={i < previewCount && preview ? 'is-projected' : ''} key={i}>{i === 0 || i === maxPreview - 1 ? i + 1 : '·'}</span>)}</div>
         <p class="future-outcome" id="future-help">{futureResult && preview ? <><strong>{futureResult.percentage}%</strong> if you {preview === 'present' ? 'attend' : 'miss'} the next {previewCount} {previewCount === 1 ? 'class' : 'classes'}. <span>This is a preview.</span></> : 'Slide to explore a possible future. Your record stays put.'}</p>
+        {preview && <button class="preview-exit" type="button" onClick={() => onPreview(null)}>↶ Back to current attendance</button>}
       </div><p class="sr-only" role="status">{futureResult && preview ? `Preview: ${preview === 'present' ? 'attending' : 'missing'} ${previewCount} ${previewCount === 1 ? 'class' : 'classes'} gives ${futureResult.percentage}%. Your counts have not changed.` : ''}</p></div>}
       {result.semester && !finished && <div class="semester-note">
         <h3>Across your {number(input.remaining!)} remaining classes</h3>
+        {result.semester.reachable && <dl class="term-budget"><div><dt>Attend at least</dt><dd>{number(result.semester.required)}</dd></div><div><dt>Can miss in total</dt><dd>{number(result.semester.canMiss!)}</dd></div></dl>}
         {result.semester.reachable ? <p>Attend at least <strong>{number(result.semester.required)}</strong>; you can miss <strong>{number(result.semester.canMiss!)}</strong> in total and finish at your target or higher. This is a term-end budget, not a consecutive-skip allowance.</p>
           : <p>You would need {number(result.semester.required)} attended classes among only {number(input.remaining!)} remaining. Revise the estimate if your schedule changes.</p>}
       </div>}

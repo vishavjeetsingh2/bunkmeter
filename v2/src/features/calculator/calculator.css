@@ -77,6 +77,13 @@ button:active { transform:translateY(1px); }
 .calculator-note { display:flex; gap:8px; color:var(--muted); font-size:11px; margin-top:20px; max-width:62ch; }
 .calculator-note > span { color:var(--green); font-size:15px; line-height:1.2; }
 .mobile-answer { display:none; }
+.quick-start { display:flex; align-items:center; flex-wrap:wrap; gap:4px 14px; margin-top:12px; font-size:12px; color:var(--muted); }
+.quick-start .example-button { margin:0; font-size:12px; }
+.preview-exit { display:block; min-height:44px; padding:8px 0; border:0; background:transparent; color:var(--ink); font-size:12px; text-decoration:underline; text-underline-offset:4px; }
+.term-budget { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+.term-budget > div { padding:12px; border-radius:8px; border:1px solid var(--line); background:#f4f6ef; }
+.term-budget dt { font-size:11px; color:var(--muted); }
+.term-budget dd { margin:2px 0 0; font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .share-result { margin-top:18px; padding-top:10px; border-top:1px solid var(--line); }
 .share-result > div { display:flex; flex-wrap:wrap; gap:4px 16px; }
 .share-result .text-button { padding-left:0; color:var(--ink); }
@@ -147,7 +154,10 @@ button:active { transform:translateY(1px); }
   .next-class button { padding:9px 7px; }
   .next-class strong { font-size:15px; }
   .calculator-note { margin-top:16px; font-size:10px; }
-  .mobile-answer { display:block; border-left:3px solid var(--green); padding-left:12px; margin:0 0 12px; }
+  .mobile-answer { display:block; border-left:3px solid var(--green); padding:10px 12px 0; margin:8px 0 12px; background:var(--green-soft); border-radius:0 8px 8px 0; }
+  .mobile-answer[data-tone='caution'] { border-color:var(--amber); background:var(--amber-soft); }
+  .mobile-answer[data-tone='danger'] { border-color:var(--red); background:var(--red-soft); }
+  .mobile-answer[data-tone='neutral'] { border-color:var(--muted); background:var(--surface); }
   .mobile-answer > span { display:block; color:var(--muted); font-size:10px; }
   .mobile-answer strong { display:block; margin-top:3px; font-size:16px; font-weight:600; line-height:1.4; }
   .mobile-answer a { display:inline-flex; align-items:center; gap:8px; min-height:40px; font-size:11px; }
