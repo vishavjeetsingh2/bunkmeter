@@ -3,6 +3,7 @@ import { ConflictError, openDatabase, readWorkspace, writeWorkspace } from './da
 import { currentSession, emptyWorkspace, type Session, type Workspace } from './model';
 import { readAttendancePreset } from '../calculator/sharing';
 import type { AttendanceFields } from '../../domain/validation';
+import { setSaveBarrier } from '../../platform';
 
 export type SaveStatus = 'loading' | 'ready' | 'saving' | 'saved' | 'unavailable' | 'conflict' | 'temporary';
 export function useSavedAttendance(initial: AttendanceFields, path: string) {
@@ -37,7 +38,11 @@ export function useSavedAttendance(initial: AttendanceFields, path: string) {
       if (pending.current || (stopped.current && current.current.revision !== expectedRevision.current)) { event.preventDefault(); }
     };
     window.addEventListener('beforeunload', beforeUnload);
-    return () => { disposed = true; clearTimeout(timeout); db.current?.close(); window.removeEventListener('beforeunload', beforeUnload); };
+    setSaveBarrier(async () => {
+      while (pending.current) await queue.current;
+      return current.current.revision === expectedRevision.current;
+    });
+    return () => { disposed = true; clearTimeout(timeout); db.current?.close(); setSaveBarrier(undefined); window.removeEventListener('beforeunload', beforeUnload); };
   }, []);
 
   function change(update: (value: Workspace) => Workspace) {

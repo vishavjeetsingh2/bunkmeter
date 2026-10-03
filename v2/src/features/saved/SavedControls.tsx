@@ -1,13 +1,11 @@
-import { calculateAttendance } from '../../domain/attendance';
-import { parseAttendance } from '../../domain/validation';
-import { resultMessage } from '../calculator/Result';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { emptySession, type Session, MAX_HISTORY, MAX_BACKUP_BYTES, MAX_SUBJECTS, mergeBackup } from './model';
 import type { useSavedAttendance } from './useSavedAttendance';
 import './saved.css';
+import { nativeServices } from '../../platform';
 
 type Saved = ReturnType<typeof useSavedAttendance>;
-function openSubjectEditor() {
+export function openSubjectEditor() {
   const details = document.getElementById('subject-editor') as HTMLDetailsElement | null;
   if (details) details.open = true;
   document.getElementById('subject-name')?.focus();
@@ -24,9 +22,12 @@ export function SubjectPicker({ saved, onSwitch }: { saved: Saved; onSwitch: () 
     <a href="#subject-editor" onClick={event => { event.preventDefault(); openSubjectEditor(); }}>{saved.state.activeId ? 'Manage' : 'Save subject'} <span aria-hidden="true">↓</span></a>
   </div><a class={`inline-save-status ${failure ? 'inline-save-status--error' : ''}`} href="#saved-tools"><span aria-hidden="true">{failure ? '!' : saved.status === 'saved' ? '✓' : '·'}</span>{label}</a></>;
 }
-function download(text: string) {
+async function download(text: string) {
+  const filename = `bunkmeter-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const native = nativeServices();
+  if (native) { await native.exportBackup(text, filename); return; }
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = `bunkmeter-backup-${new Date().toISOString().slice(0, 10)}.json`; link.click();
+  const link = document.createElement('a'); link.href = url; link.download = filename; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwitch: () => void }) {
@@ -37,6 +38,10 @@ export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwi
   const fileInput = useRef<HTMLInputElement>(null);
   const active = state.subjects.find(s => s.id === state.activeId);
   const failure = status === 'conflict' || status === 'unavailable';
+  async function exportBackup() {
+    try { await download(JSON.stringify(saved.backup, null, 2)); setNotice('Backup export opened. Keep the file somewhere safe.'); }
+    catch { setNotice('Backup export did not complete. Please try again.'); }
+  }
   useEffect(() => { setName(''); setRemoving(false); }, [state.activeId]);
   function saveSubject() {
     const title = name.trim();
@@ -46,6 +51,7 @@ export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwi
       ? { ...value, subjects: value.subjects.map(s => s.id === active.id ? { ...s, name: title } : s) }
       : addSubject(value, title));
     setName(''); setNotice(active ? 'Subject renamed.' : 'Subject added. Check the save status above.'); onSwitch();
+    if (!active) requestAnimationFrame(() => document.getElementById('saved-subject')?.focus());
   }
   function addSubject(value: typeof state, title: string) {
     const id = crypto.randomUUID();
@@ -67,8 +73,7 @@ export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwi
     <p class={`save-status ${failure ? 'save-status--error' : ''}`} role="status" data-testid="save-status">
       {status === 'loading' ? 'Loading saved attendance…' : status === 'saving' ? 'Saving on this device…' : status === 'temporary' ? 'Separate calculation. Save as a subject to keep it.' : status === 'saved' ? 'Saved on this device.' : status === 'ready' ? 'Your numbers will save on this device.' : status === 'conflict' ? 'Not saved: another tab changed your attendance. Export this tab’s backup before reloading to load the saved version.' : 'Saving unavailable. Your previous saved data has not been overwritten. Export a backup of these numbers before leaving.'}
     </p>
-    <p class="storage-explainer">No account needed. Use the same browser to return. Clearing site data or using private browsing can remove saved records. <a href="/privacy-policy">Storage & privacy</a></p>
-    {state.subjects.length > 1 && <details class="saved-details"><summary>Your subjects at a glance<span aria-hidden="true">+</span></summary><ul class="subject-overview">{state.subjects.map(subject => { const parsed = parseAttendance(subject.session.fields); const result = parsed.valid ? calculateAttendance(parsed.value) : null; return <li key={subject.id}><button type="button" onClick={() => { change(value => ({ ...value, activeId: subject.id })); onSwitch(); }}><strong>{subject.name}</strong><span>{parsed.valid && result ? resultMessage(parsed.value, result) : 'Check the saved counts'}</span></button></li>; })}</ul></details>}
+    <p class="storage-explainer">No account needed. Return on this device. Clearing browser or app data can remove saved records. <a href="https://bunkmeter.online/privacy-policy">Storage & privacy</a></p>
     <details class="saved-details" id="subject-editor">
       <summary>{active ? `Manage ${active.name}` : 'Save as a subject'}<span aria-hidden="true">+</span></summary>
       <div class="saved-content">
@@ -83,7 +88,7 @@ export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwi
     {state.removed && <button class="subtle-button" type="button" disabled={state.subjects.length >= MAX_SUBJECTS} onClick={() => { change(value => value.removed ? { ...value, subjects: [...value.subjects, value.removed], activeId: value.removed.id, removed: null } : value); onSwitch(); }}>Restore {state.removed.name}</button>}
     <details class="saved-details">
       <summary>Backup & transfer<span aria-hidden="true">+</span></summary>
-      <div class="saved-content"><p>Download a backup before clearing browser data or changing devices. An empty workspace restores the backup. Otherwise import adds subjects without replacing existing records. Backups contain your subject names and attendance, so keep them private.</p><div class="backup-actions"><button type="button" disabled={!ready} onClick={() => download(JSON.stringify(saved.backup, null, 2))}>Export backup</button><label class="import-label" for="backup-file">Import backup (adds subjects)</label><input ref={fileInput} id="backup-file" type="file" accept=".json,application/json" disabled={!ready} onChange={event => { void importFile(event.currentTarget.files?.[0]); }} /></div></div>
+      <div class="saved-content"><p>Export a backup before clearing data or changing devices. An empty workspace restores the backup. Otherwise import adds subjects without replacing existing records. Backups contain your subject names and attendance, so keep them private.</p><div class="backup-actions"><button type="button" disabled={!ready} onClick={() => { void exportBackup(); }}>Export backup</button><label class="import-label" for="backup-file">Import backup (adds subjects)</label><input ref={fileInput} id="backup-file" type="file" accept=".json,application/json" disabled={!ready} onChange={event => { void importFile(event.currentTarget.files?.[0]); }} /></div></div>
     </details>
     <details class="saved-details">
       <summary>New here? A 30-second guide<span aria-hidden="true">+</span></summary>

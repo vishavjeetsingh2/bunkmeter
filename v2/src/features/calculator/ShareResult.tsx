@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import type { AttendanceInput } from '../../domain/attendance';
 import { createAttendanceShare } from './sharing';
+import { nativeServices } from '../../platform';
 
 export default function ShareResult({ input, path }: { input: AttendanceInput; path: string }) {
   const [status, setStatus] = useState('');
@@ -15,6 +16,12 @@ export default function ShareResult({ input, path }: { input: AttendanceInput; p
   async function send() {
     setBusy(true); setStatus(''); setManual(false);
     try {
+      const native = nativeServices();
+      if (native) {
+        try { await native.share({ title: share.title, text: share.text, url: share.url }); setStatus('Share sheet closed.'); }
+        catch { setStatus('Sharing closed or unavailable. You can copy the link instead.'); }
+        return;
+      }
       if (typeof navigator.share === 'function') {
         try { await navigator.share({ title: share.title, text: share.text, url: share.url }); setStatus('Share sheet closed.'); return; }
         catch (error) { if (error instanceof Error && error.name === 'AbortError') { setStatus('Sharing cancelled.'); return; } }
