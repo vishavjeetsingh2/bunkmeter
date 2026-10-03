@@ -7,6 +7,9 @@
   --card-shadow:0 2px 5px -4px #173a4033;
 }
 .bunkmeter-product .ui-icon{display:inline-block;vertical-align:middle;flex-shrink:0}
+/* Native selects must size from the available row, not their longest option. */
+.bunkmeter-product .subject-picker select{width:0;flex:1 1 0;text-overflow:ellipsis}
+.bunkmeter-product .subject-card-top>strong{min-width:0}
 .bunkmeter-product .count-stepper:has(input[data-long=true]){flex-wrap:wrap}.bunkmeter-product .calculator-inputs .count-stepper input[data-long=true]{flex:1 0 100%;order:-1;font-size:18px}.bunkmeter-product .count-stepper:has(input[data-long=true]) .step-button{width:50%;flex:1}
 .bunkmeter-product .site-header:has(.product-nav){min-height:72px;gap:24px;justify-content:space-between}
 .bunkmeter-product .product-nav{display:flex;gap:4px;align-items:center;padding:4px;border:1px solid var(--line);border-radius:var(--pill-radius);background:var(--surface);font-size:13px}
