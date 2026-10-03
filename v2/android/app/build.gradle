@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+def signingNames = ['BUNKMETER_KEYSTORE', 'BUNKMETER_STORE_PASSWORD', 'BUNKMETER_KEY_ALIAS', 'BUNKMETER_KEY_PASSWORD']
+def signingPresent = signingNames.collect { System.getenv(it) != null && !System.getenv(it).isBlank() }
+if (signingPresent.any() && !signingPresent.every()) {
+    throw new GradleException('Set all four BUNKMETER signing environment variables, or none for an unsigned verification build.')
+}
+def hasReleaseSigning = signingPresent.every()
+
+android {
+    namespace = "online.bunkmeter.app"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "online.bunkmeter.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode = Integer.parseInt(System.getenv('BUNKMETER_VERSION_CODE') ?: '1')
+        versionName = System.getenv('BUNKMETER_VERSION_NAME') ?: '1.0.0'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(System.getenv('BUNKMETER_KEYSTORE'))
+                storePassword System.getenv('BUNKMETER_STORE_PASSWORD')
+                keyAlias System.getenv('BUNKMETER_KEY_ALIAS')
+                keyPassword System.getenv('BUNKMETER_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (hasReleaseSigning) signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// No Firebase, analytics, advertising, or account SDKs in this application.

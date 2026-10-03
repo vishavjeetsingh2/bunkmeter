@@ -1,0 +1,18 @@
+---
+import App from '../App';
+import '../../src/styles/tokens.css';
+import '../app.css';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f5f4ee" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+    <title>BunkMeter</title>
+  </head>
+  <body class="bunkmeter-product"><a class="skip-link" href="#main">Skip to attendance</a><App client:only="preact"><div slot="fallback" class="app-loading" role="status"><strong>BunkMeter</strong><p>Opening your attendance…</p><a href="/">Reopen if this takes too long</a></div></App><noscript>BunkMeter needs JavaScript to open your locally saved attendance.</noscript></body>
+</html>
