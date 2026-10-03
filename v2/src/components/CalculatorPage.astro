@@ -3,6 +3,7 @@ import Shell from '../layouts/Shell.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Calculator from '../features/calculator/Calculator';
+import Icon from './Icon';
 import { attendanceFaq } from '../content/faq';
 import { universities, type UniversityPage } from '../content/universities';
 interface Props { university?: UniversityPage }
@@ -20,7 +21,8 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
     <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
     {university && <article class="university-guide" aria-labelledby="university-guide-title"><h2 id="university-guide-title">{university.sectionTitle}</h2>{university.sections.map(section => <section><h3>{section.heading}</h3><p>{section.text}</p></section>)}<p>Source: <a href={university.source.url}>{university.source.label}</a>.</p><aside><p>BunkMeter is independent and is not affiliated with {university.shortName}. Check your current course rules and official record; this page does not decide examination eligibility.</p></aside></article>}
     <span id="faq" aria-hidden="true"></span><section class="how-section" id="how-it-works" aria-labelledby="how-title">
-      <div><span class="eyebrow">Good to know</span><h2 id="how-title">Understand the answer.</h2><p>A percentage is the starting point.<br />Here’s what the next step means.</p></div>
+      <div class="how-intro"><span class="eyebrow">Good to know</span><h2 id="how-title">How it works.</h2><p>A percentage is the starting point.<br />Here’s what the next step means.</p></div>
+      <div class="how-cards"><article><Icon name="subjects"/><h3>Subjects</h3><p>One record per course.</p></article><article><Icon name="check"/><h3>Tap to log</h3><p>Present or Absent. Undo a slip.</p></article><article><Icon name="calendar"/><h3>Spare classes</h3><p>Know what you can miss.</p></article><article><Icon name="target"/><h3>Recovery</h3><p>A clear run back to your target.</p></article></div>
       <div class="explanations">
         {attendanceFaq.map(item => <details id={item.id}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}
       </div>
@@ -41,13 +43,19 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
   .university-guide aside { border-left:3px solid var(--line); padding-left:14px; }
   .university-links { display:flex; flex-wrap:wrap; align-items:center; gap:4px 18px; font-size:12px; color:var(--muted); margin-top:24px; }
   .university-links a { display:inline-flex; align-items:center; min-height:44px; }
-  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 28px 0 30px; }
+  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 24px 0 20px; }
   .intro-kicker { font-size: 11px; font-weight: 500; color: var(--green); }
-  h1 { margin-top: 8px; font-size: clamp(36px,4vw,54px); line-height: 1.05; letter-spacing: -2.5px; font-weight: 600; }
-  h1 > span { font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic; letter-spacing:-2.1px; }
+  h1 { margin-top: 6px; font-size: clamp(26px,3vw,38px); line-height: 1.15; letter-spacing: -1.5px; font-weight: 600; }
+  h1 > span { color:var(--muted); font-weight:400; }
   .page-intro > p:last-child { font-size: 12px; color: var(--muted); padding-bottom: 3px; line-height: 1.6; }
   .mobile-break { display: none; }
-  .how-section { display: grid; grid-template-columns: .94fr 1.06fr; gap: 32px; margin-top: 53px; padding-top: 30px; border-top: 1px solid var(--line); }
+  .how-section { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .how-cards { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px; }
+  .how-cards article { padding:20px;border:1px solid var(--line);border-radius:var(--card-radius);background:var(--surface); }
+  .how-cards article :global(.ui-icon) { padding:10px;width:42px;height:42px;border-radius:50%;background:var(--green-soft);color:var(--green); }
+  .how-cards h3 { font-size:15px;font-weight:550;margin:12px 0 4px; }
+  .how-cards p { color:var(--muted);font-size:12px; }
+  .explanations { background:var(--surface);border:1px solid var(--line);border-radius:var(--card-radius);padding:6px 22px; }
   .how-section h2 { font-size: 23px; font-weight: 550; letter-spacing: -.7px; margin-top: 9px; }
   .how-section > div > p { color: var(--muted); font-size: 13px; margin-top: 12px; }
   .explanations details { border-bottom: 1px solid var(--line); }
@@ -69,12 +77,16 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
   @media (max-width: 700px) {
     .page-intro { padding: 12px 0; }
     .intro-kicker { display: none; }
-    h1 { font-size: 29px; letter-spacing: -1.3px; margin-top: 0; }
+    h1 { font-size: 24px; letter-spacing: -.9px; margin-top: 0; }
     h1 > span { letter-spacing:-1.1px; }
-    .mobile-break { display: block; }
+    .mobile-break { display: none; }
     .page-intro > p:last-child { display: none; }
     .how-section { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; padding-top: 25px; }
     .how-section > div > p { display: none; }
     .how-section h2 { font-size: 22px; }
+    .how-cards { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+    .how-cards article { padding:16px;border-radius:20px; }
+    .how-cards h3 { font-size:13px; }
+    .how-cards p { font-size:11px; }
   }
 </style>

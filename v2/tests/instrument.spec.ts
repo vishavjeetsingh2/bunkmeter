@@ -136,8 +136,10 @@ test('mobile touch responds without capturing vertical scrolling', async ({ page
   await client.send('Emulation.setTouchEmulationEnabled', { enabled: true });
   await page.goto('/'); await example(page);
   const stage = page.locator('.instrument-stage');
+  // The mobile product now puts attendance actions before the lazy Instrument.
+  await stage.scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute('data-enhanced', 'true', { timeout: 20_000 });
-  await page.evaluate(() => window.scrollTo(0, 0));
+  const initialScroll = await page.evaluate(() => window.scrollY);
   const host = page.locator('.instrument-webgl');
   await expect.poll(async () => (await stage.getAttribute('data-enhanced')) === 'false'
     || (await host.getAttribute('data-settled')) === 'true', { timeout: 10_000 }).toBe(true);
@@ -158,7 +160,7 @@ test('mobile touch responds without capturing vertical scrolling', async ({ page
     await page.waitForTimeout(25);
   }
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(50);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(initialScroll + 50);
   await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('110');
   await client.detach();
 });

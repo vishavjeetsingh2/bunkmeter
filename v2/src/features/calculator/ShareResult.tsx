@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks';
 import type { AttendanceInput } from '../../domain/attendance';
 import { createAttendanceShare } from './sharing';
 import { nativeServices } from '../../platform';
+import Icon from '../../components/Icon';
 
 export default function ShareResult({ input, path }: { input: AttendanceInput; path: string }) {
   const [status, setStatus] = useState('');
@@ -30,7 +31,7 @@ export default function ShareResult({ input, path }: { input: AttendanceInput; p
     } finally { setBusy(false); }
   }
   return <aside class="share-result" aria-label="Share attendance result">
-    <div><button type="button" class="text-button" disabled={busy} onClick={() => { void send(); }}>Share Result <span aria-hidden="true">↗</span></button><button type="button" class="text-button" disabled={busy} onClick={() => { void copy(); }}>Copy result link</button></div>
+    <div><button type="button" class="text-button share-primary" disabled={busy} onClick={() => { void send(); }}><Icon name="share" size={17}/> Share Result</button><button type="button" class="text-button share-secondary" disabled={busy} onClick={() => { void copy(); }}><Icon name="link" size={17}/>Copy result link</button></div>
     <p class="share-note">The link includes these counts, target and any remaining classes.</p>
     <p class="share-status" role="status">{status}</p>
     {manual && <><label for="share-copy" class="sr-only">Result and link to copy</label><textarea id="share-copy" readOnly value={copyText} onFocus={event => event.currentTarget.select()} rows={4} /></>}

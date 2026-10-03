@@ -12,6 +12,10 @@ export type Workspace = { version: 1; revision: string; activeId: string | null;
 export const emptySession = (): Session => ({ fields: { ...initialFields }, events: [] });
 export const emptyWorkspace = (): Workspace => ({ version: 1, revision: '', activeId: null, quick: emptySession(), subjects: [], removed: null });
 export const currentSession = (state: Workspace): Session => state.subjects.find(subject => subject.id === state.activeId)?.session ?? state.quick;
+export function appendClass(session: Session, kind: 'present' | 'absent', recordedAt: string): Session | null {
+  const next = applyClass(session.fields, kind);
+  return next ? { fields: next, events: [...session.events.slice(-(MAX_HISTORY - 1)), { id: (session.events.at(-1)?.id ?? 0) + 1, kind, before: session.fields, recordedAt }] } : null;
+}
 const object = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const shortText = (value: unknown, limit: number): value is string => typeof value === 'string' && value.length <= limit;
 
