@@ -94,7 +94,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
       if (!updated) return current;
       return { fields: updated, events: [...current.events.slice(-(MAX_HISTORY - 1)), { id: (current.events.at(-1)?.id ?? 0) + 1, kind, before: current.fields, recordedAt: new Date().toISOString() }] };
     });
-    setFeedback(kind === 'present' ? 'Present. One class forward.' : 'Absent. The balance is updated.');
+    setFeedback(kind === 'present' ? 'Present recorded. +1 attended · +1 held.' : 'Absent recorded. +1 held · attended unchanged.');
   }
   function undo() {
     setDirection('undo'); setPreview(null); setPreviewCount(1);
@@ -124,17 +124,18 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     <div class="calculator-workspace" id="calculator" ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
         <SubjectPicker saved={saved} onSwitch={switchSubject} />
-        {parsed.valid && result && <div class="mobile-answer"><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
+        {parsed.valid && result && <div class="mobile-answer" data-tone={resultTone(parsed.value, result)}><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
         <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" disabled={!saved.ready} onClick={reset}>{saved.state.activeId ? 'New calculation' : 'Reset'} <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
+        {!parsed.valid && !hasInvalid && <div class="quick-start"><span>Enter two counts. Your answer updates instantly.</span><button class="example-button" disabled={!saved.ready} type="button" onClick={() => { setDirection('present'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { attended: '90', total: '110', target: defaultTarget, remaining: '' }, events: [] }); setFeedback('Example loaded. Try a class.'); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button></div>}
         {presetNotice && <p class="field-help" role="status">{presetNotice}</p>}
         <div class="count-fields">
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
         </div>
         <div class="class-actions" role="group" aria-label="Record a class for the selected subject">
-          <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon" aria-hidden="true">＋</span><span>Present<small>Attended this class</small></span></button>
-          <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon" aria-hidden="true">−</span><span>Absent<small>Missed this class</small></span></button>
+          <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon" aria-hidden="true">✓</span><span>Present<small>Attended this class</small></span></button>
+          <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon" aria-hidden="true">×</span><span>Absent<small>Missed this class</small></span></button>
         </div>
         <div class="session-row"><span class="session-feedback" role="status">{canRecord || session.events.length ? feedback : parsed.valid && parsed.value.remaining === 0 ? 'Term complete. Update remaining classes to continue.' : parsed.valid && parsed.value.total === MAX_CLASSES ? 'Class limit reached.' : 'Enter valid counts to update a class.'}</span><button type="button" class="undo-button" disabled={!saved.ready || !session.events.length} onClick={undo}>Undo <span aria-hidden="true">↶</span></button></div>
         <div class="target-section">
@@ -164,7 +165,6 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
         <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label">{hasInvalid ? 'Check your inputs' : 'Ready when you are'}</span></div>
         <h2 id="empty-heading">{hasInvalid ? 'Let’s get the counts right.' : <>Less guessing. <br />More perspective.</>}</h2>
         <p>{hasInvalid ? 'Correct the highlighted fields to get an accurate answer. We won’t guess or round your class counts.' : 'Enter your attendance to see what you can miss—or what you need to attend.'}</p>
-        {!hasInvalid && <button class="example-button" disabled={!saved.ready} type="button" onClick={() => { setDirection('present'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { attended: '90', total: '110', target: defaultTarget, remaining: '' }, events: [] }); setFeedback('Example loaded. Try a class.'); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button>}
       </section>}
     </div>
     <p class="sr-only" role="status" aria-atomic="true">{announcement}</p>

@@ -7,15 +7,22 @@ import type { useSavedAttendance } from './useSavedAttendance';
 import './saved.css';
 
 type Saved = ReturnType<typeof useSavedAttendance>;
+function openSubjectEditor() {
+  const details = document.getElementById('subject-editor') as HTMLDetailsElement | null;
+  if (details) details.open = true;
+  document.getElementById('subject-name')?.focus();
+}
 export function SubjectPicker({ saved, onSwitch }: { saved: Saved; onSwitch: () => void }) {
-  return <div class="subject-picker">
+  const failure = saved.status === 'conflict' || saved.status === 'unavailable';
+  const label = failure ? 'Not saved · see backup options' : saved.status === 'loading' ? 'Loading your records…' : saved.status === 'saving' ? 'Saving…' : saved.status === 'temporary' ? 'Separate calculation · not saved' : saved.status === 'saved' ? 'Saved on this device' : 'Auto-saves on this device';
+  return <><div class="subject-picker">
     <label for="saved-subject" class="sr-only">Choose subject</label>
     <select id="saved-subject" disabled={!saved.ready} value={saved.state.activeId ?? ''} onChange={event => { const id = event.currentTarget.value || null; saved.change(state => ({ ...state, activeId: id })); onSwitch(); }}>
       <option value="">Quick calculation</option>
       {saved.state.subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.name}</option>)}
     </select>
-    <a href="#saved-tools">{saved.state.activeId ? 'Manage' : 'Save subject'} <span aria-hidden="true">↓</span></a>
-  </div>;
+    <a href="#subject-editor" onClick={event => { event.preventDefault(); openSubjectEditor(); }}>{saved.state.activeId ? 'Manage' : 'Save subject'} <span aria-hidden="true">↓</span></a>
+  </div><a class={`inline-save-status ${failure ? 'inline-save-status--error' : ''}`} href="#saved-tools"><span aria-hidden="true">{failure ? '!' : saved.status === 'saved' ? '✓' : '·'}</span>{label}</a></>;
 }
 function download(text: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -62,12 +69,13 @@ export default function SavedControls({ saved, onSwitch }: { saved: Saved; onSwi
     </p>
     <p class="storage-explainer">No account needed. Use the same browser to return. Clearing site data or using private browsing can remove saved records. <a href="/privacy-policy">Storage & privacy</a></p>
     {state.subjects.length > 1 && <details class="saved-details"><summary>Your subjects at a glance<span aria-hidden="true">+</span></summary><ul class="subject-overview">{state.subjects.map(subject => { const parsed = parseAttendance(subject.session.fields); const result = parsed.valid ? calculateAttendance(parsed.value) : null; return <li key={subject.id}><button type="button" onClick={() => { change(value => ({ ...value, activeId: subject.id })); onSwitch(); }}><strong>{subject.name}</strong><span>{parsed.valid && result ? resultMessage(parsed.value, result) : 'Check the saved counts'}</span></button></li>; })}</ul></details>}
-    <details class="saved-details">
+    <details class="saved-details" id="subject-editor">
       <summary>{active ? `Manage ${active.name}` : 'Save as a subject'}<span aria-hidden="true">+</span></summary>
       <div class="saved-content">
         <label for="subject-name">{active ? 'New subject name' : 'Subject name'}</label>
         <div class="subject-name-row"><input id="subject-name" type="text" maxLength={50} value={name} placeholder={active?.name ?? 'e.g. Physics'} onInput={event => setName(event.currentTarget.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); saveSubject(); } }} /><button type="button" disabled={!ready} onClick={saveSubject}>{active ? 'Rename' : 'Save subject'}</button></div>
         <p>Each subject keeps its own counts, target and last 50 dated class actions. Editing counts starts a new Undo history.</p>
+        <a class="return-to-calculator" href="#calculator" onClick={event => { event.preventDefault(); document.getElementById('saved-subject')?.focus(); }}>Back to calculator <span aria-hidden="true">↑</span></a>
         {active && <button class="subtle-button" type="button" onClick={() => setRemoving(true)}>Remove this subject</button>}
         {active && removing && <div class="remove-confirm"><p>Remove {active.name}? You can restore the last removed subject below.{state.removed && <> This replaces the recovery copy of {state.removed.name}; export a backup first if you need to keep it.</>}</p><button type="button" onClick={() => { change(value => ({ ...value, subjects: value.subjects.filter(s => s.id !== active.id), removed: active, activeId: null })); setRemoving(false); onSwitch(); setNotice('Subject removed. Restore is available below.'); }}>Confirm removal</button><button type="button" onClick={() => setRemoving(false)}>Keep subject</button></div>}
       </div>
