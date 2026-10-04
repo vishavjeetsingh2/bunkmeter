@@ -130,7 +130,7 @@ test('opening shared links and university presets never overwrites a saved subje
   await expect(page.getByLabel('Required attendance', { exact: true })).toHaveValue('2/3');
   await page.getByLabel('Classes held', { exact: true }).fill('3');
   await page.getByLabel('You attended', { exact: true }).fill('2');
-  await expect(page.locator('.status-label')).toContainText('Exactly at target');
+  await expect(page.locator('.status-label')).toContainText('No skip buffer');
   await expect(page.locator('.decision-number')).toHaveText('0');
   await nameSubject(page, 'DU course');
   await page.goto('/');

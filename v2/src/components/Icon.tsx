@@ -1,4 +1,6 @@
 const paths = {
+  warning: 'M12 3 2 21h20L12 3z M12 9v5 M12 17h.01',
+  recovery: 'M4 18h5v-5h5V8h6 M15 3l5 5-5 5',
   subjects: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
   calculator: 'M5 2h14v20H5z M8 6h8 M8 11h1 M15 11h1 M8 15h1 M15 15h1 M8 19h1 M15 19h1',
   history: 'M3 3v6h6 M3.6 9a9 9 0 1 1 .4 7 M12 7v5l3 2',

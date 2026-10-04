@@ -13,6 +13,8 @@ import SavedControls, { SubjectPicker, openSubjectEditor } from '../saved/SavedC
 import SubjectDashboard from '../saved/SubjectDashboard';
 import Icon from '../../components/Icon';
 import { steppedCount } from './count-step';
+import { attendanceStatus } from './presentation';
+import NumberReadout from './NumberReadout';
 import './calculator.css';
 import '../../styles/product.css';
 
@@ -37,6 +39,9 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
   const totalRef = useRef<HTMLInputElement>(null);
   const parsed = parseAttendance(fields);
   const result = parsed.valid ? calculateAttendance(parsed.value) : null;
+  const status = parsed.valid && result ? attendanceStatus(parsed.value, result) : null;
+  const nextRun = parsed.valid && parsed.value.remaining !== 0 && parsed.value.targetBasisPoints > 0 && result && ['above', 'at-target', 'recovery'].includes(result.state)
+    ? result.state === 'recovery' ? result.mustAttend : result.canMiss : null;
   const hasInvalid = !parsed.valid && Object.values(parsed.issues).some(issue => issue.kind === 'invalid');
   const message = parsed.valid && result ? resultMessage(parsed.value, result) : hasInvalid ? 'Check the highlighted fields. No result calculated.' : 'Enter classes held and attended to see your result.';
   const canRecord = saved.ready && parsed.valid && parsed.value.total < MAX_CLASSES && parsed.value.remaining !== 0;
@@ -58,7 +63,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     preview: activePreview,
     previewCount: runLength,
   };
-  useChoreography(workspace, `${fields.attended}|${fields.total}|${fields.target}|${fields.remaining}|${activePreview}|${runLength}|${session.events.length}`, direction);
+  useChoreography(workspace, `${saved.state.activeId}|${fields.attended}|${fields.total}|${fields.target}|${fields.remaining}|${activePreview}|${runLength}|${session.events.length}`, direction);
 
   useEffect(() => {
     const preset = readAttendancePreset(window.location.search, initial);
@@ -145,15 +150,17 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     <SubjectDashboard saved={saved} onRecord={recordSubject} onUndo={undoSubject} onOpen={id => { saved.change(state => ({ ...state, activeId: id })); switchSubject(); document.getElementById('saved-subject')?.focus(); }} onAdd={() => { switchSubject(); saved.startTemporary({ fields: { ...initial }, events: [] }); totalRef.current?.focus(); }} />
     <div class="calculator-workspace" id="calculator" data-native={appMode} ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
-        <SubjectPicker saved={saved} onSwitch={switchSubject} />
-        {parsed.valid && result && <div class="mobile-status" data-tone={resultTone(parsed.value, result)}><strong>{result.percentage ?? "—"}<small>{result.percentage !== null ? "%" : ""}</small></strong><span>{result.state === "empty" ? "No classes yet" : result.state === "recovery" ? "Recovery needed" : result.state === "unreachable" || result.state === "perfect-unreachable" ? "Target out of reach" : result.canMiss === 0n ? "No skip buffer" : parsed.value.targetBasisPoints === 0 ? "No minimum" : "On track"}</span></div>}
+        <header class="subject-context">
+          <SubjectPicker saved={saved} onSwitch={switchSubject} />
+          {parsed.valid && result && status && <div class="mobile-status" data-tone={resultTone(parsed.value, result)}><strong><NumberReadout value={result.percentage ?? '—'}/><small>{result.percentage !== null ? '%' : ''}</small></strong><span><Icon name={status.icon} size={13}/>{status.label}</span></div>}
+        </header>
         <div class="class-actions" role="group" aria-label="Record a class for the selected subject">
           <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon"><Icon name="check" size={26}/></span><span>Present<small>Attended this class</small></span></button>
           <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon"><Icon name="close" size={26}/></span><span>Absent<small>Missed this class</small></span></button>
         </div>
         <div class="session-row"><span class="session-feedback" role="status">{canRecord || session.events.length ? feedback : parsed.valid && parsed.value.remaining === 0 ? 'Term complete. Update remaining classes to continue.' : parsed.valid && parsed.value.total === MAX_CLASSES ? 'Class limit reached.' : 'Enter valid counts to update a class.'}</span><button type="button" class="undo-button" disabled={!saved.ready || !session.events.length} onClick={undo}>Undo <span aria-hidden="true">↶</span></button></div>
         {changeReadout && <div class="class-change" data-kind={changeReadout.kind} role="status" aria-atomic="true"><span>{changeReadout.kind === 'present' ? '✓ Present' : '× Absent'}</span><strong>{changeReadout.before}% <span aria-hidden="true">→</span><span class="sr-only">to</span> {changeReadout.after}%</strong></div>}
-        {parsed.valid && result && <div class="mobile-answer" data-tone={resultTone(parsed.value, result)}><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
+        {parsed.valid && result && <div class="mobile-answer" data-tone={resultTone(parsed.value, result)}><span>Your next move · {targetLabel(parsed.value)}% target</span>{nextRun !== null ? <><div class="mobile-next-metric" aria-hidden="true"><b><NumberReadout value={nextRun.toLocaleString('en-IN')}/></b><span>{result.state === 'recovery' ? 'classes to attend in a row' : 'consecutive classes you can miss'}</span></div><strong class="sr-only">{resultMessage(parsed.value, result)}</strong></> : <strong>{resultMessage(parsed.value, result)}</strong>}<a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
 
         <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" disabled={!saved.ready} onClick={reset}>{saved.state.activeId ? 'New calculation' : 'Reset'} <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
@@ -183,7 +190,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
         <div class={`class-ribbon ${activePreview ? 'class-ribbon--future' : ''}`}>
           <div class="ribbon-label"><span>{activePreview ? 'A possible next chapter' : 'Recent classes · last 12'}</span><span>{activePreview ? `${runLength} ahead` : `${Math.min(12, session.events.length)} shown`}</span></div>
           <div class="class-track" role="group" aria-label={activePreview ? 'Previewed future classes' : 'Recent session class events'}>
-            {activePreview ? Array.from({ length: runLength }, (_, i) => <span class={`event-tile event-tile--${activePreview} event-tile--future`} key={`future-${i}`} style={{ '--tile-order': i }}><span aria-hidden="true">{activePreview === 'present' ? '+' : '−'}</span><small>{i + 1}</small></span>) : session.events.length ? session.events.slice(-12).map((event, index) => <span key={event.id} role="img" class={`event-tile event-tile--${event.kind}`} style={{ '--tile-order': index }} aria-label={`${event.kind}, class ${Number(event.before.total) + 1}`}><span aria-hidden="true">{event.kind === 'present' ? '+' : '−'}</span><small>{Number(event.before.total) + 1}</small></span>) : <><span class="event-tile event-tile--empty" aria-hidden="true">＋</span><span class="ribbon-empty">Each class makes a difference.<br/>Mark one to see it here.</span></>}
+            {activePreview ? Array.from({ length: runLength }, (_, i) => <span class={`event-tile event-tile--${activePreview} event-tile--future`} key={`future-${i}`} style={{ '--tile-order': i }}><span aria-hidden="true">{activePreview === 'present' ? '✓' : '×'}</span><small>{i + 1}</small></span>) : session.events.length ? session.events.slice(-12).map((event, index) => <span key={event.id} role="img" class={`event-tile event-tile--${event.kind}`} style={{ '--tile-order': index }} aria-label={`${event.kind}, class ${Number(event.before.total) + 1}`} title={`${event.kind === 'present' ? '✓ Present' : '× Absent'} · Class ${Number(event.before.total) + 1}`}><span aria-hidden="true">{event.kind === 'present' ? '✓' : '×'}</span><small>{Number(event.before.total) + 1}</small></span>) : <><Icon name="history" size={18}/><span class="ribbon-empty">Mark a class to start your history.</span></>}
             {undoGhost && !activePreview && <span class={`event-tile event-tile--${undoGhost.kind} event-tile--undo`} aria-hidden="true" key={`undo-${undoGhost.id}`}>{undoGhost.kind === 'present' ? '+' : '−'}</span>}
           </div>
         </div>

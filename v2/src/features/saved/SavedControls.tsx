@@ -15,7 +15,7 @@ export function SubjectPicker({ saved, onSwitch }: { saved: Saved; onSwitch: () 
   const failure = saved.status === 'conflict' || saved.status === 'unavailable';
   const label = failure ? 'Not saved · see backup options' : saved.status === 'loading' ? 'Loading your records…' : saved.status === 'saving' ? 'Saving…' : saved.status === 'temporary' ? 'Separate calculation · not saved' : saved.status === 'saved' ? 'Saved on this device' : 'Auto-saves on this device';
   return <><div class="subject-picker">
-    <label for="saved-subject" class="sr-only">Choose subject</label>
+    <span class="subject-emblem"><Icon name="subjects" size={22}/></span><label for="saved-subject" class="sr-only">Choose subject</label>
     <select id="saved-subject" disabled={!saved.ready} value={saved.state.activeId ?? ''} onChange={event => { const id = event.currentTarget.value || null; saved.change(state => ({ ...state, activeId: id })); onSwitch(); }}>
       <option value="">Quick calculation</option>
       {saved.state.subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.name}</option>)}

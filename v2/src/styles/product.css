@@ -34,7 +34,7 @@
 .bunkmeter-product .input-guidance{font-size:11px;color:var(--muted);margin-top:6px}.bunkmeter-product .input-guidance summary{cursor:pointer;min-height:36px;display:flex;align-items:center;gap:6px}.bunkmeter-product .input-guidance summary::after{content:'+';margin-left:auto}.bunkmeter-product .input-guidance[open] summary::after{content:'−'}.bunkmeter-product .input-guidance .field-help{margin:0 0 10px}
 .bunkmeter-product .calculator-inputs .remaining-details{border:1px solid var(--line);border-radius:var(--control-radius);margin-top:16px;padding:0 14px}.bunkmeter-product .calculator-inputs .remaining-details summary{gap:10px;min-height:68px;padding:12px 0;font-weight:500}.bunkmeter-product .calculator-inputs .remaining-details summary>span:first-of-type{flex:1}.bunkmeter-product .calculator-inputs .remaining-details small{display:block;margin:0;font-size:10px}.bunkmeter-product .calculator-inputs .remaining-content{padding-bottom:12px}.bunkmeter-product .calculator-inputs .form-bottom{margin-top:15px;font-size:10px}.bunkmeter-product .calculator-inputs .save-subject-cta{border-radius:var(--control-radius);margin:12px 0;background:var(--green-soft);border-color:var(--line)}
 .bunkmeter-product .calculator-workspace .result{border:1px solid var(--line);border-radius:var(--card-radius);padding:22px 24px;box-shadow:var(--card-shadow)}.bunkmeter-product .calculator-workspace .result-top{border:0;padding:0}.bunkmeter-product .result .status-label{background:var(--paper);border-radius:var(--pill-radius);padding:4px 8px;font-size:10px}.bunkmeter-product .result .decision{margin-top:16px;column-gap:18px}.bunkmeter-product .result .decision-number{font-size:72px}.bunkmeter-product .result .decision-number--long{font-size:clamp(25px,3.2vw,40px)}.bunkmeter-product .result .decision h2{font-size:14px}.bunkmeter-product .result .decision-unit{font-size:14px;font-weight:500}.bunkmeter-product .result .attendance-summary{margin-top:12px}.bunkmeter-product .result .attendance-summary strong{font-size:15px}
-.bunkmeter-product .recovery-visual{margin-top:18px}.bunkmeter-product .recovery-tiles{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 14px}.bunkmeter-product .recovery-tiles>span{display:grid;place-items:center;width:20px;height:20px;border-radius:5px;background:var(--success);color:white}.bunkmeter-product .recovery-tiles>.spare-tile{background:var(--amber-soft);color:var(--amber)}.bunkmeter-product .recovery-tiles small{font-size:10px;color:var(--muted);margin-left:3px}
+.bunkmeter-product .recovery-visual{margin-top:18px}
 .bunkmeter-product .calculation-flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-radius:var(--control-radius);background:var(--surface-quiet);padding:10px;font-size:12px;font-variant-numeric:tabular-nums}.bunkmeter-product .calculation-flow>span{padding:4px 7px;border-radius:var(--pill-radius);background:var(--surface);overflow-wrap:anywhere;min-width:0;max-width:100%}.bunkmeter-product .calculation-flow>.flow-action{background:var(--green-soft);color:var(--green)}.bunkmeter-product .calculation-flow strong{margin-left:auto;font-size:12px}.bunkmeter-product .calculation-flow>.ui-icon{color:var(--muted)}
 .bunkmeter-product .result-explanation{margin-top:10px;font-size:11px;color:var(--muted)}.bunkmeter-product .result-explanation summary{display:flex;justify-content:space-between;align-items:center;min-height:40px;cursor:pointer;list-style:none}.bunkmeter-product .result-explanation[open] summary>span{transform:rotate(45deg)}.bunkmeter-product .result-explanation .decision-explanation{margin-top:0}.bunkmeter-product .result-explanation .calculation-proof{margin-bottom:8px}
 .bunkmeter-product .result .next-class{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.bunkmeter-product .result .next-class button{border-radius:var(--control-radius);background:var(--paper);border-color:var(--line);padding:12px 10px;min-height:76px}.bunkmeter-product .result .next-class button[aria-pressed=true]{background:var(--green-soft);box-shadow:none;border-color:#92afa0}.bunkmeter-product .result .next-class strong{font-size:20px}.bunkmeter-product .result .future-run{border-color:var(--line);border-radius:var(--control-radius);padding:16px}.bunkmeter-product .result .future-outcome{background:var(--green-soft);padding:10px 12px;border-radius:12px;margin-top:10px}.bunkmeter-product .result .future-outcome strong{font-size:21px;color:var(--green)}
@@ -54,3 +54,121 @@
 @media(prefers-reduced-motion:reduce){.bunkmeter-product .subject-meter>span,.bunkmeter-product .class-change,.bunkmeter-product .class-action,.bunkmeter-product .product-nav a,.bunkmeter-product .step-button{transition:none!important;animation:none!important}.bunkmeter-product .class-action:active,.bunkmeter-product .step-button:active{transform:none}}
 @media(prefers-reduced-motion:no-preference){.bunkmeter-product .subject-meter>span{transition:width 220ms ease-out}.bunkmeter-product .class-change{animation:feedback-arrive 180ms ease-out}.bunkmeter-product .subject-log:active{transform:scale(.97)}@keyframes feedback-arrive{from{opacity:.5;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}}
 .bunkmeter-product .calculator-inputs .subject-picker select{appearance:none;overflow:hidden;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='m3 5 4 4 4-4' fill='none' stroke='%23173a40' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* Final polish: page → warm cards → precise, raised controls. */
+.bunkmeter-product {
+  --card-shadow:0 2px 4px #173a4003,0 12px 32px -22px #173a4029;
+  --control-shadow:0 1px 2px #173a4010,0 4px 9px -6px #173a402b;
+  --soft-line:#173a4014;
+}
+.bunkmeter-product .calculator-workspace .calculator-inputs,
+.bunkmeter-product .calculator-workspace .result,
+.bunkmeter-product .subject-cards .subject-card,
+.bunkmeter-product .activity-card,.bunkmeter-product .backup-card {
+  border-color:var(--soft-line);box-shadow:var(--card-shadow);
+}
+.bunkmeter-product .subject-context{padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--soft-line)}
+.bunkmeter-product .calculator-inputs .subject-picker{gap:8px;margin:0}
+.bunkmeter-product .subject-emblem{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border-radius:13px;background:var(--ink);color:var(--surface);box-shadow:var(--control-shadow)}
+.bunkmeter-product .calculator-inputs .subject-picker select{border:0;border-radius:10px;background-color:transparent;font-size:19px;letter-spacing:-.4px;padding-left:4px;min-height:46px;cursor:pointer}
+.bunkmeter-product .calculator-inputs .subject-picker select:hover{background-color:var(--surface-quiet)}
+.bunkmeter-product .calculator-inputs .subject-picker a{font-size:10px;min-height:40px;display:flex;align-items:center}
+.bunkmeter-product .calculator-inputs .inline-save-status{justify-content:flex-start;min-height:28px;margin:0 0 0 52px;font-size:10px;gap:4px}
+.bunkmeter-product .subject-context .mobile-status{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.bunkmeter-product .subject-context .mobile-status>strong{font-size:32px;font-weight:600;line-height:1.15;letter-spacing:-1.4px;font-variant-numeric:tabular-nums}
+.bunkmeter-product .subject-context .mobile-status small{font-size:17px;margin-left:2px;letter-spacing:-.3px;color:var(--muted)}
+.bunkmeter-product .subject-context .mobile-status>span,
+.bunkmeter-product .subject-state,.bunkmeter-product .status-label{display:inline-flex;align-items:center;gap:5px;line-height:1.4}
+.bunkmeter-product .subject-context .mobile-status>span{font-size:10px;padding:5px 8px;border-radius:var(--pill-radius);color:var(--green);background:var(--green-soft)}
+.bunkmeter-product .subject-context .mobile-status[data-tone=caution]>span{color:var(--amber);background:var(--amber-soft)}
+.bunkmeter-product .subject-context .mobile-status[data-tone=danger]>span{color:var(--red);background:var(--red-soft)}
+.bunkmeter-product .subject-context .mobile-status[data-tone=neutral]>span{color:var(--muted);background:var(--surface-quiet)}
+.bunkmeter-product .calculator-inputs .class-actions{margin-top:0}
+.bunkmeter-product .calculator-inputs .class-action{min-height:106px;border-radius:20px;box-shadow:inset 0 1px #ffffff80,0 2px 3px #173a4005}
+.bunkmeter-product .calculator-inputs .class-action:not(:disabled):active{transform:translateY(2px);border-bottom-width:1px;box-shadow:inset 0 2px 5px #173a4010}
+.bunkmeter-product .calculator-inputs .session-row{min-height:42px}
+.bunkmeter-product .calculator-inputs .form-heading{border-top:0;margin-top:8px;padding-top:8px}
+.bunkmeter-product .calculator-inputs .form-heading h2{font-size:12px;color:var(--muted)}
+.bunkmeter-product .calculator-inputs .count-fields{gap:8px;margin-top:12px}
+.bunkmeter-product .calculator-inputs .field:has(.count-stepper){border:0;background:var(--surface-quiet);padding:10px 8px 4px;border-radius:16px}
+.bunkmeter-product .calculator-inputs .count-stepper input{font-size:31px;font-weight:600;letter-spacing:-1px}
+.bunkmeter-product .count-stepper .step-button:not(:disabled):hover{background:var(--surface);box-shadow:var(--control-shadow);color:var(--ink)}
+.bunkmeter-product .calculator-inputs .target-section{border-top:0;margin-top:16px;padding-top:8px}
+.bunkmeter-product .calculator-inputs .percent-input{border-color:var(--soft-line);background:var(--surface);box-shadow:var(--control-shadow)}
+.bunkmeter-product .calculator-inputs .percent-input input{font-size:20px;font-weight:600;letter-spacing:-.7px}
+.bunkmeter-product .calculator-inputs .target-presets button[aria-pressed=true]{background:var(--ink);color:var(--surface);box-shadow:var(--control-shadow)}
+.bunkmeter-product .calculator-inputs .remaining-details{border-color:var(--soft-line);background:var(--paper);margin-top:10px}
+.bunkmeter-product .calculator-inputs .remaining-details summary{min-height:58px}
+.bunkmeter-product .calculator-inputs .remaining-details summary>.ui-icon{color:var(--green)}
+.bunkmeter-product .calculator-inputs .form-bottom{margin-top:10px}
+.bunkmeter-product .result .decision{margin-top:20px;column-gap:22px}
+.bunkmeter-product .result .decision-number{font-size:80px;font-weight:600;letter-spacing:-.07em}
+.bunkmeter-product .result .decision-number--long{font-size:clamp(25px,3.2vw,40px)}
+.bunkmeter-product .result .decision h2{font-size:12px;color:var(--muted)}
+.bunkmeter-product .result .decision-unit{font-size:15px}
+.bunkmeter-product .result .status-label{background:var(--paper);color:var(--tone)}
+.bunkmeter-product .result .attendance-summary{border-bottom:1px solid var(--soft-line);padding-bottom:12px}
+.bunkmeter-product .result .attendance-summary strong{font-size:19px;font-weight:600}
+.bunkmeter-product .recovery-path{display:flex;list-style:none;margin:0 0 16px;padding:0;isolation:isolate;font-variant-numeric:tabular-nums}
+.bunkmeter-product .recovery-path li{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;padding:0 3px;overflow-wrap:anywhere}
+.bunkmeter-product .recovery-path li+li::before{content:'';position:absolute;top:11px;right:50%;width:100%;height:2px;background:var(--line);z-index:-1}
+.bunkmeter-product .recovery-path .path-node{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--green-soft);color:var(--green);border:4px solid var(--surface);box-sizing:content-box;margin-top:-4px}
+.bunkmeter-product .recovery-path .path-finish .path-node{background:var(--ink);color:var(--surface)}
+.bunkmeter-product .recovery-path strong{font-size:19px;line-height:1.2;letter-spacing:-.6px;max-width:100%}
+.bunkmeter-product .recovery-path small{font-size:9px;color:var(--muted);line-height:1.5}
+.bunkmeter-product .recovery-path .path-start strong{font-size:15px;line-height:1.52;color:var(--muted)}
+.bunkmeter-product .calculation-flow{background:var(--paper);padding:9px;font-size:11px}
+.bunkmeter-product .calculation-flow>span{background:transparent;padding:3px}
+.bunkmeter-product .calculation-flow>.flow-action{padding:5px 8px}
+.bunkmeter-product .result .next-class button{border-color:transparent;background:var(--surface-quiet);box-shadow:none}
+.bunkmeter-product .result .next-class button[aria-pressed=true]{border-color:#9bb7ad;background:var(--green-soft);box-shadow:var(--control-shadow)}
+.bunkmeter-product .result .future-run{border:0;background:var(--paper)}
+.bunkmeter-product .subject-cards .subject-card[data-active=true]{border-color:#91aba0;box-shadow:inset 0 3px var(--green),var(--card-shadow)}
+.bunkmeter-product .subject-state{font-size:9px}
+.bunkmeter-product .class-ribbon{padding-bottom:4px}
+.bunkmeter-product .class-track{gap:5px;color:#c0d1c6;min-height:36px}
+.bunkmeter-product .class-track .event-tile{border:0;border-radius:8px;transform:none;flex-basis:32px;height:34px;font-size:15px;box-shadow:inset 0 1px #ffffff30}
+.bunkmeter-product .class-track .event-tile--future{border:1px dashed #c8cbaa;background:transparent;box-shadow:none}
+.bunkmeter-product .class-track .event-tile small{font-size:8px}
+.bunkmeter-product .class-track .ribbon-empty{margin-left:3px;font-size:11px}
+.bunkmeter-product .saved-tools>#subject-editor{border-color:var(--soft-line)}
+.bunkmeter-product .saved-tools .backup-actions>button{border-color:transparent;box-shadow:var(--control-shadow)}
+.bunkmeter-product .mobile-next-metric{display:flex;align-items:center;gap:12px;margin-top:4px}
+.bunkmeter-product .mobile-next-metric>b{font-size:40px;font-weight:600;line-height:1.2;letter-spacing:-1.5px;overflow-wrap:anywhere;min-width:0}
+.bunkmeter-product .mobile-next-metric>span{font-size:12px;max-width:18ch;line-height:1.4}
+.bunkmeter-product .mobile-next-metric:has(.number-window:nth-child(8)){flex-wrap:wrap}
+@media(min-width:701px) and (max-width:1000px){
+  .bunkmeter-product .calculator-inputs .subject-picker{flex-wrap:wrap}
+  .bunkmeter-product .calculator-inputs .subject-picker a{margin-left:48px;min-height:26px;flex-basis:100%}
+  .bunkmeter-product .calculator-inputs .target-presets button{min-width:0;font-size:10px}
+}
+@media(min-width:1100px){.bunkmeter-product .calculator-workspace{column-gap:22px;grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr)}}
+@media(max-width:700px){
+  .bunkmeter-product .subject-context{padding-bottom:0;border:0;margin-bottom:14px}
+  .bunkmeter-product .subject-emblem{width:34px;height:34px;border-radius:11px}
+  .bunkmeter-product .calculator-inputs .subject-picker select{font-size:17px}
+  .bunkmeter-product .calculator-inputs .inline-save-status{margin-left:46px}
+  .bunkmeter-product .subject-context .mobile-status{margin-top:8px}
+  .bunkmeter-product .subject-context .mobile-status>strong{font-size:36px}
+  .bunkmeter-product .calculator-inputs .class-action{min-height:88px}
+  .bunkmeter-product .calculator-inputs .form-heading{margin-top:4px;padding-top:0}
+  .bunkmeter-product .calculator-inputs .mobile-answer{padding:10px 12px 0;margin:4px 0 14px;box-shadow:inset 3px 0 var(--green)}
+  .bunkmeter-product .calculator-inputs .mobile-answer[data-tone=caution]{box-shadow:inset 3px 0 var(--amber)}
+  .bunkmeter-product .calculator-inputs .mobile-answer[data-tone=danger]{box-shadow:inset 3px 0 var(--red)}
+  .bunkmeter-product .calculator-inputs .count-stepper input{font-size:29px}
+  .bunkmeter-product .result .decision-number{font-size:70px}
+  .bunkmeter-product .result .decision-number--long{font-size:27px}
+  .bunkmeter-product .recovery-path strong{font-size:16px}
+  .bunkmeter-product .recovery-path small{font-size:8px}
+  .bunkmeter-product .class-ribbon{display:block;padding:9px 0 0}
+  .bunkmeter-product .class-ribbon .ribbon-label{display:flex;margin-bottom:7px}
+  .bunkmeter-product .class-track{gap:4px;min-height:30px}
+  .bunkmeter-product .class-track .event-tile{height:30px;flex-basis:26px;font-size:13px;border-radius:6px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .bunkmeter-product .class-action,.bunkmeter-product .step-button,.bunkmeter-product .subject-card,.bunkmeter-product .next-class button{transition:background-color 160ms ease,box-shadow 160ms ease,border-color 160ms ease,transform 120ms ease}
+  /* Switch foreground/background together so selected text never loses contrast. */
+  .bunkmeter-product .calculator-inputs .target-presets button{transition:box-shadow 160ms ease,transform 120ms ease}
+  .bunkmeter-product .calculator-workspace[data-direction=present] .class-change{animation:feedback-arrive 180ms ease-out}
+}
+@media(prefers-reduced-motion:reduce){.bunkmeter-product .calculator-inputs .class-action:not(:disabled):active{transform:none}}

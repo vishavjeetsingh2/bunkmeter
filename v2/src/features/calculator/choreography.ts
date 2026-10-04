@@ -23,7 +23,7 @@ export function useChoreography(root: RefObject<HTMLElement>, signature: string,
             { transform: `translate3d(0,${offset}px,0) rotateX(${reverse ? -8 : 8}deg)` },
             { transform: 'translate3d(0,-1px,0) rotateX(0)', offset: .72 },
             { transform: 'translate3d(0,0,0)' },
-          ], { duration: entrance ? 800 : 460, delay: entrance ? group * 65 : Math.min(index * 18 + group * 12, 110), easing: 'cubic-bezier(.16,1,.3,1)' }));
+          ], { duration: entrance ? 800 : 240, delay: entrance ? group * 65 : Math.min(index * 8 + group * 6, 45), easing: 'cubic-bezier(.16,1,.3,1)' }));
         });
       }
       const light = host.querySelector<HTMLElement>('.instrument-light');
