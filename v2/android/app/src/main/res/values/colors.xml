@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#173a40</color>
+    <color name="colorPrimaryDark">#173a40</color>
+    <color name="colorAccent">#175b60</color>
+    <color name="bunkmeter_paper">#f5f4ee</color>
+</resources>

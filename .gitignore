@@ -4,6 +4,17 @@ v2/.astro/
 v2/coverage/
 v2/test-results/
 v2/playwright-report/
+v2/dist-mobile/
+v2/android/.gradle/
+v2/android/.idea/
+v2/android/**/build/
+v2/android/local.properties
+v2/android/app/src/main/assets/public/
+v2/android/app/src/main/assets/capacitor.config.json
+v2/android/app/src/main/assets/capacitor.plugins.json
+*.jks
+*.keystore
+keystore.properties
 .env
 .env.*
 !.env.example

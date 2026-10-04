@@ -1,0 +1,58 @@
+name: Android app checks
+on:
+  push:
+    branches: [main, 'v2/**']
+    paths: ['v2/**', '.github/workflows/android.yml']
+  pull_request:
+    branches: [main]
+    paths: ['v2/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+    defaults:
+      run:
+        working-directory: v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: v2/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - run: npm run build:android
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --config playwright.mobile.config.ts
+      - run: bash android/gradlew -p android :app:assembleDebug :app:bundleRelease :app:lintDebug :app:assembleDebugAndroidTest --console=plain
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: adb shell svc wifi disable && adb shell svc data disable && cd v2 && bash android/gradlew -p android :app:connectedDebugAndroidTest --console=plain
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bunkmeter-android-verification
+          path: |
+            v2/android/app/build/outputs/apk/debug/*.apk
+            v2/android/app/build/outputs/bundle/release/*.aab
+            v2/android/app/build/reports/
+          retention-days: 14

@@ -26,6 +26,8 @@ jobs:
       - run: npm run verify
       - run: node scripts/check-release.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Mobile layout smoke test
+        run: npx playwright test --project=webkit -g 'subject controls and text guide'
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

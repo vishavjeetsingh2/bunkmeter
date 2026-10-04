@@ -108,7 +108,11 @@ test('subject controls and text guide fit mobile and have no axe violations', as
   await page.setViewportSize({ width: 320, height: 800 });
   await start(page); await nameSubject(page, 'A subject with a long name that still fits');
   await page.locator('.saved-details summary').filter({ hasText: 'New here? A 30-second guide' }).click();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const overflow = await page.evaluate(() => ({
+    width: innerWidth, scrollWidth: document.documentElement.scrollWidth, scrollX,
+    elements: [...document.querySelectorAll('body *')].filter(el => el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right + scrollX > innerWidth || el.scrollWidth > el.clientWidth + 1)).map(el => ({ tag: el.tagName, id: el.id, class: el.className, left: el.getBoundingClientRect().left, right: el.getBoundingClientRect().right, client: el.clientWidth, scroll: el.scrollWidth, overflow: getComputedStyle(el).overflowX, text: el.textContent?.slice(0,70) })),
+  }));
+  expect(overflow.scrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.width);
   const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
   expect(report.violations).toEqual([]);
 });

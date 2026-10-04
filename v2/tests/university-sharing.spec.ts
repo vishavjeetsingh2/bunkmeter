@@ -15,7 +15,7 @@ test('university pages and matching FAQ JSON-LD are present without JavaScript',
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://bunkmeter.online${route}`);
       await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://bunkmeter.online${route}`);
       await expect(page.getByLabel('Required attendance', { exact: true })).toHaveValue(university.defaultTarget);
-      await expect(page.locator('article h3')).toHaveCount(university.sections.length);
+      await expect(page.locator('article.university-guide h3')).toHaveCount(university.sections.length);
       const json = JSON.parse((await page.locator('head script[data-faq-schema]').textContent())!);
       expect(json['@type']).toBe('FAQPage');
       const details = page.locator('.explanations details');

@@ -1,4 +1,5 @@
-import { calculateAttendance, targetLabel, type AttendanceInput, type AttendanceResult } from '../../domain/attendance';
+import { calculateAttendance, targetLabel, percentage, type AttendanceInput, type AttendanceResult } from '../../domain/attendance';
+import Icon from '../../components/Icon';
 import type { InstrumentState } from '../instrument/motion';
 import NumberReadout from './NumberReadout';
 import { projectClasses } from './class-actions';
@@ -63,6 +64,10 @@ export default function Result({ input, result, preview, onPreview, previewCount
     lead = 'A fresh start'; figure = '—'; unit = 'no classes recorded';
     explanation = 'With 0 classes held, there is no attendance percentage yet. Update the counts after your first class.';
   }
+  const run = recovering ? result.mustAttend : result.canMiss;
+  const showRun = !empty && !noTarget && !finished && !unreachable && !perfect && run !== null;
+  const afterAttended = BigInt(input.attended) + (recovering && run !== null ? run : 0n);
+  const afterTotal = BigInt(input.total) + (run ?? 0n);
   return (
     <section class={`result result--${tone}`} aria-labelledby="result-title" data-testid="result">
       <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><span aria-hidden="true" />{status}</span></div>
@@ -74,10 +79,15 @@ export default function Result({ input, result, preview, onPreview, previewCount
         <h2 id="result-title">{lead}</h2>
         <p class={`decision-number ${figure.length > 10 ? 'decision-number--long' : ''}`}><NumberReadout value={figure}/></p>
         <p class="decision-unit">{unit}</p>
-        <p class="decision-explanation">{explanation}</p>
       </div>
+      {showRun && <div class="recovery-visual">
+        {run! > 0n && <div class="recovery-tiles" aria-hidden="true">{Array.from({ length: Number(run! > 20n ? 20n : run!) }, (_, i) => <span class={recovering ? 'recovery-tile' : 'spare-tile'} key={i}><Icon name={recovering ? 'check' : 'minus'} size={12}/></span>)}{run! > 20n && <small>+{number(run! - 20n)}</small>}</div>}
+        <div class="calculation-flow" aria-label={`${input.attended} of ${input.total}, ${recovering ? 'attend' : 'miss'} ${run}, gives ${afterAttended} of ${afterTotal}, ${percentage(afterAttended, afterTotal)} percent`}><span>{number(input.attended)}/{number(input.total)}</span><Icon name="arrow" size={15}/><span class="flow-action">{recovering ? '✓ Attend' : '− Miss'} {number(run!)}</span><Icon name="arrow" size={15}/><span>{number(afterAttended)}/{number(afterTotal)}</span><strong>{percentage(afterAttended, afterTotal)}%</strong></div>
+      </div>}
+      <details class="result-explanation" open={unreachable || perfect || finished || noTarget || empty}><summary>How this is calculated <span aria-hidden="true">+</span></summary><p class="decision-explanation">{explanation}</p>
       {recovering && <p class="calculation-proof">{number(input.attended)}/{number(input.total)} → attend {number(result.mustAttend!)} → {number(BigInt(input.attended) + result.mustAttend!)}/{number(BigInt(input.total) + result.mustAttend!)}. This reaches your {target}% target.</p>}
       {!recovering && !empty && !noTarget && !finished && !unreachable && !perfect && result.canMiss !== null && <p class="calculation-proof">{number(input.attended)}/{number(input.total)} → miss {number(result.canMiss)} → {number(input.attended)}/{number(BigInt(input.total) + result.canMiss)}. One more would {input.remaining !== null && result.canMiss === BigInt(input.remaining) ? 'exceed your remaining classes' : 'fall below your target'}.</p>}
+      </details>
       {!finished && !empty && maxPreview > 0 && <div class="next-preview"><div class="preview-heading"><span>A look ahead</span><span>Preview only · counts stay the same</span></div><div class="next-class" aria-label="Next class preview">
         <button type="button" aria-pressed={preview === null} onClick={() => onPreview(null)}><span>Current</span><strong>{result.percentage}%</strong></button>
         <button type="button" aria-pressed={preview === 'present'} onClick={() => onPreview('present')}><span>If you attend next {previewCount > 1 ? previewCount : ''}<span aria-hidden="true">↗</span></span><strong>{presentPercentage}%</strong></button>

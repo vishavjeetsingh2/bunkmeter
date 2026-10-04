@@ -8,13 +8,17 @@ import { applyClass, projectClasses, type ClassKind } from './class-actions';
 import { useChoreography } from './choreography';
 import { readAttendancePreset } from './sharing';
 import { useSavedAttendance } from '../saved/useSavedAttendance';
-import { MAX_HISTORY, type ClassEvent } from '../saved/model';
-import SavedControls, { SubjectPicker } from '../saved/SavedControls';
+import { appendClass, type ClassEvent } from '../saved/model';
+import SavedControls, { SubjectPicker, openSubjectEditor } from '../saved/SavedControls';
+import SubjectDashboard from '../saved/SubjectDashboard';
+import Icon from '../../components/Icon';
+import { steppedCount } from './count-step';
 import './calculator.css';
+import '../../styles/product.css';
 
 const emptyFields: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
 
-export default function Calculator({ defaultTarget = '75', presets = ['75', '80', '85'], targetHelp = 'Use your course’s requirement. Rules vary by institution.', sharePath = '/' }: { defaultTarget?: string; presets?: string[]; targetHelp?: string; sharePath?: string } = {}) {
+export default function Calculator({ defaultTarget = '75', presets = ['75', '80', '85'], targetHelp = 'Use your course’s requirement. Rules vary by institution.', sharePath = '/', appMode = false }: { defaultTarget?: string; presets?: string[]; targetHelp?: string; sharePath?: string; appMode?: boolean } = {}) {
   const initial = { ...emptyFields, target: defaultTarget };
   const saved = useSavedAttendance(initial, sharePath);
   const { session, setSession } = saved;
@@ -23,7 +27,8 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
 
   const workspace = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState('edit');
-  const [feedback, setFeedback] = useState('A class at a time.');
+  const [feedback, setFeedback] = useState('Tap after each counted class.');
+  const [changeReadout, setChangeReadout] = useState<{ before: string; after: string; kind: ClassKind } | null>(null);
   const [undoGhost, setUndoGhost] = useState<ClassEvent | null>(null);
   const [previewCount, setPreviewCount] = useState(1);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
@@ -73,11 +78,13 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
   }, [undoGhost]);
 
   function update(name: FieldName, value: string) {
+    setChangeReadout(null);
     setPresetNotice('');
     setDirection('edit'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setFeedback('Counts adjusted. A new run starts here.');
     setSession(current => ({ fields: { ...current.fields, [name]: value }, events: [] }));
   }
   function switchSubject() {
+    setChangeReadout(null);
     saved.startTemporary(null); setPresetNotice(''); setDirection('edit'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setTouched({}); setFeedback('Ready for the next class.');
   }
   function reset() {
@@ -92,11 +99,14 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     setSession(current => {
       const updated = applyClass(current.fields, kind);
       if (!updated) return current;
-      return { fields: updated, events: [...current.events.slice(-(MAX_HISTORY - 1)), { id: (current.events.at(-1)?.id ?? 0) + 1, kind, before: current.fields, recordedAt: new Date().toISOString() }] };
+      const before = parseAttendance(current.fields), after = parseAttendance(updated);
+      if (before.valid && after.valid) setChangeReadout({ before: calculateAttendance(before.value).percentage ?? '—', after: calculateAttendance(after.value).percentage ?? '—', kind });
+      return appendClass(current, kind, new Date().toISOString()) ?? current;
     });
     setFeedback(kind === 'present' ? 'Present recorded. +1 attended · +1 held.' : 'Absent recorded. +1 held · attended unchanged.');
   }
   function undo() {
+    setChangeReadout(null);
     setDirection('undo'); setPreview(null); setPreviewCount(1);
     setUndoGhost(session.events.at(-1) ?? null);
     setSession(current => {
@@ -104,6 +114,17 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
       return last ? { fields: last.before, events: current.events.slice(0, -1) } : current;
     });
     setFeedback('Last class undone. Counts restored.');
+  }
+  function recordSubject(id: string, kind: ClassKind) {
+    if (!saved.temporary && saved.state.activeId === id) { record(kind); return; }
+    saved.change(state => ({ ...state, subjects: state.subjects.map(subject => subject.id === id ? { ...subject, session: appendClass(subject.session, kind, new Date().toISOString()) ?? subject.session } : subject) }));
+  }
+  function undoSubject(id: string) {
+    if (!saved.temporary && saved.state.activeId === id) { undo(); return; }
+    saved.change(state => ({ ...state, subjects: state.subjects.map(subject => {
+      const last = subject.session.events.at(-1);
+      return subject.id === id && last ? { ...subject, session: { fields: last.before, events: subject.session.events.slice(0, -1) } } : subject;
+    }) }));
   }
   function error(name: FieldName) {
     if (parsed.valid) return undefined;
@@ -114,17 +135,26 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
     const issue = error(name);
     return <div class="field">
       <label for={name}>{label}</label>
-      <input ref={name === 'total' ? totalRef : null} id={name} name={name} type="text" inputMode="numeric" autoComplete="off" maxLength={32}
-        disabled={!saved.ready} value={fields[name]} placeholder={placeholder} aria-invalid={Boolean(issue)} aria-describedby={issue ? `${name}-error` : name === 'remaining' ? 'remaining-help' : 'counts-help'}
-        onInput={event => update(name, event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, [name]: true }))} />
+      <div class="count-stepper"><button type="button" class="step-button" aria-label={`Decrease ${label.toLowerCase()}`} disabled={!saved.ready || steppedCount(fields, name, -1) === null} onClick={() => { const next = steppedCount(fields, name, -1); if (next !== null) update(name, next); }}><Icon name="minus" size={16}/></button><input ref={name === 'total' ? totalRef : null} id={name} name={name} type="text" inputMode="numeric" autoComplete="off" maxLength={32}
+        disabled={!saved.ready} value={fields[name]} data-long={fields[name].trim().length > 6} placeholder={placeholder} aria-invalid={Boolean(issue)} aria-describedby={issue ? `${name}-error` : name === 'remaining' ? 'remaining-help' : 'counts-help'}
+        onInput={event => update(name, event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, [name]: true }))} /><button type="button" class="step-button" aria-label={`Increase ${label.toLowerCase()}`} disabled={!saved.ready || steppedCount(fields, name, 1) === null} onClick={() => { const next = steppedCount(fields, name, 1); if (next !== null) update(name, next); }}><Icon name="plus" size={16}/></button></div>
       {issue && <p id={`${name}-error`} class="field-error">{issue}</p>}
     </div>;
   }
   return <>
-    <div class="calculator-workspace" id="calculator" ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
+    <SubjectDashboard saved={saved} onRecord={recordSubject} onUndo={undoSubject} onOpen={id => { saved.change(state => ({ ...state, activeId: id })); switchSubject(); document.getElementById('saved-subject')?.focus(); }} onAdd={() => { switchSubject(); saved.startTemporary({ fields: { ...initial }, events: [] }); totalRef.current?.focus(); }} />
+    <div class="calculator-workspace" id="calculator" data-native={appMode} ref={workspace} data-tone={instrumentState.tone} data-preview={activePreview ?? 'current'} data-direction={direction}>
       <form class="calculator-inputs" onSubmit={event => { event.preventDefault(); setTouched({ total: true, attended: true, target: true, remaining: true }); }} noValidate>
         <SubjectPicker saved={saved} onSwitch={switchSubject} />
+        {parsed.valid && result && <div class="mobile-status" data-tone={resultTone(parsed.value, result)}><strong>{result.percentage ?? "—"}<small>{result.percentage !== null ? "%" : ""}</small></strong><span>{result.state === "empty" ? "No classes yet" : result.state === "recovery" ? "Recovery needed" : result.state === "unreachable" || result.state === "perfect-unreachable" ? "Target out of reach" : result.canMiss === 0n ? "No skip buffer" : parsed.value.targetBasisPoints === 0 ? "No minimum" : "On track"}</span></div>}
+        <div class="class-actions" role="group" aria-label="Record a class for the selected subject">
+          <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon"><Icon name="check" size={26}/></span><span>Present<small>Attended this class</small></span></button>
+          <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon"><Icon name="close" size={26}/></span><span>Absent<small>Missed this class</small></span></button>
+        </div>
+        <div class="session-row"><span class="session-feedback" role="status">{canRecord || session.events.length ? feedback : parsed.valid && parsed.value.remaining === 0 ? 'Term complete. Update remaining classes to continue.' : parsed.valid && parsed.value.total === MAX_CLASSES ? 'Class limit reached.' : 'Enter valid counts to update a class.'}</span><button type="button" class="undo-button" disabled={!saved.ready || !session.events.length} onClick={undo}>Undo <span aria-hidden="true">↶</span></button></div>
+        {changeReadout && <div class="class-change" data-kind={changeReadout.kind} role="status" aria-atomic="true"><span>{changeReadout.kind === 'present' ? '✓ Present' : '× Absent'}</span><strong>{changeReadout.before}% <span aria-hidden="true">→</span><span class="sr-only">to</span> {changeReadout.after}%</strong></div>}
         {parsed.valid && result && <div class="mobile-answer" data-tone={resultTone(parsed.value, result)}><span>Your next move · {targetLabel(parsed.value)}% target</span><strong>{resultMessage(parsed.value, result)}</strong><a href="#result-title">See the breakdown <span aria-hidden="true">↓</span></a></div>}
+
         <div class="form-heading"><h2>Your numbers.</h2><button class="text-button" type="button" disabled={!saved.ready} onClick={reset}>{saved.state.activeId ? 'New calculation' : 'Reset'} <span aria-hidden="true">↺</span></button></div>
         <p class="form-intro" id="counts-help">Use the lecture counts from your college record.</p>
         {!parsed.valid && !hasInvalid && <div class="quick-start"><span>Enter two counts. Your answer updates instantly.</span><button class="example-button" disabled={!saved.ready} type="button" onClick={() => { setDirection('present'); setPreview(null); setPreviewCount(1); setUndoGhost(null); setSession({ fields: { attended: '90', total: '110', target: defaultTarget, remaining: '' }, events: [] }); setFeedback('Example loaded. Try a class.'); setTouched({}); }}>Try an example <span aria-hidden="true">↗</span></button></div>}
@@ -133,24 +163,21 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
         </div>
-        <div class="class-actions" role="group" aria-label="Record a class for the selected subject">
-          <button class="class-action class-action--present" type="button" disabled={!canRecord} onClick={() => record('present')}><span class="action-icon" aria-hidden="true">✓</span><span>Present<small>Attended this class</small></span></button>
-          <button class="class-action class-action--absent" type="button" disabled={!canRecord} onClick={() => record('absent')}><span class="action-icon" aria-hidden="true">×</span><span>Absent<small>Missed this class</small></span></button>
-        </div>
-        <div class="session-row"><span class="session-feedback" role="status">{canRecord || session.events.length ? feedback : parsed.valid && parsed.value.remaining === 0 ? 'Term complete. Update remaining classes to continue.' : parsed.valid && parsed.value.total === MAX_CLASSES ? 'Class limit reached.' : 'Enter valid counts to update a class.'}</span><button type="button" class="undo-button" disabled={!saved.ready || !session.events.length} onClick={undo}>Undo <span aria-hidden="true">↶</span></button></div>
+        {!saved.state.subjects.length && <ol class="discovery-steps" aria-label="Getting started"><li><b>1</b> Enter counts</li><li><b>2</b> See your next move</li><li><b>3</b> Save & return</li></ol>}
+        {parsed.valid && !saved.state.activeId && <button class="save-subject-cta" type="button" onClick={openSubjectEditor}><span aria-hidden="true">＋</span> Save this subject <small>Name it. Pick up here next time.</small></button>}
         <div class="target-section">
           <div class="target-heading"><label for="target">Required attendance</label><div class="percent-input"><input disabled={!saved.ready} id="target" name="target" type="text" inputMode={fields.target === '2/3' ? 'text' : 'decimal'} autoComplete="off" maxLength={16} value={fields.target}
             aria-invalid={Boolean(error('target'))} aria-describedby={error('target') ? 'target-error' : 'target-help'}
             onInput={event => update('target', event.currentTarget.value)} onBlur={() => setTouched(current => ({ ...current, target: true }))} />{fields.target !== '2/3' && <span aria-hidden="true">%</span>}</div></div>
           {error('target') && <p class="field-error" id="target-error">{error('target')}</p>}
-          <div class="target-presets" role="group" aria-label="Common target percentages">{presets.map(target => <button type="button" disabled={!saved.ready} key={target} aria-pressed={fields.target === target} onClick={() => update('target', target)}>{target === '2/3' ? 'Exact 2/3' : `${target}%`}</button>)}{!presets.includes('2/3') && <button type="button" disabled={!saved.ready} aria-pressed={fields.target === '2/3'} onClick={() => update('target', '2/3')}>Exact 2/3</button>}<span>or enter your own</span></div>
-          <p class="field-help" id="target-help">{targetHelp}</p>
+          <div class="target-presets" role="group" aria-label="Common target percentages">{presets.map(target => <button type="button" disabled={!saved.ready} key={target} aria-pressed={fields.target === target} onClick={() => update('target', target)}>{target === '2/3' ? 'Exact 2/3' : `${target}%`}</button>)}{!presets.includes('2/3') && <button type="button" disabled={!saved.ready} aria-pressed={fields.target === '2/3'} onClick={() => update('target', '2/3')}>Exact 2/3</button>}<button type="button" aria-pressed={!presets.includes(fields.target) && fields.target !== "2/3"} onClick={() => { const input = document.getElementById("target") as HTMLInputElement | null; input?.focus(); input?.select(); }}>Own %</button></div>
+          <details class="input-guidance"><summary>Which target should I use?</summary><p class="field-help" id="target-help">{targetHelp}</p></details>
         </div>
         <details class="remaining-details">
-          <summary><span>Plan to the end of term <small>{fields.remaining.trim() ? `${fields.remaining} left` : 'Optional'}</small></span><span class="expand-icon" aria-hidden="true">+</span></summary>
+          <summary><Icon name="calendar"/><span>Plan to the end of term <small>{fields.remaining.trim() ? `${fields.remaining} left` : 'Optional'}</small></span><span class="expand-icon" aria-hidden="true">+</span></summary>
           <div class="remaining-content">{countInput('remaining', 'Classes remaining', 'e.g. 20')}<p id="remaining-help" class="field-help">Upcoming lectures that count toward attendance. Leave blank if unknown; enter 0 if the term is complete.</p></div>
         </details>
-        <div class="form-bottom"><span class="privacy-dot" aria-hidden="true" /><p>{saved.temporary ? 'Separate calculation. Save as a subject to keep it.' : 'Attendance stays in this browser. Back up important records below.'}</p></div>
+        <div class="form-bottom"><span class="privacy-dot" aria-hidden="true" /><p>{saved.temporary ? 'Separate calculation. Save as a subject to keep it.' : 'Attendance stays on this device. Back up important records below.'}</p></div>
       </form>
       <Instrument state={instrumentState}>
         <div class={`class-ribbon ${activePreview ? 'class-ribbon--future' : ''}`}>
