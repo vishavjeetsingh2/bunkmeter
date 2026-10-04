@@ -4,6 +4,7 @@ import type { InstrumentState } from '../instrument/motion';
 import NumberReadout from './NumberReadout';
 import { projectClasses } from './class-actions';
 import ShareResult from './ShareResult';
+import { attendanceStatus, classMilestones } from './presentation';
 
 const number = (value: bigint | number) => value.toLocaleString('en-IN');
 
@@ -36,7 +37,7 @@ export default function Result({ input, result, preview, onPreview, previewCount
   const empty = result.state === 'empty';
   const noTarget = input.targetBasisPoints === 0;
   const tone = resultTone(input, result);
-  const status = empty ? 'No classes yet' : noTarget ? 'No minimum set' : perfect || unreachable ? 'Target out of reach' : recovering ? 'Below target' : result.state === 'at-target' ? 'Exactly at target' : 'Above target';
+  const status = attendanceStatus(input, result);
   let lead = 'You can miss';
   let figure = result.canMiss === null ? '—' : number(result.canMiss);
   let unit = result.canMiss === 1n ? 'consecutive class' : 'consecutive classes';
@@ -68,9 +69,10 @@ export default function Result({ input, result, preview, onPreview, previewCount
   const showRun = !empty && !noTarget && !finished && !unreachable && !perfect && run !== null;
   const afterAttended = BigInt(input.attended) + (recovering && run !== null ? run : 0n);
   const afterTotal = BigInt(input.total) + (run ?? 0n);
+  const milestones = showRun ? classMilestones(input, run!, recovering) : [];
   return (
     <section class={`result result--${tone}`} aria-labelledby="result-title" data-testid="result">
-      <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><span aria-hidden="true" />{status}</span></div>
+      <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><Icon name={status.icon} size={13}/>{status.label}</span></div>
       <div class="attendance-summary">
         <div><span class="metric-label">Current attendance</span><strong><NumberReadout value={result.percentage ?? '—'}/>{result.percentage !== null && <span>%</span>}</strong></div>
         <span class="count-note">{number(input.attended)} of {number(input.total)}<br />{' '}classes attended</span>
@@ -81,7 +83,12 @@ export default function Result({ input, result, preview, onPreview, previewCount
         <p class="decision-unit">{unit}</p>
       </div>
       {showRun && <div class="recovery-visual">
-        {run! > 0n && <div class="recovery-tiles" aria-hidden="true">{Array.from({ length: Number(run! > 20n ? 20n : run!) }, (_, i) => <span class={recovering ? 'recovery-tile' : 'spare-tile'} key={i}><Icon name={recovering ? 'check' : 'minus'} size={12}/></span>)}{run! > 20n && <small>+{number(run! - 20n)}</small>}</div>}
+        {milestones.length > 0 && <ol class="recovery-path" aria-label={recovering ? 'Consecutive attendance milestones' : 'Consecutive missed-class milestones'}>
+          <li class="path-start"><span class="path-node"><Icon name="target" size={13}/></span><strong>{result.percentage}%</strong><small>Now</small></li>
+          {milestones.map((step, index) => <li key={step.classes.toString()} class={index === milestones.length - 1 ? 'path-finish' : ''}>
+            <span class="path-node"><Icon name={recovering ? 'check' : 'minus'} size={13}/></span><strong>+{number(step.classes)}</strong><small>{recovering ? 'attend' : 'miss'} · {step.percentage}%</small>
+          </li>)}
+        </ol>}
         <div class="calculation-flow" aria-label={`${input.attended} of ${input.total}, ${recovering ? 'attend' : 'miss'} ${run}, gives ${afterAttended} of ${afterTotal}, ${percentage(afterAttended, afterTotal)} percent`}><span>{number(input.attended)}/{number(input.total)}</span><Icon name="arrow" size={15}/><span class="flow-action">{recovering ? '✓ Attend' : '− Miss'} {number(run!)}</span><Icon name="arrow" size={15}/><span>{number(afterAttended)}/{number(afterTotal)}</span><strong>{percentage(afterAttended, afterTotal)}%</strong></div>
       </div>}
       <details class="result-explanation" open={unreachable || perfect || finished || noTarget || empty}><summary>How this is calculated <span aria-hidden="true">+</span></summary><p class="decision-explanation">{explanation}</p>

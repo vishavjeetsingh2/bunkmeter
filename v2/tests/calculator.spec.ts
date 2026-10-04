@@ -28,14 +28,14 @@ test('audited boundaries render the exact result', async ({ page }) => {
   await counts(page, '405', '450', '81');
   await expect(page.locator('.decision-number')).toHaveText('50');
   await counts(page, '29', '50', '58');
-  await expect(page.locator('.status-label')).toHaveText('Exactly at target');
+  await expect(page.locator('.status-label')).toHaveText('No skip buffer');
   await expect(page.locator('.decision-number')).toHaveText('0');
   await counts(page, '0', '102', '99');
   await expect(page.locator('.decision-number')).toHaveText('10,098');
   await expect(page.getByTestId('result')).not.toContainText('out of reach');
   await counts(page, '7499', '10000');
   await expect(page.getByTestId('result')).toContainText('74.99');
-  await expect(page.locator('.status-label')).toHaveText('Below target');
+  await expect(page.locator('.status-label')).toHaveText('Recovery needed');
 });
 
 test('invalid values never leave a plausible old answer', async ({ page }) => {

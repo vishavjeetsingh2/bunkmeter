@@ -5,6 +5,7 @@ import { parseAttendance } from '../../domain/validation';
 import { resultMessage, resultTone } from '../calculator/Result';
 import type { useSavedAttendance } from './useSavedAttendance';
 import { MAX_SUBJECTS } from './model';
+import { attendanceStatus } from '../calculator/presentation';
 
 export default function SubjectDashboard({ saved, onOpen, onAdd, onRecord, onUndo }: {
   saved: ReturnType<typeof useSavedAttendance>; onOpen: (id: string) => void; onAdd: () => void;
@@ -18,10 +19,10 @@ export default function SubjectDashboard({ saved, onOpen, onAdd, onRecord, onUnd
       const parsed = parseAttendance(subject.session.fields);
       const result = parsed.valid ? calculateAttendance(parsed.value) : null;
       const tone = parsed.valid && result ? resultTone(parsed.value, result) : 'neutral';
-      const status = !result || result.state === 'empty' ? 'Set up counts' : tone === 'danger' ? 'Out of reach' : tone === 'caution' ? result.state === 'recovery' ? 'Recovery needed' : 'No skip buffer' : tone === 'safe' ? 'On track' : 'No minimum';
+      const status = parsed.valid && result ? attendanceStatus(parsed.value, result) : { label: 'Set up counts', icon: 'minus' as const };
       const recordable = saved.ready && parsed.valid && parsed.value.total < MAX_CLASSES && parsed.value.remaining !== 0;
-      return <li key={subject.id}><article class="subject-card" data-tone={tone}><button class="subject-open" type="button" disabled={!saved.ready} onClick={() => onOpen(subject.id)} aria-label={`Open ${subject.name}`}>
-        <span class="subject-card-top"><strong>{subject.name}</strong><span class="subject-state">{status}</span></span>
+      return <li key={subject.id}><article class="subject-card" data-tone={tone} data-active={!saved.temporary && saved.state.activeId === subject.id}><button class="subject-open" type="button" disabled={!saved.ready} onClick={() => onOpen(subject.id)} aria-label={`Open ${subject.name}`}>
+        <span class="subject-card-top"><strong>{subject.name}</strong><span class="subject-state"><Icon name={status.icon} size={12}/>{status.label}</span></span>
         <span class="subject-card-number">{result?.percentage ?? '—'}{result?.percentage !== null && result && <small>%</small>}<span>Target {parsed.valid ? targetLabel(parsed.value) : subject.session.fields.target}%</span></span>
         <span class="subject-meter" aria-hidden="true"><span style={{ width: `${result?.percentage ?? 0}%` }} />{parsed.valid && <i style={{ left: `${Math.min(99, targetPercent(parsed.value))}%` }} />}</span>
         <span class="subject-counts">{subject.session.fields.attended || '—'} attended / {subject.session.fields.total || '—'} held</span>
