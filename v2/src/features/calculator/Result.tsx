@@ -5,6 +5,8 @@ import NumberReadout from './NumberReadout';
 import { projectClasses } from './class-actions';
 import ShareResult from './ShareResult';
 import { attendanceStatus, classMilestones } from './presentation';
+import AttendanceJourney from './AttendanceJourney';
+import './web-experience.css';
 
 const number = (value: bigint | number) => value.toLocaleString('en-IN');
 
@@ -24,7 +26,7 @@ export function resultTone(input: AttendanceInput, result: AttendanceResult): In
   return result.state === 'recovery' || result.canMiss === 0n ? 'caution' : 'safe';
 }
 
-export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult, sharePath = '/' }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null; sharePath?: string }) {
+export default function Result({ input, result, preview, onPreview, previewCount, maxPreview, onPreviewCount, futureResult, sharePath = '/', webVisuals = false }: { input: AttendanceInput; result: AttendanceResult; preview: InstrumentState['preview']; onPreview: (preview: InstrumentState['preview']) => void; previewCount: number; maxPreview: number; onPreviewCount: (count: number) => void; futureResult: AttendanceResult | null; sharePath?: string; webVisuals?: boolean }) {
   const target = targetLabel(input);
   const presentRun = projectClasses(input, 'present', previewCount);
   const absentRun = projectClasses(input, 'absent', previewCount);
@@ -71,7 +73,7 @@ export default function Result({ input, result, preview, onPreview, previewCount
   const afterTotal = BigInt(input.total) + (run ?? 0n);
   const milestones = showRun ? classMilestones(input, run!, recovering) : [];
   return (
-    <section class={`result result--${tone}`} aria-labelledby="result-title" data-testid="result">
+    <section class={`result result--${tone} ${webVisuals ? 'web-result' : ''}`} aria-labelledby="result-title" data-testid="result">
       <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label"><Icon name={status.icon} size={13}/>{status.label}</span></div>
       <div class="attendance-summary">
         <div><span class="metric-label">Current attendance</span><strong><NumberReadout value={result.percentage ?? '—'}/>{result.percentage !== null && <span>%</span>}</strong></div>
@@ -83,7 +85,8 @@ export default function Result({ input, result, preview, onPreview, previewCount
         <p class="decision-unit">{unit}</p>
       </div>
       {showRun && <div class="recovery-visual">
-        {milestones.length > 0 && <ol class="recovery-path" aria-label={recovering ? 'Consecutive attendance milestones' : 'Consecutive missed-class milestones'}>
+        {webVisuals && <AttendanceJourney key={`${input.attended}|${input.total}|${target}|${run}`} input={input} run={run!} recovering={recovering}/>}
+        {!webVisuals && milestones.length > 0 && <ol class="recovery-path" aria-label={recovering ? 'Consecutive attendance milestones' : 'Consecutive missed-class milestones'}>
           <li class="path-start"><span class="path-node"><Icon name="target" size={13}/></span><strong>{result.percentage}%</strong><small>Now</small></li>
           {milestones.map((step, index) => <li key={step.classes.toString()} class={index === milestones.length - 1 ? 'path-finish' : ''}>
             <span class="path-node"><Icon name={recovering ? 'check' : 'minus'} size={13}/></span><strong>+{number(step.classes)}</strong><small>{recovering ? 'attend' : 'miss'} · {step.percentage}%</small>

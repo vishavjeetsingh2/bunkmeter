@@ -16,8 +16,10 @@ import Icon from '../../components/Icon';
 import { steppedCount } from './count-step';
 import { attendanceStatus } from './presentation';
 import NumberReadout from './NumberReadout';
+import CountBalance from './CountBalance';
 import './calculator.css';
 import '../../styles/product.css';
+import './web-experience.css';
 
 const emptyFields: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
 
@@ -172,6 +174,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
           {countInput('total', 'Classes held', 'e.g. 110')}
           {countInput('attended', 'You attended', 'e.g. 90')}
         </div>
+        {!appMode && parsed.valid && <CountBalance input={parsed.value}/>} 
         {appMode && !saved.state.subjects.length && <ol class="discovery-steps" aria-label="Getting started"><li><b>1</b> Enter counts</li><li><b>2</b> See your next move</li><li><b>3</b> Save & return</li></ol>}
         {appMode && parsed.valid && !saved.state.activeId && <button class="save-subject-cta" type="button" onClick={openSubjectEditor}><span aria-hidden="true">＋</span> Save this subject <small>Name it. Pick up here next time.</small></button>}
         <div class="target-section">
@@ -197,7 +200,7 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
           </div>
         </div>}
       </Instrument>
-      {parsed.valid && result ? <Result sharePath={sharePath} input={parsed.value} result={result} preview={activePreview} onPreview={choosePreview} previewCount={runLength} maxPreview={maxPreview} onPreviewCount={count => { setDirection('future'); setPreviewCount(count); setPreview(current => current ?? 'present'); }} futureResult={futureResult} /> : <section class="result result--empty" aria-labelledby="empty-heading">
+      {parsed.valid && result ? <Result webVisuals={!appMode} sharePath={sharePath} input={parsed.value} result={result} preview={activePreview} onPreview={choosePreview} previewCount={runLength} maxPreview={maxPreview} onPreviewCount={count => { setDirection('future'); setPreviewCount(count); setPreview(current => current ?? 'present'); }} futureResult={futureResult} /> : <section class="result result--empty" aria-labelledby="empty-heading">
         <div class="result-top"><span class="eyebrow">Your next move</span><span class="status-label">{hasInvalid ? 'Check your inputs' : 'Ready when you are'}</span></div>
         <h2 id="empty-heading">{hasInvalid ? 'Let’s get the counts right.' : <>Less guessing. <br />More perspective.</>}</h2>
         <p>{hasInvalid ? 'Correct the highlighted fields to get an accurate answer. We won’t guess or round your class counts.' : 'Enter your attendance to see what you can miss—or what you need to attend.'}</p>
