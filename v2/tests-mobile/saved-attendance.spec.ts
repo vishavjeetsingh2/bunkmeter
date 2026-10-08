@@ -117,7 +117,7 @@ test('subject controls and text guide fit mobile and have no axe violations', as
   expect(report.violations).toEqual([]);
 });
 
-test('opening shared links and university presets never overwrites a saved subject or quick draft', async ({ page }) => {
+test('opening shared links and exact-target presets never overwrites a saved subject or quick draft', async ({ page }) => {
   await start(page); await nameSubject(page, 'Physics');
   await page.goto('/?held=100&attended=72&req=75');
   await expect(page.locator('.decision-number')).toHaveText('12');
@@ -126,7 +126,7 @@ test('opening shared links and university presets never overwrites a saved subje
   await expect(page.getByLabel('Choose subject')).toHaveValue(/.+/);
   await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('110');
   await expect(page.getByLabel('You attended', { exact: true })).toHaveValue('90');
-  await page.goto('/du');
+  await page.goto('/?held=3&attended=2&req=2%2F3');
   await expect(page.getByLabel('Required attendance', { exact: true })).toHaveValue('2/3');
   await page.getByLabel('Classes held', { exact: true }).fill('3');
   await page.getByLabel('You attended', { exact: true }).fill('2');

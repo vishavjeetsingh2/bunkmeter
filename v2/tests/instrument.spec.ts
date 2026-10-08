@@ -64,9 +64,9 @@ test('unavailable lighting leaves the calculator usable without creating a rende
   await page.goto('/'); await example(page);
   await expect(page.getByRole('button', { name: 'Interactive view' })).toBeVisible();
   await expect(page.locator('.instrument-webgl canvas')).toHaveCount(0);
-  await page.getByRole('button', { name: /^Present/ }).click();
+  await page.getByRole('button', { name: 'Increase classes held', exact: true }).click();
   await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('111');
-  await expect(page.getByTestId('save-status')).toHaveText('Saved on this device.');
+  await expect(page.getByTestId('result')).toBeVisible();
 });
 
 for (const reason of ['save-data', 'low-core', 'low-memory', 'slow-network'] as const) {

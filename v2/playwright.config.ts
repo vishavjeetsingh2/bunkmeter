@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import process from 'node:process';
 
 export default defineConfig({
   testDir: './tests',
@@ -11,7 +12,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:4322', viewport: { width: 1366, height: 900 }, trace: 'retain-on-failure', launchOptions: { timeout: 15_000 } },
   projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
+    { name: 'chromium', use: { browserName: 'chromium', ...(process.env.PLAYWRIGHT_CHROME ? { channel: 'chrome' } : {}) } },
     { name: 'firefox', use: { browserName: 'firefox' } },
     { name: 'webkit', use: { browserName: 'webkit' } },
   ],

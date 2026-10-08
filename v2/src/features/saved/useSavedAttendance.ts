@@ -6,9 +6,9 @@ import type { AttendanceFields } from '../../domain/validation';
 import { setSaveBarrier } from '../../platform';
 
 export type SaveStatus = 'loading' | 'ready' | 'saving' | 'saved' | 'unavailable' | 'conflict' | 'temporary';
-export function useSavedAttendance(initial: AttendanceFields, path: string) {
+export function useSavedAttendance(initial: AttendanceFields, path: string, persist = true) {
   const [state, setState] = useState<Workspace>(() => ({ ...emptyWorkspace(), quick: { fields: initial, events: [] } }));
-  const [status, setStatus] = useState<SaveStatus>('loading');
+  const [status, setStatus] = useState<SaveStatus>(persist ? 'loading' : 'ready');
   const [temporary, setTemporary] = useState<Session | null>(null);
   const current = useRef(state);
   const temporaryRef = useRef<Session | null>(null);
@@ -21,6 +21,12 @@ export function useSavedAttendance(initial: AttendanceFields, path: string) {
   useEffect(() => {
     let disposed = false, finished = false;
     const preset = readAttendancePreset(window.location.search, initial);
+    // The public calculator never opens or writes the former tracking database.
+    // Its in-memory session also keeps edits isolated from existing app records.
+    if (!persist) {
+      startTemporary({ fields: preset.fields ?? initial, events: [] });
+      return;
+    }
     // Shared links and university defaults never replace a saved subject or quick draft.
     if (preset.fields || preset.invalid || path !== '/') startTemporary({ fields: preset.fields ?? initial, events: [] });
     const timeout = setTimeout(() => { if (!disposed && !finished) { finished = true; setStatus('unavailable'); db.current?.close(); } }, 5000);
