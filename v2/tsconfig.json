@@ -6,5 +6,5 @@
     "target": "ES2022"
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "dist-mobile", "android", "node_modules"]
+  "exclude": ["dist", "dist-mobile", "android", "node_modules", "playwright-report", "test-results"]
 }
