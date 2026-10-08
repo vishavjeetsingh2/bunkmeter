@@ -172,3 +172,11 @@
   .bunkmeter-product .calculator-workspace[data-direction=present] .class-change{animation:feedback-arrive 180ms ease-out}
 }
 @media(prefers-reduced-motion:reduce){.bunkmeter-product .calculator-inputs .class-action:not(:disabled):active{transform:none}}
+
+/* Public web calculator: input first; tracking remains in the Android edition. */
+.bunkmeter-product .calculator-workspace[data-native=false] .calculator-inputs .form-heading{margin-top:0;padding-top:0;border-top:0}
+.bunkmeter-product .legacy-backup{margin-top:28px;color:var(--muted);font-size:13px;max-width:76ch}
+.bunkmeter-product .legacy-backup summary{cursor:pointer;min-height:44px;display:flex;align-items:center;text-decoration:underline;text-underline-offset:3px}
+.bunkmeter-product .legacy-backup p{line-height:1.7;margin:10px 0}
+.bunkmeter-product .legacy-backup button{min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+@media(max-width:700px){.bunkmeter-product .calculator-workspace[data-native=false] .mobile-answer{margin-top:0}}

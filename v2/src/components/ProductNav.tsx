@@ -1,12 +1,12 @@
 import Icon from './Icon';
 import { useEffect, useState } from 'preact/hooks';
 
-export default function ProductNav({ base = '', helpId = 'how-it-works' }: { base?: string; helpId?: string }) {
+export default function ProductNav({ base = '', helpId = 'how-it-works', appMode = false }: { base?: string; helpId?: string; appMode?: boolean }) {
   const [active, setActive] = useState('calculator');
   const items = [
-    { id: 'subjects', label: 'Subjects', icon: 'subjects' as const },
+    ...(appMode ? [{ id: 'subjects', label: 'Subjects', icon: 'subjects' as const }] : []),
     { id: 'calculator', label: 'Calculator', icon: 'calculator' as const },
-    { id: 'saved-tools', label: 'History', icon: 'history' as const },
+    ...(appMode ? [{ id: 'saved-tools', label: 'History', icon: 'history' as const }] : []),
     { id: helpId, label: 'Help', icon: 'help' as const },
   ];
   useEffect(() => {
