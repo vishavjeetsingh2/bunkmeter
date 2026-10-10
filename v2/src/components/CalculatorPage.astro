@@ -3,7 +3,7 @@ import Shell from '../layouts/Shell.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Calculator from '../features/calculator/Calculator';
-import Advertisement from './Advertisement.astro';
+
 import Icon from './Icon';
 import { attendanceFaq } from '../content/faq';
 import { universities, type UniversityPage } from '../content/universities';
@@ -19,7 +19,7 @@ const calculatorProps = university ? { defaultTarget: university.defaultTarget, 
     <div class="page-intro"><div><p class="intro-kicker">Attendance calculator · Bunk budget & recovery</p><h1>{university ? university.heading : <>Your attendance.<br class="mobile-break" /> <span>In perspective.</span></>}</h1></div><p>Every class changes the picture.<br />Know your next move.</p></div>
     {university && <p class="university-preset-note">{university.lead}</p>}
     <Calculator client:load {...calculatorProps} sharePath={path} />
-    <Advertisement />
+
     <noscript><p class="noscript">JavaScript is needed for this calculator. You can still calculate your percentage: attended ÷ held × 100. Enable JavaScript to get recovery and allowance results.</p></noscript>
     {university && <article class="university-guide" aria-labelledby="university-guide-title"><h2 id="university-guide-title">{university.sectionTitle}</h2>{university.sections.map(section => <section><h3>{section.heading}</h3><p>{section.text}</p></section>)}<p>Source: <a href={university.source.url}>{university.source.label}</a>.</p><aside><p>BunkMeter is independent and is not affiliated with {university.shortName}. Check your current course rules and official record; this page does not decide examination eligibility.</p></aside></article>}
     <span id="faq" aria-hidden="true"></span><section class="how-section" id="how-it-works" aria-labelledby="how-title">
