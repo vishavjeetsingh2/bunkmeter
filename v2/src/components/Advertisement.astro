@@ -1,74 +1,11 @@
 <aside class="advertisement" aria-label="Advertisement" data-ad-slot>
-  <div class="ad-heading"><span>Advertisement</span><button type="button" data-ad-settings hidden>Ad settings</button></div>
-  <div class="ad-choice" data-ad-choice>
-    <p>Allow ads from Adsterra?</p>
-    <p>Adsterra and its partners may use cookies and process your IP address and device information to deliver, measure and personalise ads. The calculator works either way.</p>
-    <a href="/privacy-policy#advertising">Advertising privacy</a>
-    <div><button type="button" data-ad-allow>Allow ads</button><button type="button" data-ad-reject>No thanks</button></div>
-  </div>
-  <div data-ad-content hidden></div>
-  <p data-ad-status role="status" hidden></p>
+  <div class="ad-heading"><span>Advertisement</span><a href="/privacy-policy#advertising">Advertising privacy</a></div>
+  <iframe src="/advertisement.html" title="Advertisement from Adsterra" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>
 </aside>
-<script>
-  const slot = document.querySelector<HTMLElement>('[data-ad-slot]');
-  if (slot) {
-    const choice = slot.querySelector<HTMLElement>('[data-ad-choice]')!;
-    const content = slot.querySelector<HTMLElement>('[data-ad-content]')!;
-    const status = slot.querySelector<HTMLElement>('[data-ad-status]')!;
-    const settings = slot.querySelector<HTMLButtonElement>('[data-ad-settings]')!;
-    const allow = slot.querySelector<HTMLButtonElement>('[data-ad-allow]')!;
-    const key = 'bunkmeter-ad-choice-v1';
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    function render(enabled: boolean, remember = true) {
-      clearTimeout(timer);
-      content.replaceChildren();
-      choice.hidden = true;
-      settings.hidden = false;
-      content.hidden = !enabled;
-      status.hidden = false;
-      status.textContent = enabled ? 'An ad may appear here. Availability varies.' : 'Ads are off.';
-      if (remember) try { localStorage.setItem(key, JSON.stringify({ enabled, expires: Date.now() + 180 * 86400000 })); } catch { /* Choice still applies on this page. */ }
-      if (!enabled) return;
-      const frame = document.createElement('iframe');
-      frame.title = 'Advertisement from Adsterra';
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer';
-      frame.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
-      frame.src = '/advertisement.html';
-      content.append(frame);
-      timer = setTimeout(() => { status.textContent = 'If no ad appears, it may be unavailable or blocked. Your calculator is unaffected.'; }, 15000);
-    }
-    allow.addEventListener('click', () => { render(true); settings.focus(); });
-    slot.querySelector('[data-ad-reject]')!.addEventListener('click', () => { render(false); settings.focus(); });
-    settings.addEventListener('click', () => {
-      clearTimeout(timer); content.replaceChildren(); content.hidden = true;
-      choice.hidden = false; status.hidden = true; settings.hidden = true;
-      try { localStorage.removeItem(key); } catch { /* Storage may be unavailable. */ }
-      allow.focus();
-    });
-    window.addEventListener('storage', event => {
-      if (event.key === key || event.key === null) {
-        clearTimeout(timer); content.replaceChildren(); content.hidden = true;
-        choice.hidden = false; status.hidden = true; settings.hidden = true;
-      }
-    });
-    try {
-      const saved = JSON.parse(localStorage.getItem(key) ?? 'null');
-      if (saved && typeof saved.enabled === 'boolean' && typeof saved.expires === 'number' && saved.expires > Date.now()) render(saved.enabled, false);
-    } catch { /* Default to no ad requests. */ }
-  }
-</script>
 <style>
   .advertisement{margin:32px 0;padding:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px}
   .ad-heading{display:flex;justify-content:space-between;align-items:center;min-height:44px;gap:16px}
   .ad-heading>span{text-transform:uppercase;font-size:10px;letter-spacing:1.2px}
-  .advertisement button{min-height:44px;padding:9px 16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;cursor:pointer}
-  .ad-choice{max-width:620px;margin:8px auto 16px}
-  .ad-choice>p:first-child{font-weight:600;font-size:15px;color:var(--ink)}
-  .ad-choice p{margin:8px 0}.ad-choice>div{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-  .ad-choice a{display:inline-flex;align-items:center;min-height:44px}
-  [data-ad-content]{height:320px;overflow:hidden}
-  [data-ad-content] :global(iframe){display:block;width:100%;height:320px;border:0}
-  [data-ad-status]{margin:8px 0;font-size:11px}
-  [hidden]{display:none!important}
+  .ad-heading a{display:inline-flex;align-items:center;min-height:44px}
+  iframe{display:block;width:100%;height:320px;border:0}
 </style>
