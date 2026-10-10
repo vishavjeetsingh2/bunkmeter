@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('advertising is paused on calculator and university pages', async ({ page }) => {
+test('Adsterra stays disabled on calculator and university pages', async ({ page }) => {
   const adRequests: string[] = [];
   page.on('request', request => { if (/bauval\.org|advertisement\.html/.test(request.url())) adRequests.push(request.url()); });
   for (const path of ['/', '/vtu', '/aktu', '/du']) {
