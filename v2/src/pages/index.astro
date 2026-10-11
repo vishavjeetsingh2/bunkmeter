@@ -1,4 +1,6 @@
 ---
 import CalculatorPage from '../components/CalculatorPage.astro';
+// Keep the vendor's installation tag verbatim in the generated main-page head.
+const vignetteTag = "<script>(function(s){s.dataset.zone='12003940',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>";
 ---
-<CalculatorPage />
+<CalculatorPage><Fragment slot="head-ad" set:html={vignetteTag} /></CalculatorPage>

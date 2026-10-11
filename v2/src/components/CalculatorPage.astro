@@ -14,6 +14,7 @@ const metadata = university ? { title: university.title, description: university
 const calculatorProps = university ? { defaultTarget: university.defaultTarget, presets: university.presets, targetHelp: university.targetHelp } : {};
 ---
 <Shell {...metadata} path={path} faq={true}>
+  <slot name="head-ad" slot="head-ad"><script is:inline>(function(s){s.dataset.zone='12003940';s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script></slot>
   <Header home={true} />
   <main id="main" class="wrap" tabindex="-1">
     <div class="page-intro"><div><p class="intro-kicker">Attendance calculator · Bunk budget & recovery</p><h1>{university ? university.heading : <>Your attendance.<br class="mobile-break" /> <span>In perspective.</span></>}</h1></div><p>Every class changes the picture.<br />Know your next move.</p></div>
