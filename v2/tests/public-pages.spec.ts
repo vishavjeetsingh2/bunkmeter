@@ -1,6 +1,24 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const routes = ['/', '/vtu', '/aktu', '/du', '/attendance-calculator-guide', '/about', '/contact', '/privacy-policy', '/terms', '/disclaimer'];
+
+test('worked examples and FAQ are crawlable without JavaScript', async ({ request }) => {
+  const html = await (await request.get('/')).text();
+  expect(html).toContain('Attendance calculator.');
+  expect(html).toContain('id="examples-title"');
+  expect(html).toContain('72 / 100 → 84 / 112');
+  expect(html).toContain('90 / 110 → 90 / 120');
+  expect(html).toContain('80 / 100 → 114 / 134');
+  expect(html).toContain('data-faq-schema');
+});
+
+test('worked example opens a correct editable recovery result', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: /Recover to 85%/ }).click();
+  await expect(page.locator('.decision-number')).toHaveText('34');
+  await expect(page.getByLabel('Classes held', { exact: true })).toHaveValue('100');
+  await expect(page.getByLabel('You attended', { exact: true })).toHaveValue('80');
+});
 test('public routes have unique metadata, canonical URLs and complete navigation', async ({ page, request }) => {
   const titles = new Set<string>();
   for (const path of routes) {

@@ -21,6 +21,8 @@ export default function AttendanceJourney({ input, run, recovering }: { input: A
       {[0, 50, 100].map(value => <g key={value}><line x1="28" x2="372" y1={y(value)} y2={y(value)} class="journey-grid"/><text x="4" y={y(value) + 3}>{value}</text></g>)}
       <line x1="28" x2="372" y1={targetY} y2={targetY} class="journey-target"/>
       <polyline points={points} class="journey-line" pathLength="1"/>
+      <line class="journey-cursor" x1={x(active.classes)} x2={x(active.classes)} y1={y(Number(active.percentage))} y2="132"/>
+      <circle class="journey-halo" cx={x(active.classes)} cy={y(Number(active.percentage))} r="14"/>
       {steps.map((step, i) => <g key={step.classes.toString()} class={i === selected ? 'journey-point is-selected' : 'journey-point'}><circle cx={x(step.classes)} cy={y(Number(step.percentage))} r={i === selected ? 8 : 4}/><circle class="point-core" cx={x(step.classes)} cy={y(Number(step.percentage))} r="2"/></g>)}
       <text x="28" y="152">Now</text><text x="372" y="152" text-anchor="end">{run > 0n ? `${format(run)} classes ${recovering ? 'attended' : 'missed'}` : 'No skip buffer'}</text>
     </svg>
