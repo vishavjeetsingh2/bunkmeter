@@ -16,7 +16,7 @@ const schema = path === '/' ? { '@context': 'https://schema.org', '@type': 'WebA
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content={productionRelease && !noindex ? 'index, follow' : 'noindex, follow'} />
+    <meta name="robots" content={productionRelease && !noindex ? 'index, follow, max-image-preview:large' : 'noindex, follow'} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BunkMeter" />
@@ -29,6 +29,7 @@ const schema = path === '/' ? { '@context': 'https://schema.org', '@type': 'WebA
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${siteUrl}/og-preview.png`} />
+    <meta name="twitter:image:alt" content="BunkMeter attendance calculator — know what you can miss and what you must attend." />
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}
     {faq && <script type="application/ld+json" data-faq-schema set:html={JSON.stringify(faqSchema).replace(/</g, '\\u003c')} />}
     <meta name="theme-color" content="#f5f4ee" />

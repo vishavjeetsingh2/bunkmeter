@@ -19,6 +19,9 @@
 .journey-grid{stroke:var(--line);stroke-width:.6}
 .journey-target{stroke:var(--amber);stroke-width:1;stroke-dasharray:4 5}
 .journey-line{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.journey-cursor{stroke:var(--green);stroke-width:1;stroke-dasharray:3 4;opacity:.45}
+.journey-halo{fill:var(--green);opacity:.1;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){.journey-halo{transition:cx 220ms ease-out,cy 220ms ease-out}.journey-cursor{transition:x1 220ms ease-out,x2 220ms ease-out,y1 220ms ease-out}}
 .journey-point circle{fill:var(--surface);stroke:var(--green);stroke-width:2;transition:r 160ms ease-out}
 .journey-point.is-selected circle{fill:var(--green)}
 .journey-point .point-core{fill:var(--surface);stroke:none}
