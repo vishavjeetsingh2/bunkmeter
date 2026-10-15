@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import type { ComponentChildren } from 'preact';
+import type { AttendanceInput } from '../../domain/attendance';
 import { calculateAttendance, targetLabel, targetPercent, MAX_CLASSES } from '../../domain/attendance';
 import { parseAttendance, type AttendanceFields, type FieldName } from '../../domain/validation';
 import Result, { resultMessage, resultTone } from './Result';
@@ -23,7 +25,7 @@ import './web-experience.css';
 
 const emptyFields: AttendanceFields = { attended: '', total: '', target: '75', remaining: '' };
 
-export default function Calculator({ defaultTarget = '75', presets = ['75', '80', '85'], targetHelp = 'Use your course’s requirement. Rules vary by institution.', sharePath = '/', appMode = false }: { defaultTarget?: string; presets?: string[]; targetHelp?: string; sharePath?: string; appMode?: boolean } = {}) {
+export default function Calculator({ defaultTarget = '75', presets = ['75', '80', '85'], targetHelp = 'Use your course’s requirement. Rules vary by institution.', sharePath = '/', appMode = false, appPlan }: { defaultTarget?: string; presets?: string[]; targetHelp?: string; sharePath?: string; appMode?: boolean; appPlan?: (input: AttendanceInput | null, id: string, name: string, subjectIds: string[], records: Record<string, AttendanceInput | null>) => ComponentChildren } = {}) {
   const initial = { ...emptyFields, target: defaultTarget };
   const saved = useSavedAttendance(initial, sharePath, appMode);
   const { session, setSession } = saved;
@@ -207,7 +209,9 @@ export default function Calculator({ defaultTarget = '75', presets = ['75', '80'
       </section>}
     </div>
     <p class="sr-only" role="status" aria-atomic="true">{announcement}</p>
+    {appMode && saved.ready && appPlan?.(parsed.valid ? parsed.value : null, saved.state.activeId ?? 'quick', saved.state.subjects.find(subject => subject.id === saved.state.activeId)?.name ?? 'Quick calculation', saved.state.subjects.map(subject => subject.id), Object.fromEntries([{ id: 'quick', session: saved.state.quick }, ...saved.state.subjects].map(subject => { const value = parseAttendance(subject.session.fields); return [subject.id, value.valid ? value.value : null]; })))}
     {appMode ? <SavedControls saved={saved} onSwitch={switchSubject} /> : <LegacyBackup />}
     <p class="calculator-note"><span aria-hidden="true">↳</span> Planning, not permission. Your institution’s record and attendance policy are the final word.</p>
   </>;
 }
+

@@ -5,6 +5,6 @@ const config: CapacitorConfig = {
   // Keep this origin stable: IndexedDB is keyed to it across app upgrades.
   server: { hostname: 'localhost', androidScheme: 'https' },
   android: { allowMixedContent: false, backgroundColor: '#f5f4ee' },
-  plugins: { SystemBars: { style: 'LIGHT', insetsHandling: 'css' } },
+  plugins: { SystemBars: { style: 'LIGHT', insetsHandling: 'css' }, LocalNotifications: { smallIcon: 'bunkmeter_monochrome', iconColor: '#12616a' } },
 };
 export default config;

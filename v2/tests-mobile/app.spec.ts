@@ -10,6 +10,7 @@ test('packaged app has no external requests and persists subjects across a new p
     return route.continue();
   });
   await page.goto('/');
+  await page.getByRole('button', { name: 'Subjects', exact: true }).click();
   await page.getByRole('button', { name: 'Add your first subject' }).click();
   await expect(page.getByLabel('Classes held', { exact: true })).toBeFocused();
   await page.getByLabel('Classes held', { exact: true }).fill('100');
@@ -31,7 +32,9 @@ test('packaged app has no external requests and persists subjects across a new p
   expect(violations).toEqual([]);
   expect(external).toEqual([]); expect(errors).toEqual([]);
   const reopened = await context.newPage(); await page.close(); await reopened.goto('/');
+  await reopened.getByRole('button', { name: 'Subjects', exact: true }).click();
   await expect(reopened.getByRole('button', { name: 'Open Physics', exact: true })).toContainText('73 attended / 101 held');
+  await reopened.getByRole('button', { name: 'Open Physics', exact: true }).click();
   await reopened.getByRole('button', { name: /^Undo/ }).click();
   await expect(reopened.getByLabel('You attended', { exact: true })).toHaveValue('72');
   await expect(reopened.getByTestId('save-status')).toHaveText('Saved on this device.');
