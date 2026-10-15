@@ -1,5 +1,17 @@
 # BunkMeter Android
 
+## Recovery app — 15 October 2026
+
+The app now has separate Calculate, Recovery and Subjects screens with an app-only visual theme. The production website and its advertising are unchanged. Existing attendance records, subject IDs, origin, database and backup format remain unchanged.
+
+Recovery calendars use the exact shared engine. Choose class weekdays, classes per selected day and a start date; tap a date to exclude a holiday. Every scheduled class is assumed attended. Plans never write attendance marks. Projections are capped at 180 calendar days; an incomplete horizon does not imply a target date. Impossible recovery is explicitly shown.
+
+Plans are stored separately on-device under `bunkmeter.recovery-plans.v1`; attendance backups do not yet transfer calendars/reminder preferences. Recreate plans after importing attendance. Corrupt plan storage is not silently overwritten. Editing attendance cancels stale reminder plans; removing a subject removes its plan. Save a new plan after changes.
+
+The official `@capacitor/local-notifications` plugin schedules one combined notification per planned day across enabled subjects. Enabling reminders is explicit and asks for notification permission; opening the app never asks. Exact-alarm permission is removed and notifications are explicitly inexact. Android battery settings, force-stop and permission revocation can affect delivery. No server or advertising push integration is involved.
+
+Release gate: verify permission allow/deny, notification tap, background delivery, reboot and cancellation on a physical Android device. A debug APK is for testing, not Play submission. Legacy single-page UI tests need navigation updates as their corresponding flows change; the new recovery suite and updated packaged-app persistence test cover the new navigation.
+
 The Android app bundles a separate static Astro entry with Capacitor 8. It imports the **same** calculator, exact attendance engine, Instrument, saved-subject model and IndexedDB store as the website. There is no remote website wrapper, server URL, account or sync service. Website routes, SEO and advertising markup remain in `src/pages` / `layouts`; they are not included in the Android entry.
 
 ## Build
